@@ -7,21 +7,24 @@ import {
   EMPATHY_SEALS,
 } from './data/portfolioData';
 import HosakaDesktopOS from './components/HosakaDesktopOS';
+import CyberspaceTerrain from './components/CyberspaceTerrain';
+import NeuralWaveMatrix from './components/NeuralWaveMatrix';
+import WintermuteCoreSvg from './components/WintermuteCoreSvg';
 import { playKeyclick, playVoightKampffPulse } from './utils/soundEngine';
 
 const STORAGE_KEY_SEALS = 'ono_sendai_vk_seals_v1';
+const IRIS_CIRCUMFERENCE = 2 * Math.PI * 138;
 
 export default function App() {
-  // Mode: 'editorial' (Felipe-inspired narrative deck) vs 'os' (Madu-inspired multi-window desktop)
   const [viewMode, setViewMode] = useState('editorial');
   const [phosphorMode, setPhosphorMode] = useState('amber');
   const [soundOn, setSoundOn] = useState(true);
 
-  // Voight-Kampff Calibration (0 to 3 pulses — like Felipe's "Me ajuda a puxar?")
+  // Voight-Kampff Biometric Calibration (0..3 pulses)
   const [vkPulses, setVkPulses] = useState(0);
   const isCalibrated = vkPulses >= 3;
 
-  // Empathy Seals (12 total — unlocks Brushed Titanium at 6, 24K Straylight Gold at 12)
+  // Empathy Seals (12 total — evolves Obsidian -> Titanium at 6 -> 24K Gold at 12)
   const [unlockedSeals, setUnlockedSeals] = useState(() => {
     try {
       const saved = localStorage.getItem(STORAGE_KEY_SEALS);
@@ -33,36 +36,33 @@ export default function App() {
     return ['seal_boot'];
   });
 
-  // Manual chassis override or automatic by seals count
   const [chassisOverride, setChassisOverride] = useState(null);
 
-  // Companion Owl Speech
+  // Rachel-7 Companion Stream
   const [owlSpeech, setOwlSpeech] = useState(OWL_QUOTES.uncalibrated);
   const [tipIndex, setTipIndex] = useState(0);
 
-  // Active ROM Cartridge in Section 2
+  // Section 01: Hosaka ROM Cartridges
   const [romCategory, setRomCategory] = useState('all');
   const [activeRomId, setActiveRomId] = useState(ROM_CARTRIDGES[0].id);
   const [showTerminalRun, setShowTerminalRun] = useState(false);
 
-  // Active Telemetry Pin in Section 3
+  // Section 02: Neural Wave Telemetry Pin
   const [selectedPin, setSelectedPin] = useState(TELEMETRY_PINS[TELEMETRY_PINS.length - 1]);
 
-  // Section 4: Neuromancer Kuang Grade Mark XI ICEbreaker Mini-Game
+  // Section 03: Neuromancer Kuang Grade Mark XI ICEbreaker
   const [playerIntegrity, setPlayerIntegrity] = useState(100);
   const [iceShield, setIceShield] = useState(100);
   const [shieldBuff, setShieldBuff] = useState(false);
   const [combatLog, setCombatLog] = useState([
     'CONEXÃO MATRIZ ESTABELECIDA: Alvo -> Núcleo IA Wintermute (Tessier-Ashpool).',
-    'Selecione uma rotina de ataque Backend para quebrar o gelo (ICE) da fortaleza.',
+    'Dispare uma rotina Backend para romper o gelo neural (ICE).',
   ]);
 
-  // Modals (Seals Vault & Quick Command Palette)
+  // Modals & Notifications
   const [sealsModalOpen, setSealsModalOpen] = useState(false);
   const [cmdOpen, setCmdOpen] = useState(false);
   const [cmdQuery, setCmdQuery] = useState('');
-
-  // Toast notification
   const [toastMsg, setToastMsg] = useState('');
 
   const notify = useCallback((msg) => {
@@ -95,7 +95,6 @@ export default function App() {
     });
   }, []);
 
-  // Compute active chassis material
   const computedChassis =
     chassisOverride ||
     (unlockedSeals.length >= 12
@@ -104,7 +103,6 @@ export default function App() {
       ? 'titanium'
       : 'obsidian');
 
-  // Sync data-chassis and data-phosphor attributes on <html>
   useEffect(() => {
     document.documentElement.setAttribute('data-chassis', computedChassis);
   }, [computedChassis]);
@@ -113,7 +111,6 @@ export default function App() {
     document.documentElement.setAttribute('data-phosphor', phosphorMode);
   }, [phosphorMode]);
 
-  // Global keyboard shortcut Ctrl+K / Cmd+K
   useEffect(() => {
     const onKeyDown = (e) => {
       if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'k') {
@@ -128,7 +125,6 @@ export default function App() {
     return () => window.removeEventListener('keydown', onKeyDown);
   }, []);
 
-  // Voight-Kampff Calibration Pulse handler
   const handleVkPulse = () => {
     setVkPulses((prev) => {
       const next = Math.min(3, prev + 1);
@@ -138,14 +134,13 @@ export default function App() {
         unlockSeal('seal_calibrate');
       } else {
         setOwlSpeech(
-          `CALIBRANDO LENTE VOIGHT-KAMPFF (${next}/3): Ajustando dilatação de pupila e foco óptico... Pressione mais ${3 - next}x.`
+          `CALIBRANDO LENTE VOIGHT-KAMPFF (${next}/3): Ajustando foco óptico... Pressione mais ${3 - next}x.`
         );
       }
       return next;
     });
   };
 
-  // Switch between Editorial Deck and Hosaka Desktop OS
   const handleSwitchMode = (mode) => {
     playKeyclick(soundOn, 780);
     setViewMode(mode);
@@ -157,7 +152,6 @@ export default function App() {
     }
   };
 
-  // Cycle Companion Owl advice
   const handlePokeOwl = () => {
     playKeyclick(soundOn, 880);
     unlockSeal('seal_owl');
@@ -166,7 +160,19 @@ export default function App() {
     setOwlSpeech(OWL_QUOTES.tips[nextIdx]);
   };
 
-  // Select ROM Cartridge
+  const handleFilterRomCategory = (categoryId) => {
+    playKeyclick(soundOn, 700);
+    setRomCategory(categoryId);
+    const matching =
+      categoryId === 'all'
+        ? ROM_CARTRIDGES
+        : ROM_CARTRIDGES.filter((r) => r.category === categoryId);
+    if (matching.length > 0 && !matching.some((r) => r.id === activeRomId)) {
+      setActiveRomId(matching[0].id);
+      setShowTerminalRun(false);
+    }
+  };
+
   const handleSelectRom = (romId) => {
     playKeyclick(soundOn, 720);
     setActiveRomId(romId);
@@ -174,7 +180,6 @@ export default function App() {
     unlockSeal('seal_rom');
   };
 
-  // Run ROM Live Diagnostics
   const handleRunRomTerminal = () => {
     playKeyclick(soundOn, 940);
     setShowTerminalRun(true);
@@ -182,7 +187,6 @@ export default function App() {
     notify('Diagnóstico de container/banco executado com sucesso.');
   };
 
-  // Copy code or contact
   const handleCopyText = async (text, label) => {
     playKeyclick(soundOn, 820);
     try {
@@ -192,7 +196,18 @@ export default function App() {
     notify(`${label} copiado para a área de transferência.`);
   };
 
-  // Kuang Mark XI ICEbreaker turn-based move
+  const handleSelectTelemetryPin = (pin) => {
+    playKeyclick(soundOn, 850);
+    setSelectedPin(pin);
+    unlockSeal('seal_matrix');
+  };
+
+  const handleStepTelemetryPin = (delta) => {
+    const idx = TELEMETRY_PINS.findIndex((p) => p.id === selectedPin.id);
+    const nextIdx = (idx + delta + TELEMETRY_PINS.length) % TELEMETRY_PINS.length;
+    handleSelectTelemetryPin(TELEMETRY_PINS[nextIdx]);
+  };
+
   const handleIceMove = (moveType) => {
     playKeyclick(soundOn, 660);
     if (iceShield <= 0 || playerIntegrity <= 0) {
@@ -210,18 +225,18 @@ export default function App() {
 
     if (moveType === 'kuang_sql') {
       dmgToIce = 34;
-      playerActionLine = '▶ [T-SQL INDEX SEEK]: Você injetou uma Stored Procedure otimizada (-34% ICE).';
+      playerActionLine = '▶ [T-SQL INDEX SEEK]: Stored Procedure otimizada aplicada (-34% ICE).';
     } else if (moveType === 'avl_burst') {
       dmgToIce = 42;
-      playerActionLine = '▶ [ROTAÇÃO ÁRVORE AVL O(log n)]: Desbalanceamento corrigido na matriz (-42% ICE).';
+      playerActionLine = '▶ [ROTAÇÃO ÁRVORE AVL O(log n)]: Rebalanceamento neural na matriz (-42% ICE).';
     } else if (moveType === 'acid_shield') {
       dmgToIce = 15;
       healDeck = 22;
       newBuff = true;
-      playerActionLine = '▶ [TRANSAÇÃO ACID ROLLBACK]: Integridade restaurada (+22% Deck) e escudo ativo (-15% ICE).';
+      playerActionLine = '▶ [TRANSAÇÃO ACID ROLLBACK]: Integridade restaurada (+22% Deck) e proteção ativa (-15% ICE).';
     } else if (moveType === 'sandevistan_net') {
       dmgToIce = 38;
-      playerActionLine = '▶ [PIPELINE C#/.NET ASYNC]: Disparo concorrente de alta vazão (-38% ICE).';
+      playerActionLine = '▶ [PIPELINE C#/.NET ASYNC]: Fluxo concorrente de alta vazão (-38% ICE).';
     }
 
     const nextIce = Math.max(0, iceShield - dmgToIce);
@@ -231,12 +246,11 @@ export default function App() {
       unlockSeal('seal_icebreaker');
       setCombatLog([
         playerActionLine,
-        '★ VITÓRIA NO CIBERESPAÇO: O gelo da Tessier-Ashpool foi quebrado! Selo [VK-07 Cowboy do Ciberespaço] liberado.',
+        '★ VITÓRIA NO CIBERESPAÇO: O gelo da Tessier-Ashpool foi quebrado! Selo [VK-07] liberado.',
       ]);
       return;
     }
 
-    // Enemy counter-attack
     const rawEnemyDmg = Math.floor(Math.random() * 14) + 12;
     const finalEnemyDmg = newBuff ? Math.floor(rawEnemyDmg * 0.45) : rawEnemyDmg;
     const nextPlayer = Math.min(100, Math.max(0, playerIntegrity + healDeck - finalEnemyDmg));
@@ -245,33 +259,31 @@ export default function App() {
 
     setCombatLog([
       playerActionLine,
-      `◀ [CONTRA-ATAQUE WINTERMUTE]: Pulso neural causou -${finalEnemyDmg}% no seu Cyberdeck.`,
+      `◀ [CONTRA-ATAQUE WINTERMUTE]: Pulso defensivo causou -${finalEnemyDmg}% no seu Cyberdeck.`,
     ]);
   };
 
-  // Filtered ROMs
   const visibleRoms =
     romCategory === 'all'
       ? ROM_CARTRIDGES
       : ROM_CARTRIDGES.filter((r) => r.category === romCategory);
 
   const activeRom =
-    ROM_CARTRIDGES.find((r) => r.id === activeRomId) || ROM_CARTRIDGES[0];
+    visibleRoms.find((r) => r.id === activeRomId) || visibleRoms[0] || ROM_CARTRIDGES[0];
 
-  // Command Palette Items
   const commandItems = [
     {
-      label: 'Alternar para Bancada Hosaka OS (Janelas Multitarefa)',
-      sub: 'MODO SISTEMA OPERACIONAL',
+      label: 'Alternar para Bancada Hosaka OS (6 Janelas Multitarefa)',
+      sub: 'MODO OS',
       action: () => handleSwitchMode('os'),
     },
     {
-      label: 'Alternar para Dossiê Editorial Tyrell-84',
-      sub: 'MODO LEITURA & ENGENHARIA',
+      label: 'Alternar para Navegação Espacial Tyrell-84',
+      sub: 'CIBERESPAÇO',
       action: () => handleSwitchMode('editorial'),
     },
     {
-      label: 'Calibrar Lente Voight-Kampff (100% Foco)',
+      label: 'Calibrar Íris Voight-Kampff (100% Foco)',
       sub: 'BIOMETRIA',
       action: () => {
         setVkPulses(3);
@@ -280,20 +292,21 @@ export default function App() {
       },
     },
     {
-      label: 'Alternar Fósforo CRT (Âmbar P3 / Verde Matriz P1)',
-      sub: 'MONITOR CRT',
+      label: 'Alternar Espectro CRT (Âmbar P3 / Verde P1)',
+      sub: 'ESPECTRO',
       action: () => setPhosphorMode((p) => (p === 'amber' ? 'green' : 'amber')),
     },
     {
-      label: 'Abrir Cofre de Selos Voight-Kampff & Chassi',
+      label: 'Abrir Cofre de Selos Voight-Kampff & Liga',
       sub: `${unlockedSeals.length}/12 SELOS`,
       action: () => setSealsModalOpen(true),
     },
     ...ROM_CARTRIDGES.map((rom) => ({
-      label: `Inspecionar Fita: ${rom.title}`,
+      label: `Carregar Fita ROM: ${rom.title}`,
       sub: rom.slot,
       action: () => {
         setViewMode('editorial');
+        setRomCategory('all');
         handleSelectRom(rom.id);
         const el = document.getElementById('sec-rom-bay');
         if (el) el.scrollIntoView({ behavior: 'smooth' });
@@ -306,22 +319,24 @@ export default function App() {
       item.sub.toLowerCase().includes(cmdQuery.toLowerCase())
   );
 
+  const irisProgressOffset = IRIS_CIRCUMFERENCE * (1 - vkPulses / 3);
+
   return (
     <>
       <a href="#main-deck" className="skip-link">
-        Pular para a bancada principal
+        Pular para o ciberespaço principal
       </a>
 
       {/* ====================================================================
-          TOP TACTILE HARDWARE BAR
+          SLEEK TRANSLUCENT TOP NAVIGATION (NO HEAVY BOX CHROME)
           ==================================================================== */}
       <header className="top-console-bar" role="banner">
         <div className="top-console-inner">
           <div className="brand-plate">
             <span className="brand-led" aria-hidden="true" />
-            <span className="brand-model-code">ONO-SENDAI VII // TYRELL-84</span>
+            <span className="brand-model-code">ONO-SENDAI VII</span>
+            <span className="brand-divider" aria-hidden="true">/</span>
             <span className="brand-sub-tag">
-              CHASSI:{' '}
               {computedChassis === 'obsidian'
                 ? 'OBSIDIANA 84'
                 : computedChassis === 'titanium'
@@ -330,8 +345,7 @@ export default function App() {
             </span>
           </div>
 
-          {/* Mode Switcher: Editorial Deck (Felipe style) vs Hosaka OS (Madu style) */}
-          <div className="mode-switch-group" role="tablist" aria-label="Modo de Operação da Estação">
+          <div className="mode-switch-group" role="tablist" aria-label="Modo de Operação">
             <button
               type="button"
               role="tab"
@@ -339,7 +353,7 @@ export default function App() {
               className={`mode-switch-btn ${viewMode === 'editorial' ? 'active' : ''}`}
               onClick={() => handleSwitchMode('editorial')}
             >
-              ◆ DOSSIÊ &amp; BANCADA
+              Ciberespaço &amp; Dossiê
             </button>
             <button
               type="button"
@@ -348,277 +362,313 @@ export default function App() {
               className={`mode-switch-btn ${viewMode === 'os' ? 'active' : ''}`}
               onClick={() => handleSwitchMode('os')}
             >
-              ▣ HOSAKA OS [6 APPS]
+              Hosaka OS [6 Apps]
             </button>
           </div>
 
           <div className="console-right-controls">
             <button
               type="button"
-              className="mini-rocker-btn"
+              className="nav-ghost-btn"
               onClick={() => {
                 playKeyclick(soundOn, 750);
                 setCmdOpen(true);
               }}
               title="Abrir paleta de comandos (Ctrl+K)"
             >
-              ⌘ COMANDOS [Ctrl+K]
+              Ctrl+K
             </button>
 
             <button
               type="button"
-              className="mini-rocker-btn"
+              className="nav-ghost-btn"
               onClick={() => {
                 playKeyclick(soundOn, 690);
                 setPhosphorMode((p) => (p === 'amber' ? 'green' : 'amber'));
               }}
-              title="Alternar cor do fósforo CRT entre Âmbar P3 e Verde P1"
+              title="Alternar espectro entre Âmbar P3 e Verde P1"
             >
-              CRT: {phosphorMode === 'amber' ? 'ÂMBAR P3' : 'VERDE P1'}
+              {phosphorMode === 'amber' ? 'Âmbar P3' : 'Verde P1'}
             </button>
 
             <button
               type="button"
-              className="mini-rocker-btn"
+              className="nav-ghost-btn"
               aria-pressed={soundOn}
               onClick={() => setSoundOn((s) => !s)}
-              title="Ativar ou silenciar cliques mecânicos e sintetizador"
+              title="Ativar ou silenciar sintetizador CS-80"
             >
-              SOM: {soundOn ? 'ON' : 'MUTE'}
+              {soundOn ? 'Som On' : 'Mudo'}
             </button>
 
             <button
               type="button"
-              className="seals-counter-pill t-nums"
+              className="seals-orb-pill t-nums"
               onClick={() => {
                 playKeyclick(soundOn, 810);
                 setSealsModalOpen(true);
               }}
-              title="Ver Selos de Empatia Voight-Kampff e evoluir o metal do chassi"
+              title="Abrir Cofre de Selos Voight-Kampff e liga metálica"
             >
-              <span>★ SELOS VK:</span>
-              <strong>{unlockedSeals.length}/12</strong>
+              <span className="seals-orb-dot" aria-hidden="true" />
+              <span>Selos {unlockedSeals.length}/12</span>
             </button>
           </div>
         </div>
       </header>
 
       {/* ====================================================================
-          RACHEL-7 / WINTERMUTE MECHANICAL OWL COMPANION STRIP
-          ==================================================================== */}
-      <aside className="companion-strip" aria-label="Unidade Assistente Rachel-7">
-        <div className="companion-card">
-          <div className="companion-left">
-            <button
-              type="button"
-              className="owl-avatar-btn"
-              onClick={handlePokeOwl}
-              title="Cutucar a coruja mecânica Rachel-7 para receber dicas de engenharia"
-              aria-label="Consultar assistente mecânico Rachel-7"
-            >
-              <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="var(--phosphor-primary)" strokeWidth="1.8">
-                <circle cx="8.5" cy="10.5" r="3.2" />
-                <circle cx="15.5" cy="10.5" r="3.2" />
-                <circle cx="8.5" cy="10.5" r="1" fill="var(--phosphor-primary)" />
-                <circle cx="15.5" cy="10.5" r="1" fill="var(--phosphor-primary)" />
-                <path d="M12 13.5L10.5 16H13.5L12 13.5Z" />
-                <path d="M4 7L7 4.5M20 7L17 4.5" />
-                <rect x="3" y="3" width="18" height="18" rx="4" />
-              </svg>
-            </button>
-            <div className="companion-speech">
-              <strong>UNIDADE RACHEL-7 // TYRELL CORP: </strong>
-              <span>{owlSpeech}</span>
-            </div>
-          </div>
-
-          <div className="companion-meta">
-            <button type="button" className="keycap-btn crt-btn" onClick={handlePokeOwl}>
-              OUTRA TRANSMISSÃO ↻
-            </button>
-          </div>
-        </div>
-      </aside>
-
-      {/* ====================================================================
-          MAIN STAGE: SWITCH BETWEEN EDITORIAL DECK & HOSAKA DESKTOP OS
+          MAIN STAGE: CYBERSPACE SPATIAL DECK VS HOSAKA OS WORKSTATION
           ==================================================================== */}
       <main id="main-deck">
         {viewMode === 'os' ? (
-          <HosakaDesktopOS
-            soundOn={soundOn}
-            unlockSeal={unlockSeal}
-            notify={notify}
-            unlockedSeals={unlockedSeals}
-            chassisStage={computedChassis}
-          />
-        ) : (
-          <div className="editorial-container">
-            {/* ================================================================
-                SECTION 1: HERO & VOIGHT-KAMPFF BIOMETRIC CALIBRATION
-                ================================================================ */}
-            <section className="hero-deck-grid" aria-labelledby="hero-heading">
-              <div className="chassis-frame corner-screws hero-editorial-panel">
-                <div>
-                  <span className="eyebrow-badge">
-                    ◆ TERMINAL DE ENGENHARIA BACKEND · SÉRIE 1984 / 2077
-                  </span>
-                  <h1 id="hero-heading" className="hero-title" style={{ marginTop: '14px' }}>
-                    Miqueias Carvalho.{' '}
-                    <span className="highlight-tag">Da query em produção</span> à arquitetura de APIs.
-                  </h1>
-                  <p className="hero-lead" style={{ marginTop: '14px' }}>
-                    {PROFILE_DATA.summary} Atualmente na <strong>Zetti</strong> sustentando regras de negócio e bancos{' '}
-                    <strong>SQL Server</strong> para dezenas de farmácias, graduando em Engenharia de Software na{' '}
-                    <strong>UNIFAN (2027)</strong>.
-                  </p>
-                </div>
-
-                <div className="hero-telemetry-strip">
-                  <div className="telemetry-cell">
-                    <small>OPERAÇÃO ATUAL (DEZ/2025 – HOJE)</small>
-                    <strong>Zetti · SQL Server &amp; VB6</strong>
-                  </div>
-                  <div className="telemetry-cell">
-                    <small>ECOSSISTEMA DE APIs &amp; POO</small>
-                    <strong>C# / .NET · Java 17 · Node.js</strong>
-                  </div>
-                  <div className="telemetry-cell">
-                    <small>FORMAÇÃO ACADÊMICA</small>
-                    <strong>Eng. Software · UNIFAN</strong>
-                  </div>
-                </div>
-
-                <div className="hero-cta-row">
-                  <a href="#sec-rom-bay" className="keycap-btn primary" onClick={() => playKeyclick(soundOn, 760)}>
-                    INSPECIONAR FITAS ROM [6] ↓
-                  </a>
+          <>
+            <aside className="rachel-horizon-bar" aria-label="Unidade Assistente Rachel-7">
+              <div className="rachel-horizon-inner">
+                <div className="rachel-stream-left">
                   <button
                     type="button"
-                    className="keycap-btn"
-                    onClick={() => handleSwitchMode('os')}
+                    className="owl-orb-btn"
+                    onClick={handlePokeOwl}
+                    aria-label="Consultar assistente mecânico Rachel-7"
                   >
-                    ABRIR HOSAKA OS [JANELAS] ▣
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--phosphor-primary)" strokeWidth="1.6">
+                      <circle cx="8.5" cy="10.5" r="2.8" />
+                      <circle cx="15.5" cy="10.5" r="2.8" />
+                      <circle cx="8.5" cy="10.5" r="0.9" fill="var(--phosphor-primary)" />
+                      <circle cx="15.5" cy="10.5" r="0.9" fill="var(--phosphor-primary)" />
+                      <path d="M12 13.5L10.6 15.8H13.4L12 13.5Z" />
+                      <path d="M4.5 7.5L7.5 5M19.5 7.5L16.5 5" />
+                    </svg>
                   </button>
-                  <a
-                    href={PROFILE_DATA.cvPdf}
-                    download="Curriculo_Miqueias_Carvalho.pdf"
-                    className="keycap-btn"
-                    onClick={() => unlockSeal('seal_dossier')}
-                  >
-                    BAIXAR CURRÍCULO PDF ⬇
-                  </a>
+                  <p className="rachel-speech-line">
+                    <span className="rachel-tag">RACHEL-7 // </span>
+                    {owlSpeech}
+                  </p>
                 </div>
+                <button type="button" className="ghost-pill-btn" onClick={handlePokeOwl}>
+                  Próxima transmissão ↻
+                </button>
               </div>
+            </aside>
+            <HosakaDesktopOS
+              soundOn={soundOn}
+              unlockSeal={unlockSeal}
+              notify={notify}
+              unlockedSeals={unlockedSeals}
+              chassisStage={computedChassis}
+            />
+          </>
+        ) : (
+          <div className="cyberspace-flow">
+            {/* ================================================================
+                SECTION 0: FULL-BLEED CYBERSPACE HERO + ORBITAL IRIS SCANNER
+                ================================================================ */}
+            <section className="hero-cyberspace" aria-labelledby="hero-heading">
+              <CyberspaceTerrain chassis={computedChassis} phosphor={phosphorMode} />
 
-              {/* Right Column: Interactive Voight-Kampff Biometric Calibrator */}
-              <div className="crt-monitor vk-calibrator-box">
-                <div className="vk-top-header">
-                  <span>UNIDADE ÓPTICA VOIGHT-KAMPFF // MODELO VK-84</span>
-                  <span className="t-nums">
-                    FOCO: {isCalibrated ? '100% ESTÁVEL' : `${vkPulses * 33}% DESALINHADO`}
-                  </span>
-                </div>
-
-                <div className="vk-viewport">
-                  <div className={`vk-portrait-frame ${isCalibrated ? '' : 'uncalibrated'}`}>
-                    <img
-                      src={PROFILE_DATA.portrait}
-                      alt="Retrato de Miqueias Carvalho no visor Voight-Kampff"
-                      width="272"
-                      height="363"
-                      fetchPriority="high"
-                    />
-                    <div className="vk-reticle-overlay">
-                      <span>RETINA: MC-84</span>
-                      <span>{isCalibrated ? 'HUMANO OK' : 'CALIBRAR'}</span>
-                    </div>
-                  </div>
-
-                  <div className="vk-Waveforms">
-                    <div className="vk-readout-row">
-                      <span>SUJEITO:</span>
-                      <strong>MIQUEIAS H. S. CARVALHO</strong>
-                    </div>
-                    <div className="vk-readout-row">
-                      <span>ESPECIALIDADE:</span>
-                      <strong>BACKEND C#/.NET &amp; SQL</strong>
-                    </div>
-                    <div className="vk-readout-row">
-                      <span>ÍNDICE DE EMPATIA:</span>
-                      <strong className="t-nums">{isCalibrated ? '98.4% VALIDADO' : 'AGUARDANDO PULSO'}</strong>
-                    </div>
-                    <div className="vk-readout-row">
-                      <span>STATUS DE PRODUÇÃO:</span>
-                      <strong>ZETTI · ATIVO</strong>
-                    </div>
-
-                    <div>
-                      <small style={{ color: 'var(--crt-text-muted)', display: 'block', marginBottom: '4px' }}>
-                        ESTÁGIOS DE CALIBRAÇÃO ÓPTICA ({vkPulses}/3):
-                      </small>
-                      <div className="vk-progress-pips" aria-hidden="true">
-                        <span className={`vk-pip ${vkPulses >= 1 ? 'on' : ''}`} />
-                        <span className={`vk-pip ${vkPulses >= 2 ? 'on' : ''}`} />
-                        <span className={`vk-pip ${vkPulses >= 3 ? 'on' : ''}`} />
-                      </div>
-                    </div>
-                  </div>
-                </div>
-
-                <div className="vk-controls-footer">
-                  <span style={{ fontFamily: 'var(--font-mono)', fontSize: '11.5px', color: 'var(--crt-text-sub)' }}>
-                    {isCalibrated
-                      ? '✔ Lente Voight-Kampff estabilizada. Selo [VK-02] gravado.'
-                      : 'A imagem está com ruído analógico. Ajude a calibrar a lente:'}
-                  </span>
-                  {!isCalibrated ? (
-                    <button type="button" className="keycap-btn primary" onClick={handleVkPulse}>
-                      PULSAR CALIBRAÇÃO ({vkPulses}/3) ⚡
-                    </button>
-                  ) : (
+              <aside className="rachel-horizon-bar hero-top-ticker" aria-label="Unidade Assistente Rachel-7">
+                <div className="rachel-horizon-inner">
+                  <div className="rachel-stream-left">
                     <button
                       type="button"
-                      className="keycap-btn crt-btn"
-                      onClick={() => {
-                        playKeyclick(soundOn, 520);
-                        setVkPulses(0);
-                      }}
+                      className="owl-orb-btn"
+                      onClick={handlePokeOwl}
+                      title="Consultar Rachel-7 para receber transmissões e dicas"
+                      aria-label="Consultar assistente mecânico Rachel-7"
                     >
-                      REINICIAR LENTE ↺
+                      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--phosphor-primary)" strokeWidth="1.6">
+                        <circle cx="8.5" cy="10.5" r="2.8" />
+                        <circle cx="15.5" cy="10.5" r="2.8" />
+                        <circle cx="8.5" cy="10.5" r="0.9" fill="var(--phosphor-primary)" />
+                        <circle cx="15.5" cy="10.5" r="0.9" fill="var(--phosphor-primary)" />
+                        <path d="M12 13.5L10.6 15.8H13.4L12 13.5Z" />
+                        <path d="M4.5 7.5L7.5 5M19.5 7.5L16.5 5" />
+                      </svg>
                     </button>
-                  )}
+                    <p className="rachel-speech-line">
+                      <span className="rachel-tag">RACHEL-7 // </span>
+                      {owlSpeech}
+                    </p>
+                  </div>
+                  <button type="button" className="ghost-pill-btn" onClick={handlePokeOwl}>
+                    Nova transmissão ↻
+                  </button>
+                </div>
+              </aside>
+
+              <div className="wrap hero-grid">
+                <div className="hero-copy-col">
+                  <div className="hero-eyebrow">
+                    <span className="pulse-dot" aria-hidden="true" />
+                    <span>NODE BACKEND · SÉRIE 1984 / 2077 · GOIÂNIA</span>
+                  </div>
+
+                  <h1 id="hero-heading" className="hero-title">
+                    Miqueias Carvalho.{' '}
+                    <span className="hero-accent-phrase">Da query em produção</span> à arquitetura de APIs.
+                  </h1>
+
+                  <p className="hero-lead">
+                    {PROFILE_DATA.summary} Atualmente na <strong>Zetti</strong> sustentando bancos{' '}
+                    <strong>SQL Server</strong> para dezenas de farmácias e graduando em Engenharia de Software na{' '}
+                    <strong>UNIFAN (2027)</strong>.
+                  </p>
+
+                  <div className="hero-specs-ledger">
+                    <div className="hero-spec-item">
+                      <small>PRODUÇÃO ATUAL (DEZ/2025)</small>
+                      <strong>Zetti · SQL Server &amp; VB6</strong>
+                    </div>
+                    <div className="hero-spec-item">
+                      <small>ECOSISTEMA DE SERVIÇOS</small>
+                      <strong>C# / .NET · Java 17 · Node.js</strong>
+                    </div>
+                    <div className="hero-spec-item">
+                      <small>FORMAÇÃO SUPERIOR</small>
+                      <strong>Eng. Software · UNIFAN</strong>
+                    </div>
+                  </div>
+
+                  <div className="hero-cta-row">
+                    <a
+                      href="#sec-rom-bay"
+                      className="pill-btn primary"
+                      onClick={() => playKeyclick(soundOn, 760)}
+                    >
+                      Explorar Fitas ROM [6] ↓
+                    </a>
+                    <button
+                      type="button"
+                      className="pill-btn secondary"
+                      onClick={() => handleSwitchMode('os')}
+                    >
+                      Abrir Hosaka OS ▣
+                    </button>
+                    <a
+                      href={PROFILE_DATA.cvPdf}
+                      download="Curriculo_Miqueias_Carvalho.pdf"
+                      className="hero-text-link"
+                      onClick={() => unlockSeal('seal_dossier')}
+                    >
+                      Baixar Currículo PDF ↗
+                    </a>
+                  </div>
+                </div>
+
+                {/* Right Column: Circular Orbital Voight-Kampff Iris Scanner */}
+                <div className="hero-iris-col">
+                  <div className={`vk-orbital-scanner ${isCalibrated ? 'calibrated' : ''}`}>
+                    <svg viewBox="0 0 320 320" className="vk-orbital-svg" aria-hidden="true">
+                      <circle
+                        cx="160"
+                        cy="160"
+                        r="152"
+                        fill="none"
+                        stroke="var(--hairline-strong)"
+                        strokeWidth="1"
+                        strokeDasharray="6 14 2 14"
+                        className="iris-orbit-ring"
+                      />
+                      <circle
+                        cx="160"
+                        cy="160"
+                        r="138"
+                        fill="none"
+                        stroke="var(--hairline)"
+                        strokeWidth="2"
+                      />
+                      <circle
+                        cx="160"
+                        cy="160"
+                        r="138"
+                        fill="none"
+                        stroke={isCalibrated ? 'var(--phosphor-secondary)' : 'var(--phosphor-primary)'}
+                        strokeWidth="3"
+                        strokeLinecap="round"
+                        strokeDasharray={IRIS_CIRCUMFERENCE}
+                        strokeDashoffset={irisProgressOffset}
+                        transform="rotate(-90 160 160)"
+                        className="iris-progress-arc"
+                      />
+                      {/* Crosshair Tick Marks Outside Lens */}
+                      <line x1="160" y1="2" x2="160" y2="20" stroke="var(--phosphor-primary)" strokeWidth="1.2" strokeOpacity="0.65" />
+                      <line x1="160" y1="300" x2="160" y2="318" stroke="var(--phosphor-primary)" strokeWidth="1.2" strokeOpacity="0.65" />
+                      <line x1="2" y1="160" x2="20" y2="160" stroke="var(--phosphor-primary)" strokeWidth="1.2" strokeOpacity="0.65" />
+                      <line x1="300" y1="160" x2="318" y2="160" stroke="var(--phosphor-primary)" strokeWidth="1.2" strokeOpacity="0.65" />
+                      <text x="160" y="-4" textAnchor="middle" fill="var(--ink-muted)" fontSize="9" fontFamily="var(--font-mono)">000°</text>
+                      <text x="326" y="163" textAnchor="start" fill="var(--ink-muted)" fontSize="9" fontFamily="var(--font-mono)">090°</text>
+                      <text x="160" y="330" textAnchor="middle" fill="var(--ink-muted)" fontSize="9" fontFamily="var(--font-mono)">180°</text>
+                      <text x="-6" y="163" textAnchor="end" fill="var(--ink-muted)" fontSize="9" fontFamily="var(--font-mono)">270°</text>
+                    </svg>
+
+                    <div className={`vk-circular-aperture ${isCalibrated ? 'calibrated' : 'uncalibrated'}`}>
+                      <img
+                        src={PROFILE_DATA.portrait}
+                        alt="Retrato de Miqueias Carvalho no visor orbital Voight-Kampff"
+                        width="272"
+                        height="363"
+                        fetchPriority="high"
+                      />
+                    </div>
+                  </div>
+
+                  <div className="vk-iris-caption">
+                    <div className="vk-iris-meta t-nums">
+                      <span>RETINA MC-84</span>
+                      <span className="meta-sep">·</span>
+                      <strong style={{ color: isCalibrated ? 'var(--phosphor-secondary)' : 'var(--phosphor-primary)' }}>
+                        {isCalibrated ? 'EMPATIA 98.4% VALIDADO' : `SINTONIZANDO ${vkPulses * 33}%`}
+                      </strong>
+                    </div>
+
+                    {!isCalibrated ? (
+                      <button type="button" className="pill-btn primary" onClick={handleVkPulse}>
+                        Pulsar Calibração ({vkPulses}/3) ⚡
+                      </button>
+                    ) : (
+                      <button
+                        type="button"
+                        className="ghost-pill-btn"
+                        onClick={() => {
+                          playKeyclick(soundOn, 520);
+                          setVkPulses(0);
+                        }}
+                      >
+                        Lente Estabilizada · Recalibrar ↺
+                      </button>
+                    )}
+                  </div>
                 </div>
               </div>
             </section>
 
             {/* ================================================================
-                SECTION 2: HOSAKA ROM CARTRIDGE BAY (REAL PROJECTS & PRODUCTION)
+                SECTION 01: FLUXO DE FITAS ROM (BORDERLESS EDITORIAL SPLIT)
                 ================================================================ */}
-            <section id="sec-rom-bay" aria-labelledby="rom-heading">
-              <div className="section-header-bar">
+            <section id="sec-rom-bay" className="space-section wrap" aria-labelledby="rom-heading">
+              <div className="section-head-open">
                 <div>
-                  <h2 id="rom-heading">01 // Baia de Fitas ROM Hosaka (Produção &amp; Repositórios)</h2>
+                  <span className="section-kicker">01 / ARQUITETURA &amp; PRODUÇÃO</span>
+                  <h2 id="rom-heading">Fitas ROM Hosaka</h2>
                   <p>
-                    Cada cartucho guarda os bastidores reais de engenharia, trecho de código e simulação de terminal.
+                    Bastidores técnicos em SQL Server, VB6 e APIs REST reais com snippets executáveis.
                   </p>
                 </div>
+
                 <div className="rom-filter-tabs" role="group" aria-label="Filtrar fitas ROM por categoria">
                   {[
                     { id: 'all', label: 'Todas (6)' },
-                    { id: 'prod', label: 'Produção Zetti' },
+                    { id: 'prod', label: 'Zetti Produção' },
                     { id: 'api', label: 'APIs REST (3)' },
                     { id: 'desktop', label: 'Desktop DAO' },
-                    { id: 'algo', label: 'Estruturas O(1) / AVL' },
+                    { id: 'algo', label: 'O(1) & AVL' },
                   ].map((tab) => (
                     <button
                       key={tab.id}
                       type="button"
-                      className={`rom-tab-btn ${romCategory === tab.id ? 'active' : ''}`}
-                      onClick={() => {
-                        playKeyclick(soundOn, 700);
-                        setRomCategory(tab.id);
-                      }}
+                      className={`filter-pill ${romCategory === tab.id ? 'active' : ''}`}
+                      onClick={() => handleFilterRomCategory(tab.id)}
                     >
                       {tab.label}
                     </button>
@@ -626,9 +676,9 @@ export default function App() {
                 </div>
               </div>
 
-              <div className="rom-deck-layout">
-                {/* Left Rack: Physical ROM Cartridges */}
-                <div className="rom-rack-list" role="listbox" aria-label="Cartuchos de Projeto">
+              <div className="rom-split-stage">
+                {/* Left: Clean Hairline-Ruled Track (Zero Box Slabs) */}
+                <div className="rom-index-rail" role="listbox" aria-label="Cartuchos de Projeto">
                   {visibleRoms.map((rom) => {
                     const isSelected = rom.id === activeRom.id;
                     return (
@@ -637,51 +687,50 @@ export default function App() {
                         type="button"
                         role="option"
                         aria-selected={isSelected}
-                        className={`rom-cartridge-btn ${isSelected ? 'active' : ''}`}
+                        className={`rom-index-item ${isSelected ? 'active' : ''}`}
                         onClick={() => handleSelectRom(rom.id)}
                       >
-                        <div className="rom-cart-top">
-                          <span>{rom.slot}</span>
-                          <span>{isSelected ? '● INSERIDA' : 'INSERIR →'}</span>
+                        <div className="rom-index-meta">
+                          <span>{rom.slot.split(' · ')[0]}</span>
+                          <span>{isSelected ? 'Ativo ●' : 'Carregar →'}</span>
                         </div>
-                        <div className="rom-cart-title">{rom.title}</div>
-                        <div className="rom-cart-sub">{rom.period}</div>
+                        <div className="rom-index-title">{rom.title}</div>
+                        <div className="rom-index-sub">{rom.period}</div>
                       </button>
                     );
                   })}
                 </div>
 
-                {/* Right Reader Bay: CRT Inspector */}
-                <article className="crt-monitor rom-reader-bay" aria-live="polite">
-                  <div className="rom-bay-header">
+                {/* Right: Open Typographic Reader Stream */}
+                <article className="rom-open-reader" aria-live="polite">
+                  <header className="rom-reader-head">
                     <div>
-                      <span className="rom-slot-tag">
+                      <span className="rom-reader-slot">
                         {activeRom.slot} · {activeRom.period}
                       </span>
-                      <h3 className="rom-bay-title">{activeRom.title}</h3>
+                      <h3 className="rom-reader-title">{activeRom.title}</h3>
                     </div>
                     <a
                       href={activeRom.repoUrl}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="keycap-btn primary"
+                      className="pill-btn primary"
                     >
                       {activeRom.linkLabel} ↗
                     </a>
-                  </div>
+                  </header>
 
-                  <div className="rom-impact-banner">
-                    <strong>IMPACTO DIRETO: </strong>
-                    {activeRom.impact}
-                  </div>
+                  <blockquote className="rom-impact-lead">
+                    <span className="impact-label">IMPACTO DIRETO //</span> {activeRom.impact}
+                  </blockquote>
 
-                  <div className="rom-story-columns">
-                    <div className="rom-story-box">
-                      <h4>CONTEXTO DE OPERAÇÃO</h4>
+                  <div className="rom-prose-grid">
+                    <div>
+                      <h4>Contexto de Operação</h4>
                       <p>{activeRom.context}</p>
                     </div>
-                    <div className="rom-story-box">
-                      <h4>POR TRÁS DA ENTREGA TÉCNICA</h4>
+                    <div>
+                      <h4>Engenharia Aplicada</h4>
                       <ul>
                         {activeRom.engineering.map((item, idx) => (
                           <li key={idx}>{item}</li>
@@ -690,70 +739,60 @@ export default function App() {
                     </div>
                   </div>
 
-                  <div style={{ zIndex: 3 }}>
-                    <div
-                      style={{
-                        display: 'flex',
-                        justifyContent: 'space-between',
-                        alignItems: 'center',
-                        marginBottom: '6px',
-                        fontFamily: 'var(--font-mono)',
-                        fontSize: '11px',
-                        color: 'var(--phosphor-secondary)',
-                      }}
-                    >
-                      <span> TRECHO DE CÓDIGO DA FITA ({activeRom.id})</span>
-                      <button
-                        type="button"
-                        className="keycap-btn crt-btn"
-                        style={{ padding: '4px 10px', fontSize: '11px' }}
-                        onClick={() => handleCopyText(activeRom.codeSnippet, 'Snippet de código')}
-                      >
-                        COPIAR CÓDIGO
-                      </button>
+                  {/* Soft Translucent Code Deck (No Heavy Borders) */}
+                  <div className="cyberspace-code-deck">
+                    <div className="code-deck-bar">
+                      <span>SNIPPET SOURCE // {activeRom.id}</span>
+                      <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
+                        <button
+                          type="button"
+                          className="ghost-pill-btn"
+                          onClick={() => handleCopyText(activeRom.codeSnippet, 'Snippet de código')}
+                        >
+                          Copiar código
+                        </button>
+                        <button
+                          type="button"
+                          className="ghost-pill-btn accent-tint"
+                          onClick={handleRunRomTerminal}
+                        >
+                          ▶ Rodar diagnóstico
+                        </button>
+                      </div>
                     </div>
-                    <pre className="rom-code-terminal" translate="no">
+                    <pre className="rom-code-pre" translate="no">
                       {activeRom.codeSnippet}
                     </pre>
-                  </div>
 
-                  {showTerminalRun && (
-                    <div style={{ zIndex: 3 }}>
-                      <div
-                        style={{
-                          fontFamily: 'var(--font-mono)',
-                          fontSize: '11px',
-                          color: 'var(--phosphor-green)',
-                          marginBottom: '4px',
-                        }}
-                      >
-                        SAÍDA DO TERMINAL HOSAKA:
+                    {showTerminalRun && (
+                      <div className="terminal-output-block">
+                        <div className="terminal-output-label">STDOUT // CLUSTER HOSAKA</div>
+                        <pre className="rom-code-pre output" translate="no">
+                          {activeRom.terminalOutput}
+                        </pre>
                       </div>
-                      <pre className="rom-code-terminal" translate="no">
-                        {activeRom.terminalOutput}
-                      </pre>
-                    </div>
-                  )}
-
-                  <div className="rom-stack-chips">
-                    {activeRom.stack.map((tech) => (
-                      <span key={tech} className="rom-chip">
-                        {tech}
-                      </span>
-                    ))}
+                    )}
                   </div>
 
-                  <div className="rom-actions-bar">
-                    <button type="button" className="keycap-btn primary" onClick={handleRunRomTerminal}>
-                      ▶ RODAR DIAGNÓSTICO NO TERMINAL
-                    </button>
+                  <div className="rom-footer-meta">
+                    <div className="rom-inline-stack">
+                      {activeRom.stack.map((tech, idx) => (
+                        <React.Fragment key={tech}>
+                          <span>{tech}</span>
+                          {idx < activeRom.stack.length - 1 && (
+                            <span className="stack-sep" aria-hidden="true">·</span>
+                          )}
+                        </React.Fragment>
+                      ))}
+                    </div>
+
                     <a
                       href={activeRom.repoUrl}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="keycap-btn crt-btn"
+                      className="hero-text-link"
                     >
-                      INSPECIONAR FONTE ↗
+                      Inspecionar fonte completo ↗
                     </a>
                   </div>
                 </article>
@@ -761,312 +800,271 @@ export default function App() {
             </section>
 
             {/* ================================================================
-                SECTION 3: TACTILE PUNCH-CARD TELEMETRY PLAQUE (FELIPE STYLE)
+                SECTION 02: ONDA NEURAL DE TELEMETRIA (REPLACES 26 SQUARE PINS)
                 ================================================================ */}
-            <section id="sec-telemetry" aria-labelledby="matrix-heading">
-              <div className="section-header-bar">
+            <section id="sec-telemetry" className="space-section wrap" aria-labelledby="matrix-heading">
+              <div className="section-head-open">
                 <div>
-                  <h2 id="matrix-heading">02 // Placa de Telemetria &amp; Commits (Pulso a Pulso)</h2>
+                  <span className="section-kicker">02 / MATRIZ NEURAL CONTÍNUA</span>
+                  <h2 id="matrix-heading">Telemetria &amp; Evolução (2021 → 2026)</h2>
                   <p>
-                    Cada pino luminoso grava um marco real da trajetória de Miqueias (2021 → 2026). Passe o cursor ou clique nos pinos.
+                    Cada nó orbital na curva registra um marco real da trajetória de Miqueias. Deslize ou selecione os sinais.
                   </p>
                 </div>
                 <a
                   href={PROFILE_DATA.github}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="keycap-btn"
+                  className="ghost-pill-btn"
                 >
-                  GITHUB.COM/MIQUEIAS-HENRIQUE ↗
+                  github.com/Miqueias-Henrique ↗
                 </a>
               </div>
 
-              <div className="chassis-frame corner-screws matrix-plaque-card">
-                <div className="matrix-stats-row">
-                  <div className="matrix-stat-box">
-                    <small>REPOSITÓRIOS PÚBLICOS</small>
-                    <strong className="t-nums">27 REPOS</strong>
-                  </div>
-                  <div className="matrix-stat-box">
-                    <small>SUSTENTAÇÃO EM PRODUÇÃO</small>
-                    <strong className="t-nums">SQL SERVER &amp; VB6</strong>
-                  </div>
-                  <div className="matrix-stat-box">
-                    <small>APIs &amp; BACKEND</small>
-                    <strong className="t-nums">C# · JAVA · NODE</strong>
-                  </div>
-                  <div className="matrix-stat-box">
-                    <small>ENGENHARIA DE SOFTWARE</small>
-                    <strong className="t-nums">UNIFAN · 2027</strong>
-                  </div>
+              <div className="open-metrics-strip">
+                <div className="open-metric-cell">
+                  <strong className="t-nums">27</strong>
+                  <span>Repositórios públicos no GitHub</span>
                 </div>
-
-                <div className="punch-grid-wrap">
-                  <div className="punch-grid" role="list" aria-label="Pinos de telemetria histórica">
-                    {TELEMETRY_PINS.map((pin) => (
-                      <button
-                        key={pin.id}
-                        type="button"
-                        className="punch-pin"
-                        data-level={pin.level}
-                        title={`${pin.code}: ${pin.label}`}
-                        aria-label={`Marco ${pin.code}: ${pin.label}`}
-                        onMouseEnter={() => setSelectedPin(pin)}
-                        onClick={() => {
-                          playKeyclick(soundOn, 850);
-                          setSelectedPin(pin);
-                          unlockSeal('seal_matrix');
-                        }}
-                      />
-                    ))}
-                  </div>
+                <div className="open-metric-cell">
+                  <strong>SQL Server &amp; VB6</strong>
+                  <span>Sustentação diária na Zetti</span>
                 </div>
-
-                <div className="matrix-inspector-strip" aria-live="polite">
-                  <div>
-                    <strong style={{ color: 'var(--ink-accent)', marginRight: '8px' }}>
-                      [{selectedPin.code} · {selectedPin.commits} PULSOS REGISTRADOS]:
-                    </strong>
-                    <span>{selectedPin.label}</span>
-                  </div>
-                  <span style={{ color: 'var(--ink-muted)' }}>
-                    Clique em qualquer pino para cravar o Selo [VK-06]
-                  </span>
+                <div className="open-metric-cell">
+                  <strong>C# · Java · Node</strong>
+                  <span>APIs RESTful e arquitetura limpa</span>
+                </div>
+                <div className="open-metric-cell">
+                  <strong className="t-nums">UNIFAN · 2027</strong>
+                  <span>Engenharia de Software</span>
                 </div>
               </div>
+
+              <NeuralWaveMatrix
+                pins={TELEMETRY_PINS}
+                selectedPin={selectedPin}
+                onHoverPin={setSelectedPin}
+                onSelectPin={handleSelectTelemetryPin}
+                onStepPin={handleStepTelemetryPin}
+              />
             </section>
 
             {/* ================================================================
-                SECTION 4: NEUROMANCER KUANG MARK XI ICEBREAKER DUEL
+                SECTION 03: NÚCLEO WINTERMUTE & FORJA DA LIGA METÁLICA
                 ================================================================ */}
-            <section id="sec-icebreaker" aria-labelledby="ice-heading">
-              <div className="section-header-bar">
+            <section id="sec-icebreaker" className="space-section wrap" aria-labelledby="ice-heading">
+              <div className="section-head-open">
                 <div>
-                  <h2 id="ice-heading">03 // Incursão Kuang Grade Mark XI (Quebra de Gelo Wintermute)</h2>
+                  <span className="section-kicker">03 / CIBERESPAÇO &amp; QUIMERA TESSIER-ASHPOOL</span>
+                  <h2 id="ice-heading">Incursão Kuang Grade Mark XI</h2>
                   <p>
-                    Inspirado em Neuromancer (William Gibson). Use algoritmos e transações reais do seu repertório para quebrar o ICE.
+                    Quebre a fortaleza Wintermute combinando SQL Server, Árvore AVL e pipelines .NET.
                   </p>
                 </div>
                 <button
                   type="button"
-                  className="keycap-btn"
+                  className="ghost-pill-btn"
                   onClick={() => {
                     playKeyclick(soundOn, 540);
                     setPlayerIntegrity(100);
                     setIceShield(100);
-                    setCombatLog(['MATRIZ REINICIADA: Escolha uma rotina para iniciar a incursão.']);
+                    setShieldBuff(false);
+                    setCombatLog(['MATRIZ REINICIADA: Selecione uma rotina de ataque no ciberespaço.']);
                   }}
                 >
-                  REINICIAR MATRIZ ↺
+                  Reiniciar Matriz ↺
                 </button>
               </div>
 
-              <div className="icebreaker-arena">
-                <div className="crt-monitor ice-combat-screen">
-                  <div className="ice-boss-row">
-                    <div className="ice-fighter-box">
-                      <div className="ice-fighter-header">
-                        <span style={{ color: 'var(--phosphor-green)' }}>CYBERDECK ONO-SENDAI (VOCÊ)</span>
-                        <span className="t-nums">{playerIntegrity}%</span>
-                      </div>
-                      <div className="ice-hp-bar">
-                        <div className="ice-hp-fill" style={{ width: `${playerIntegrity}%` }} />
-                      </div>
-                    </div>
+              <div className="icebreaker-spatial-grid">
+                <div className="ice-combat-open">
+                  <div className="ice-core-hud">
+                    <WintermuteCoreSvg iceShield={iceShield} playerIntegrity={playerIntegrity} />
 
-                    <div className="ice-fighter-box">
-                      <div className="ice-fighter-header">
-                        <span style={{ color: 'var(--phosphor-alert)' }}>FORTALEZA ICE WINTERMUTE</span>
-                        <span className="t-nums">{iceShield}%</span>
+                    <div className="ice-beams-stack">
+                      <div className="ice-beam-row">
+                        <div className="ice-beam-meta">
+                          <span style={{ color: 'var(--phosphor-green)' }}>CYBERDECK ONO-SENDAI</span>
+                          <span className="t-nums">{playerIntegrity}%</span>
+                        </div>
+                        <div className="ice-beam-track">
+                          <div className="ice-beam-fill player" style={{ width: `${playerIntegrity}%` }} />
+                        </div>
                       </div>
-                      <div className="ice-hp-bar">
-                        <div className="ice-hp-fill enemy" style={{ width: `${iceShield}%` }} />
+
+                      <div className="ice-beam-row">
+                        <div className="ice-beam-meta">
+                          <span style={{ color: 'var(--phosphor-alert)' }}>FORTALEZA WINTERMUTE ICE</span>
+                          <span className="t-nums">{iceShield}%</span>
+                        </div>
+                        <div className="ice-beam-track">
+                          <div className="ice-beam-fill enemy" style={{ width: `${iceShield}%` }} />
+                        </div>
+                      </div>
+
+                      <div className="ice-stream-log" aria-live="polite">
+                        {combatLog.map((entry, idx) => (
+                          <div key={idx}>{entry}</div>
+                        ))}
                       </div>
                     </div>
                   </div>
 
-                  <div className="ice-battle-log" aria-live="polite">
-                    {combatLog.map((entry, idx) => (
-                      <div key={idx}>{entry}</div>
-                    ))}
-                  </div>
-
-                  <div className="ice-moves-grid">
+                  <div className="ice-moves-pills">
                     <button
                       type="button"
-                      className="keycap-btn crt-btn"
+                      className="pill-btn secondary"
                       onClick={() => handleIceMove('kuang_sql')}
                     >
                       ⚡ T-SQL Index Seek (-34% ICE)
                     </button>
                     <button
                       type="button"
-                      className="keycap-btn crt-btn"
+                      className="pill-btn secondary"
                       onClick={() => handleIceMove('avl_burst')}
                     >
-                      ◆ Rotação Árvore AVL O(log n) (-42% ICE)
+                      ◆ Rotação AVL O(log n) (-42% ICE)
                     </button>
                     <button
                       type="button"
-                      className="keycap-btn crt-btn"
+                      className="pill-btn secondary"
                       onClick={() => handleIceMove('sandevistan_net')}
                     >
                       ▶ Pipeline C#/.NET Async (-38% ICE)
                     </button>
                     <button
                       type="button"
-                      className="keycap-btn crt-btn"
+                      className="pill-btn secondary"
                       onClick={() => handleIceMove('acid_shield')}
                     >
-                      ✚ Rollback ACID (+22% Deck &amp; Escudo)
+                      ✚ Rollback ACID (+22% Deck)
                     </button>
                   </div>
                 </div>
 
-                {/* Right Column: Hardware Evolution & Seals Preview */}
-                <div className="chassis-frame corner-screws" style={{ padding: '22px', display: 'flex', flexDirection: 'column', justifyContent: 'space-between', gap: '14px' }}>
+                {/* Right Column: Circular Metallic Alloy Orbs (No Rectangles) */}
+                <div className="alloy-evolution-col">
                   <div>
-                    <span className="eyebrow-badge">EVOLUÇÃO FÍSICA DA ESTAÇÃO</span>
-                    <h3 style={{ fontFamily: 'var(--font-display)', fontSize: '20px', fontWeight: 800, marginTop: '10px' }}>
-                      Obsidiana 84 → Titânio → Ouro 24K
-                    </h3>
-                    <p style={{ fontSize: '14px', color: 'var(--ink-secondary)', marginTop: '6px' }}>
-                      Assim como um artefato vivo em chassi escuro Tyrell, cada interação grava um <strong>Selo Voight-Kampff</strong> no navegador. Ao atingir 6 selos, o aço escurecido evolui para <strong>Titânio Escovado Tyrell</strong>; com 12 selos (ou usando o seletor abaixo), funde-se em <strong>Ouro 24K Villa Straylight</strong>.
+                    <span className="section-kicker">EVOLUÇÃO DA ESTAÇÃO</span>
+                    <h3 className="alloy-title">Obsidiana 84 → Titânio → Ouro 24K</h3>
+                    <p className="alloy-desc">
+                      Explore a bancada para destravar os 12 <strong>Selos Voight-Kampff</strong> e refundir o
+                      espectro cromático do ciberespaço — ou teste cada liga metálica diretamente abaixo:
                     </p>
                   </div>
 
-                  <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
-                    <div style={{ fontFamily: 'var(--font-mono)', fontSize: '11px', color: 'var(--ink-muted)' }}>
-                      TESTAR LIGA METÁLICA DO CHASSI AGORA:
-                    </div>
-                    <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
-                      <button
-                        type="button"
-                        className={`keycap-btn ${computedChassis === 'obsidian' ? 'primary' : ''}`}
-                        onClick={() => {
-                          playKeyclick(soundOn, 640);
-                          setChassisOverride('obsidian');
-                        }}
-                      >
-                        1. Obsidiana 84
-                      </button>
-                      <button
-                        type="button"
-                        className={`keycap-btn ${computedChassis === 'titanium' ? 'primary' : ''}`}
-                        onClick={() => {
-                          playKeyclick(soundOn, 740);
-                          setChassisOverride('titanium');
-                        }}
-                      >
-                        2. Titânio Tyrell
-                      </button>
-                      <button
-                        type="button"
-                        className={`keycap-btn ${computedChassis === 'gold-24k' ? 'primary' : ''}`}
-                        onClick={() => {
-                          playKeyclick(soundOn, 880);
-                          setChassisOverride('gold-24k');
-                        }}
-                      >
-                        3. Ouro 24K Straylight
-                      </button>
-                    </div>
+                  <div className="alloy-orbs-row" role="group" aria-label="Selecionar liga metálica da estação">
+                    <button
+                      type="button"
+                      className={`alloy-orb-btn ${computedChassis === 'obsidian' ? 'active' : ''}`}
+                      onClick={() => {
+                        playKeyclick(soundOn, 640);
+                        setChassisOverride('obsidian');
+                      }}
+                    >
+                      <span className="alloy-sphere obsidian" aria-hidden="true" />
+                      <span>1. Obsidiana 84</span>
+                    </button>
+
+                    <button
+                      type="button"
+                      className={`alloy-orb-btn ${computedChassis === 'titanium' ? 'active' : ''}`}
+                      onClick={() => {
+                        playKeyclick(soundOn, 740);
+                        setChassisOverride('titanium');
+                      }}
+                    >
+                      <span className="alloy-sphere titanium" aria-hidden="true" />
+                      <span>2. Titânio Tyrell</span>
+                    </button>
+
+                    <button
+                      type="button"
+                      className={`alloy-orb-btn ${computedChassis === 'gold-24k' ? 'active' : ''}`}
+                      onClick={() => {
+                        playKeyclick(soundOn, 880);
+                        setChassisOverride('gold-24k');
+                      }}
+                    >
+                      <span className="alloy-sphere gold-24k" aria-hidden="true" />
+                      <span>3. Ouro 24K Straylight</span>
+                    </button>
                   </div>
 
                   <button
                     type="button"
-                    className="keycap-btn"
+                    className="pill-btn primary"
+                    style={{ width: 'fit-content' }}
                     onClick={() => setSealsModalOpen(true)}
                   >
-                    ABRIR INVENTÁRIO DE SELOS ({unlockedSeals.length}/12) ★
+                    Abrir Cofre de Selos ({unlockedSeals.length}/12) ★
                   </button>
                 </div>
               </div>
             </section>
 
             {/* ================================================================
-                SECTION 5: ESPERANZA HARDWARE COMMUNICATION PORTS (CONTACT)
+                SECTION 04: CANAIS DIRETOS (ARCHITECTURAL RULED LEDGER)
                 ================================================================ */}
-            <section id="sec-contact" aria-labelledby="ports-heading">
-              <div className="section-header-bar">
+            <section id="sec-contact" className="space-section wrap" aria-labelledby="ports-heading">
+              <div className="section-head-open">
                 <div>
-                  <h2 id="ports-heading">04 // Portas de Comunicação Direta (Escolha um Conector)</h2>
+                  <span className="section-kicker">04 / CONEXÃO DIRETA</span>
+                  <h2 id="ports-heading">Canais &amp; Dossiê Oficial</h2>
                   <p>
-                    Conecte-se diretamente com Miqueias Carvalho para oportunidades Backend, C#/.NET, SQL Server ou Java.
+                    Converse sobre oportunidades Backend C#/.NET, SQL Server, Java ou Node.js em Goiânia ou remoto.
                   </p>
                 </div>
               </div>
 
-              <div className="ports-grid">
-                <div className="port-socket-card">
-                  <div>
-                    <div className="port-pin-header">
-                      <span>PORTA RS-232 // E-MAIL</span>
-                      <span>[ONLINE]</span>
-                    </div>
-                    <h3 style={{ marginTop: '6px' }}>Correio Eletrônico</h3>
-                    <p style={{ marginTop: '4px' }}>{PROFILE_DATA.email}</p>
-                  </div>
-                  <button
-                    type="button"
-                    className="keycap-btn primary"
-                    onClick={() => handleCopyText(PROFILE_DATA.email, 'E-mail de Miqueias')}
-                  >
-                    COPIAR E-MAIL
-                  </button>
-                </div>
+              <div className="contact-ledger">
+                <button
+                  type="button"
+                  className="contact-row"
+                  onClick={() => handleCopyText(PROFILE_DATA.email, 'E-mail de Miqueias')}
+                >
+                  <span className="contact-port-code">RS-232 // E-MAIL</span>
+                  <strong className="contact-title">Correio Eletrônico Direto</strong>
+                  <span className="contact-endpoint">{PROFILE_DATA.email}</span>
+                  <span className="contact-action">Copiar e-mail →</span>
+                </button>
 
                 <a
                   href={PROFILE_DATA.whatsapp}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="port-socket-card"
+                  className="contact-row"
                   onClick={() => unlockSeal('seal_dossier')}
                 >
-                  <div>
-                    <div className="port-pin-header">
-                      <span>PORTA VID-PHON // WHATSAPP</span>
-                      <span>[DIRETO]</span>
-                    </div>
-                    <h3 style={{ marginTop: '6px' }}>Linha Direta Goiânia</h3>
-                    <p style={{ marginTop: '4px' }}>{PROFILE_DATA.phoneDisplay}</p>
-                  </div>
-                  <span className="keycap-btn">CHAMAR NO WHATSAPP ↗</span>
+                  <span className="contact-port-code">VID-PHON // WHATSAPP</span>
+                  <strong className="contact-title">Linha Direta Goiânia</strong>
+                  <span className="contact-endpoint t-nums">{PROFILE_DATA.phoneDisplay}</span>
+                  <span className="contact-action">Chamar no WhatsApp ↗</span>
                 </a>
 
                 <a
                   href={PROFILE_DATA.linkedin}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="port-socket-card"
+                  className="contact-row"
                   onClick={() => unlockSeal('seal_dossier')}
                 >
-                  <div>
-                    <div className="port-pin-header">
-                      <span>PORTA HOSAKA NET // LINKEDIN</span>
-                      <span>[PERFIL]</span>
-                    </div>
-                    <h3 style={{ marginTop: '6px' }}>LinkedIn Profissional</h3>
-                    <p style={{ marginTop: '4px' }}>in/miqueias-henrique-88503b218</p>
-                  </div>
-                  <span className="keycap-btn">ABRIR LINKEDIN ↗</span>
+                  <span className="contact-port-code">HOSAKA NET // LINKEDIN</span>
+                  <strong className="contact-title">Rede Profissional</strong>
+                  <span className="contact-endpoint">in/miqueias-henrique-88503b218</span>
+                  <span className="contact-action">Abrir LinkedIn ↗</span>
                 </a>
 
                 <a
                   href={PROFILE_DATA.cvPdf}
                   download="Curriculo_Miqueias_Carvalho.pdf"
-                  className="port-socket-card"
+                  className="contact-row highlight-row"
                   onClick={() => unlockSeal('seal_dossier')}
                 >
-                  <div>
-                    <div className="port-pin-header">
-                      <span>HARD COPY // DOSSIÊ PDF</span>
-                      <span>[53 KB]</span>
-                    </div>
-                    <h3 style={{ marginTop: '6px' }}>Currículo Oficial PDF</h3>
-                    <p style={{ marginTop: '4px' }}>Curriculo_Miqueias_Carvalho.pdf</p>
-                  </div>
-                  <span className="keycap-btn primary">BAIXAR PDF ⬇</span>
+                  <span className="contact-port-code">HARD COPY // PDF · 53 KB</span>
+                  <strong className="contact-title">Currículo Oficial Miqueias Carvalho</strong>
+                  <span className="contact-endpoint">Curriculo_Miqueias_Carvalho.pdf</span>
+                  <span className="contact-action">Baixar PDF ⬇</span>
                 </a>
               </div>
             </section>
@@ -1075,27 +1073,21 @@ export default function App() {
       </main>
 
       {/* ====================================================================
-          FOOTER SERIAL PLATE
+          OPEN CYBERSPACE FOOTER
           ==================================================================== */}
-      <footer className="serial-footer">
-        <div className="chassis-frame serial-footer-inner">
-          <div>
-            <strong>ONO-SENDAI CYBERSPACE VII // TYRELL-84</strong> · Desenvolvido por Miqueias Carvalho · Goiânia, GO
-          </div>
-          <div className="stack-badges-strip">
-            {['C# / .NET', 'SQL Server', 'VB6', 'Java 17 & Spring Boot 3', 'Node.js & NestJS', 'PostgreSQL & MySQL', 'Docker'].map(
-              (tech) => (
-                <span key={tech} className="stack-mini-pill">
-                  {tech}
-                </span>
-              )
-            )}
-          </div>
+      <footer className="cyberspace-footer wrap">
+        <div className="footer-signature">
+          <span>ONO-SENDAI CYBERSPACE VII // TYRELL-84</span>
+          <span className="meta-sep">·</span>
+          <span>Miqueias Carvalho · Goiânia, GO</span>
+        </div>
+        <div className="footer-stack-line">
+          C# / .NET · SQL Server · VB6 · Java 17 · Spring Boot 3 · Node.js &amp; NestJS · Docker
         </div>
       </footer>
 
       {/* ====================================================================
-          MODAL 1: VOIGHT-KAMPFF SEALS & HARDWARE CHASSIS VAULT
+          MODAL 1: COFRE DE SELOS VOIGHT-KAMPFF
           ==================================================================== */}
       {sealsModalOpen && (
         <div
@@ -1108,25 +1100,26 @@ export default function App() {
           <div className="modal-window" onClick={(e) => e.stopPropagation()}>
             <header className="modal-header">
               <span id="seals-modal-title">
-                ★ INVENTÁRIO DE SELOS VOIGHT-KAMPFF ({unlockedSeals.length}/12)
+                ★ INVENTÁRIO VOIGHT-KAMPFF ({unlockedSeals.length}/12)
               </span>
               <button
                 type="button"
-                className="os-win-ctrl-btn"
+                className="modal-close-btn"
+                aria-label="Fechar inventário"
                 onClick={() => setSealsModalOpen(false)}
               >
                 ×
               </button>
             </header>
             <div className="modal-body">
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '8px' }}>
-                <span style={{ fontFamily: 'var(--font-mono)', fontSize: '12px' }}>
-                  Desbloqueie selos explorando a bancada ou libere todos para testar a transformação em Ouro 24K:
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '10px' }}>
+                <span style={{ fontFamily: 'var(--font-mono)', fontSize: '12px', color: 'var(--ink-sub)' }}>
+                  Desbloqueie explorando a estação ou teste o espectro máximo em Ouro 24K:
                 </span>
                 <div style={{ display: 'flex', gap: '8px' }}>
                   <button
                     type="button"
-                    className="keycap-btn primary"
+                    className="pill-btn primary"
                     onClick={() => {
                       const allIds = EMPATHY_SEALS.map((s) => s.id);
                       setUnlockedSeals(allIds);
@@ -1135,34 +1128,37 @@ export default function App() {
                       notify('Todos os 12 Selos Voight-Kampff liberados! Chassi Ouro 24K ativo.');
                     }}
                   >
-                    LIBERAR TODOS (12/12)
+                    Liberar todos (12/12)
                   </button>
                   <button
                     type="button"
-                    className="keycap-btn"
+                    className="ghost-pill-btn"
                     onClick={() => {
                       setUnlockedSeals(['seal_boot']);
                       setChassisOverride(null);
                       notify('Progresso de selos reiniciado.');
                     }}
                   >
-                    ZERAR
+                    Zerar
                   </button>
                 </div>
               </div>
 
-              <div className="seals-grid">
+              <div className="seals-list-grid">
                 {EMPATHY_SEALS.map((seal) => {
                   const isUnlocked = unlockedSeals.includes(seal.id);
                   return (
                     <div
                       key={seal.id}
-                      className={`seal-badge-card ${isUnlocked ? 'unlocked' : ''}`}
+                      className={`seal-item ${isUnlocked ? 'unlocked' : ''}`}
                     >
-                      <strong>
-                        [{seal.code}] {seal.title}
-                      </strong>
-                      <span>{seal.desc}</span>
+                      <span className="seal-status-ring" aria-hidden="true" />
+                      <div>
+                        <strong>
+                          [{seal.code}] {seal.title}
+                        </strong>
+                        <span>{seal.desc}</span>
+                      </div>
                     </div>
                   );
                 })}
@@ -1173,7 +1169,7 @@ export default function App() {
       )}
 
       {/* ====================================================================
-          MODAL 2: QUICK COMMAND PALETTE (CTRL+K)
+          MODAL 2: COMMAND PALETTE (CTRL+K)
           ==================================================================== */}
       {cmdOpen && (
         <div
@@ -1186,43 +1182,38 @@ export default function App() {
           <div className="modal-window" onClick={(e) => e.stopPropagation()}>
             <header className="modal-header">
               <span id="cmd-modal-title">⌘ TERMINAL DE COMANDO RÁPIDO ONO-SENDAI</span>
-              <button type="button" className="os-win-ctrl-btn" onClick={() => setCmdOpen(false)}>
+              <button
+                type="button"
+                className="modal-close-btn"
+                aria-label="Fechar paleta de comandos"
+                onClick={() => setCmdOpen(false)}
+              >
                 ×
               </button>
             </header>
             <div className="modal-body">
               <input
                 type="text"
+                className="cmd-input"
                 value={cmdQuery}
                 onChange={(e) => setCmdQuery(e.target.value)}
                 placeholder="Buscar fita ROM, modo Hosaka OS, lente Voight-Kampff..."
                 aria-label="Filtrar comandos da estação"
                 autoFocus
-                style={{
-                  width: '100%',
-                  padding: '10px 12px',
-                  fontFamily: 'var(--font-mono)',
-                  fontSize: '13px',
-                  background: 'var(--crt-bg)',
-                  color: 'var(--phosphor-primary)',
-                  border: '2px solid var(--chassis-border)',
-                  borderRadius: '4px',
-                }}
               />
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
+              <div className="cmd-results-list">
                 {commandItems.map((item, idx) => (
                   <button
                     key={idx}
                     type="button"
-                    className="keycap-btn"
-                    style={{ justifyContent: 'space-between', width: '100%', textAlign: 'left' }}
+                    className="cmd-result-row"
                     onClick={() => {
                       item.action();
                       setCmdOpen(false);
                     }}
                   >
                     <span>{item.label}</span>
-                    <small style={{ color: 'var(--ink-muted)' }}>{item.sub}</small>
+                    <small>{item.sub}</small>
                   </button>
                 ))}
               </div>
@@ -1231,12 +1222,10 @@ export default function App() {
         </div>
       )}
 
-      {/* ====================================================================
-          TOAST NOTIFICATION
-          ==================================================================== */}
       {toastMsg && (
         <div className="hardware-toast" role="status" aria-live="polite">
-          ◆ {toastMsg}
+          <span className="pulse-dot" aria-hidden="true" />
+          <span>{toastMsg}</span>
         </div>
       )}
     </>
