@@ -1,0 +1,1583 @@
+/* ============================================================================
+   ONO-SENDAI CYBERSPACE VII // TYRELL-84 RETRO-FUTURIST WORKSTATION
+   Design System & Tokens — Tactile Cassette Futurism (Blade Runner & Neuromancer)
+   Zero violet/lavender tokens. Dynamic Hardware Chassis Evolution:
+   - [data-chassis="polycarbonate"] (Default 0–5 seals: Warm Braun/Hosaka Ivory & Amber CRT)
+   - [data-chassis="titanium"]      (6–11 seals: Brushed Tyrell Steel & Ice Phosphor)
+   - [data-chassis="gold-24k"]      (12/12 seals: Villa Straylight 24K Gold & Amber/Emerald)
+   ============================================================================ */
+
+:root {
+  /* Fonts */
+  --font-display: 'Chakra Petch', 'Space Grotesk', system-ui, sans-serif;
+  --font-sans: 'Space Grotesk', system-ui, -apple-system, sans-serif;
+  --font-mono: 'IBM Plex Mono', 'JetBrains Mono', ui-monospace, monospace;
+
+  /* Hardware Chassis Stage 1: Hosaka Polycarbonate (1984 Ivory / Bakelite / Amber Phosphor) */
+  --chassis-bg: #E6DFD1;
+  --chassis-bg-deep: #D8CFC0;
+  --chassis-panel: #EFEAE0;
+  --chassis-panel-raised: #F7F4EC;
+  --chassis-well: #CFC5B4;
+  --chassis-bevel-light: #FFFDF8;
+  --chassis-bevel-dark: #A69B88;
+  --chassis-border: #3D352B;
+  --chassis-screw: #786D5C;
+
+  /* CRT Phosphor Monitor Surfaces (Always high-contrast dark inside screens/windows) */
+  --crt-bg: #0D0A07;
+  --crt-surface: #15100B;
+  --crt-card: #1E1710;
+  --crt-card-hover: #281F15;
+  --crt-border: rgba(255, 176, 0, 0.36);
+  --crt-border-strong: rgba(255, 176, 0, 0.72);
+  --crt-hairline: rgba(255, 240, 200, 0.10);
+
+  /* Phosphor & Accent Signals */
+  --phosphor-primary: #FFB000;      /* P3 Amber CRT */
+  --phosphor-primary-dim: rgba(255, 176, 0, 0.16);
+  --phosphor-secondary: #00E5B8;    /* Hosaka Teal / Matrix Vector */
+  --phosphor-secondary-dim: rgba(0, 229, 184, 0.15);
+  --phosphor-alert: #FF4D1A;        /* Tyrell Vermilion / Voight-Kampff Warning */
+  --phosphor-green: #38F27F;        /* P1 Green Terminal */
+
+  /* Typography on Chassis (Light Editorial Surface) */
+  --ink-primary: #1B1712;
+  --ink-secondary: #4A4135;
+  --ink-muted: #756958;
+  --ink-accent: #B8420A;
+
+  /* Typography on CRT (Dark Monitor Surface) */
+  --crt-text: #FDF6E2;
+  --crt-text-sub: #D9C9A3;
+  --crt-text-muted: #968769;
+
+  /* Elevation & Mechanical Keycap Shadows */
+  --shadow-chassis: 0 2px 0 var(--chassis-bevel-light) inset, 0 -2px 0 var(--chassis-bevel-dark) inset, 0 6px 18px rgba(27, 23, 18, 0.12);
+  --shadow-keycap: 0 2px 0 #FFFDF8 inset, 0 -3px 0 #9E927E inset, 0 3px 0 #2B241C, 0 5px 10px rgba(0, 0, 0, 0.18);
+  --shadow-keycap-active: 0 1px 0 #9E927E inset, 0 1px 0 #2B241C, 0 2px 4px rgba(0, 0, 0, 0.15);
+  --shadow-window: 0 22px 55px rgba(10, 7, 4, 0.55), 0 0 0 2px var(--chassis-border);
+
+  --radius-xs: 3px;
+  --radius-sm: 5px;
+  --radius-md: 8px;
+}
+
+/* Stage 2: Tyrell Brushed Titanium (6+ Seals) */
+html[data-chassis="titanium"] {
+  --chassis-bg: #D5DCE2;
+  --chassis-bg-deep: #C1CBD4;
+  --chassis-panel: #E3E8ED;
+  --chassis-panel-raised: #F1F5F8;
+  --chassis-well: #B3BFC9;
+  --chassis-bevel-light: #FFFFFF;
+  --chassis-bevel-dark: #8694A1;
+  --chassis-border: #252E38;
+  --chassis-screw: #576573;
+
+  --crt-bg: #070C10;
+  --crt-surface: #0D151C;
+  --crt-card: #13202B;
+  --crt-card-hover: #1A2C3B;
+  --crt-border: rgba(0, 229, 184, 0.38);
+  --crt-border-strong: rgba(0, 229, 184, 0.78);
+
+  --phosphor-primary: #00E5B8;
+  --phosphor-primary-dim: rgba(0, 229, 184, 0.16);
+  --phosphor-secondary: #FFB000;
+  --ink-primary: #12181F;
+  --ink-secondary: #344250;
+  --ink-muted: #5C6D7E;
+  --ink-accent: #0A7B68;
+}
+
+/* Stage 3: Straylight 24K Gold Orbital Core (12/12 Seals) */
+html[data-chassis="gold-24k"] {
+  --chassis-bg: #E8D5A5;
+  --chassis-bg-deep: #D4B97B;
+  --chassis-panel: #F3E4BC;
+  --chassis-panel-raised: #FCF3D9;
+  --chassis-well: #C4A664;
+  --chassis-bevel-light: #FFFDF2;
+  --chassis-bevel-dark: #9B7B38;
+  --chassis-border: #3B2907;
+  --chassis-screw: #806122;
+
+  --crt-bg: #0A0803;
+  --crt-surface: #141006;
+  --crt-card: #1F1809;
+  --crt-card-hover: #2B220D;
+  --crt-border: rgba(255, 200, 55, 0.45);
+  --crt-border-strong: rgba(255, 200, 55, 0.88);
+
+  --phosphor-primary: #FFC837;
+  --phosphor-primary-dim: rgba(255, 200, 55, 0.18);
+  --phosphor-secondary: #38F27F;
+  --ink-primary: #1F1504;
+  --ink-secondary: #4D360E;
+  --ink-muted: #7A5B21;
+  --ink-accent: #9E3B08;
+}
+
+/* Phosphor Switcher Override (Amber P3 vs Green P1) */
+html[data-phosphor="green"] {
+  --phosphor-primary: #38F27F;
+  --phosphor-primary-dim: rgba(56, 242, 127, 0.16);
+  --phosphor-secondary: #FFB000;
+  --crt-border: rgba(56, 242, 127, 0.36);
+  --crt-border-strong: rgba(56, 242, 127, 0.75);
+}
+
+/* Global Reset & Base */
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  scroll-behavior: smooth;
+  background-color: var(--chassis-bg);
+  color: var(--ink-primary);
+  font-family: var(--font-sans);
+  font-size: 16px;
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+}
+
+body {
+  min-height: 100vh;
+  background-color: var(--chassis-bg);
+  background-image:
+    radial-gradient(rgba(27, 23, 18, 0.06) 1px, transparent 0),
+    linear-gradient(180deg, rgba(255, 255, 255, 0.28) 0%, rgba(0, 0, 0, 0.04) 100%);
+  background-size: 20px 20px, 100% 100%;
+  color: var(--ink-primary);
+  overflow-x: hidden;
+  transition: background-color 0.35s ease, color 0.25s ease;
+}
+
+button, a, input, select, textarea {
+  font: inherit;
+  color: inherit;
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+}
+
+button {
+  cursor: pointer;
+}
+
+:focus-visible {
+  outline: 2px solid var(--phosphor-alert);
+  outline-offset: 2px;
+}
+
+.t-nums {
+  font-variant-numeric: tabular-nums;
+}
+
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+.skip-link {
+  position: fixed;
+  top: -100px;
+  left: 16px;
+  z-index: 9999;
+  background: var(--crt-bg);
+  color: var(--phosphor-primary);
+  border: 2px solid var(--phosphor-primary);
+  padding: 10px 16px;
+  font-family: var(--font-mono);
+  font-size: 12px;
+  font-weight: 700;
+  text-decoration: none;
+  border-radius: var(--radius-xs);
+}
+.skip-link:focus {
+  top: 12px;
+}
+
+/* CRT Monitor Screen Scanline & Curvature Treatment */
+.crt-monitor {
+  position: relative;
+  background-color: var(--crt-bg);
+  color: var(--crt-text);
+  border: 3px solid var(--chassis-border);
+  border-radius: var(--radius-md);
+  box-shadow:
+    inset 0 0 38px rgba(0, 0, 0, 0.85),
+    inset 0 0 2px var(--phosphor-primary),
+    0 2px 0 var(--chassis-bevel-light);
+  overflow: hidden;
+}
+
+.crt-monitor::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: repeating-linear-gradient(
+    0deg,
+    rgba(0, 0, 0, 0.24) 0px,
+    rgba(0, 0, 0, 0.24) 1px,
+    transparent 1px,
+    transparent 3px
+  );
+  opacity: 0.55;
+  z-index: 2;
+}
+
+/* Tactile Hardware Frame / Panel */
+.chassis-frame {
+  position: relative;
+  background: var(--chassis-panel);
+  border: 2px solid var(--chassis-border);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-chassis);
+}
+
+/* Corner Screws Decoration */
+.corner-screws {
+  position: relative;
+}
+.corner-screws::before,
+.corner-screws::after {
+  content: "";
+  position: absolute;
+  top: 8px;
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--chassis-screw);
+  border: 1px solid var(--chassis-border);
+  box-shadow: inset 1px 1px 0 rgba(255,255,255,0.35);
+  pointer-events: none;
+}
+.corner-screws::before { left: 8px; }
+.corner-screws::after { right: 8px; }
+
+/* Tactile Keycap Button */
+.keycap-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 9px 15px;
+  background: var(--chassis-panel-raised);
+  color: var(--ink-primary);
+  border: 1.5px solid var(--chassis-border);
+  border-radius: var(--radius-sm);
+  box-shadow: var(--shadow-keycap);
+  font-family: var(--font-mono);
+  font-size: 12.5px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  text-decoration: none;
+  transition: transform 0.08s ease, box-shadow 0.08s ease, background-color 0.15s ease;
+  user-select: none;
+}
+
+.keycap-btn:hover {
+  background: #FFFFFF;
+}
+
+.keycap-btn:active,
+.keycap-btn.pressed {
+  transform: translateY(2px);
+  box-shadow: var(--shadow-keycap-active);
+}
+
+.keycap-btn.primary {
+  background: var(--phosphor-primary);
+  color: #120D04;
+  border-color: #120D04;
+  box-shadow: 0 2px 0 rgba(255,255,255,0.45) inset, 0 -3px 0 rgba(0,0,0,0.28) inset, 0 3px 0 #120D04, 0 5px 10px rgba(0,0,0,0.22);
+}
+
+.keycap-btn.primary:hover {
+  filter: brightness(1.06);
+}
+
+.keycap-btn.alert {
+  background: var(--phosphor-alert);
+  color: #FFFDF8;
+  border-color: #1B1712;
+  box-shadow: 0 2px 0 rgba(255,255,255,0.35) inset, 0 -3px 0 rgba(0,0,0,0.3) inset, 0 3px 0 #1B1712;
+}
+
+.keycap-btn.crt-btn {
+  background: var(--crt-card);
+  color: var(--phosphor-primary);
+  border: 1px solid var(--crt-border-strong);
+  box-shadow: 0 2px 0 rgba(255, 176, 0, 0.15) inset, 0 2px 0 #050402;
+}
+.keycap-btn.crt-btn:hover {
+  background: var(--phosphor-primary);
+  color: #0D0A07;
+}
+
+/* ============================================================================
+   TOP HARDWARE CONSOLE BAR (STATUS, MODE SWITCH, PHOSPHOR, MEDALS)
+   ============================================================================ */
+.top-console-bar {
+  position: sticky;
+  top: 0;
+  z-index: 200;
+  background: var(--chassis-panel);
+  border-bottom: 2px solid var(--chassis-border);
+  box-shadow: 0 4px 14px rgba(27, 23, 18, 0.10);
+  padding: 8px max(20px, env(safe-area-inset-left));
+}
+
+.top-console-inner {
+  max-width: 1400px;
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.brand-plate {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.brand-led {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: var(--phosphor-green);
+  border: 1px solid #0A2916;
+  box-shadow: 0 0 8px var(--phosphor-green);
+}
+
+.brand-model-code {
+  font-family: var(--font-display);
+  font-weight: 800;
+  font-size: 14px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--ink-primary);
+}
+
+.brand-sub-tag {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--ink-muted);
+  padding: 2px 7px;
+  background: var(--chassis-well);
+  border: 1px solid var(--chassis-border);
+  border-radius: var(--radius-xs);
+}
+
+.mode-switch-group {
+  display: inline-flex;
+  background: var(--chassis-well);
+  padding: 3px;
+  border: 1.5px solid var(--chassis-border);
+  border-radius: var(--radius-sm);
+  gap: 4px;
+}
+
+.mode-switch-btn {
+  padding: 6px 12px;
+  font-family: var(--font-mono);
+  font-size: 11.5px;
+  font-weight: 700;
+  text-transform: uppercase;
+  border: 1px solid transparent;
+  border-radius: var(--radius-xs);
+  background: transparent;
+  color: var(--ink-secondary);
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  transition: all 0.14s ease;
+}
+
+.mode-switch-btn.active {
+  background: var(--crt-bg);
+  color: var(--phosphor-primary);
+  border-color: var(--chassis-border);
+  box-shadow: 0 1px 4px rgba(0,0,0,0.25);
+}
+
+.console-right-controls {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.mini-rocker-btn {
+  padding: 5px 10px;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 700;
+  background: var(--chassis-panel-raised);
+  border: 1.5px solid var(--chassis-border);
+  border-radius: var(--radius-xs);
+  box-shadow: 0 2px 0 var(--chassis-border);
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+.mini-rocker-btn:active {
+  transform: translateY(1px);
+  box-shadow: 0 1px 0 var(--chassis-border);
+}
+
+.seals-counter-pill {
+  background: var(--crt-bg);
+  color: var(--phosphor-primary);
+  border: 1.5px solid var(--chassis-border);
+  padding: 5px 11px;
+  border-radius: var(--radius-xs);
+  font-family: var(--font-mono);
+  font-size: 11.5px;
+  font-weight: 700;
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  box-shadow: inset 0 0 8px rgba(255, 176, 0, 0.25);
+}
+
+/* ============================================================================
+   WINTERMUTE / VK-84 OWL COMPANION BAR
+   ============================================================================ */
+.companion-strip {
+  max-width: 1400px;
+  margin: 14px auto 0;
+  padding: 0 max(20px, env(safe-area-inset-left));
+}
+
+.companion-card {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 10px 16px;
+  background: var(--crt-bg);
+  color: var(--crt-text);
+  border: 2px solid var(--chassis-border);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-chassis);
+  flex-wrap: wrap;
+}
+
+.companion-left {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  flex: 1;
+  min-width: 260px;
+}
+
+.owl-avatar-btn {
+  width: 48px;
+  height: 48px;
+  border-radius: var(--radius-sm);
+  background: var(--crt-card);
+  border: 1.5px solid var(--phosphor-primary);
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+  position: relative;
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+.owl-avatar-btn:hover {
+  transform: scale(1.05);
+  box-shadow: 0 0 14px var(--phosphor-primary-dim);
+}
+
+.companion-speech {
+  font-family: var(--font-mono);
+  font-size: 12.5px;
+  line-height: 1.45;
+  color: var(--crt-text);
+}
+.companion-speech strong {
+  color: var(--phosphor-primary);
+  letter-spacing: 0.05em;
+}
+
+.companion-meta {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--phosphor-secondary);
+}
+
+/* ============================================================================
+   EDITORIAL DOSSIER MODE (SECTIONS, HERO CALIBRATION, ROM CARTRIDGES, MATRIX)
+   ============================================================================ */
+.editorial-container {
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 20px max(20px, env(safe-area-inset-left)) 64px;
+  display: flex;
+  flex-direction: column;
+  gap: 44px;
+}
+
+/* Section 1: Hero & Voight-Kampff Calibration */
+.hero-deck-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1.16fr) minmax(360px, 0.84fr);
+  gap: 20px;
+  align-items: stretch;
+}
+
+.hero-editorial-panel {
+  padding: 24px 28px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.eyebrow-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--ink-accent);
+  background: var(--chassis-well);
+  border: 1px solid var(--chassis-border);
+  padding: 4px 10px;
+  border-radius: var(--radius-xs);
+  width: fit-content;
+}
+
+.hero-title {
+  font-family: var(--font-display);
+  font-size: clamp(1.85rem, 3.0vw, 2.75rem);
+  font-weight: 800;
+  line-height: 1.08;
+  letter-spacing: -0.02em;
+  color: var(--ink-primary);
+  text-wrap: balance;
+}
+
+.hero-title span.highlight-tag {
+  background: var(--crt-bg);
+  color: var(--phosphor-primary);
+  padding: 0 10px;
+  border-radius: var(--radius-xs);
+  display: inline-block;
+}
+
+.hero-lead {
+  font-size: 1rem;
+  line-height: 1.54;
+  color: var(--ink-secondary);
+  max-width: 64ch;
+  text-wrap: pretty;
+}
+
+.hero-telemetry-strip {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+  padding-top: 12px;
+  border-top: 1.5px dashed var(--chassis-bevel-dark);
+}
+
+.telemetry-cell {
+  background: var(--chassis-panel-raised);
+  border: 1px solid var(--chassis-border);
+  padding: 8px 11px;
+  border-radius: var(--radius-xs);
+}
+
+.telemetry-cell small {
+  display: block;
+  font-family: var(--font-mono);
+  font-size: 9.5px;
+  text-transform: uppercase;
+  color: var(--ink-muted);
+  letter-spacing: 0.06em;
+}
+
+.telemetry-cell strong {
+  display: block;
+  font-family: var(--font-display);
+  font-size: 14.5px;
+  font-weight: 800;
+  color: var(--ink-primary);
+  margin-top: 2px;
+}
+
+.hero-cta-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  align-items: center;
+}
+
+.hero-cta-row .keycap-btn {
+  padding: 8px 12px;
+  font-size: 11.5px;
+}
+
+/* Right Column: Voight-Kampff CRT Biometric Calibrator */
+.vk-calibrator-box {
+  padding: 18px 20px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  gap: 12px;
+  position: relative;
+  z-index: 1;
+}
+
+.vk-top-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--phosphor-primary);
+  border-bottom: 1px solid var(--crt-border);
+  padding-bottom: 8px;
+  z-index: 3;
+}
+
+.vk-viewport {
+  position: relative;
+  display: grid;
+  grid-template-columns: 156px 1fr;
+  gap: 16px;
+  align-items: center;
+  background: var(--crt-surface);
+  border: 1px solid var(--crt-border);
+  padding: 14px;
+  border-radius: var(--radius-sm);
+  z-index: 3;
+}
+
+.vk-portrait-frame {
+  position: relative;
+  width: 156px;
+  height: 198px;
+  border: 2px solid var(--phosphor-primary);
+  border-radius: var(--radius-xs);
+  overflow: hidden;
+  background: #050403;
+}
+
+.vk-portrait-frame img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: 50% 18%;
+  display: block;
+  transition: filter 0.35s ease, transform 0.35s ease;
+}
+
+.vk-portrait-frame.uncalibrated img {
+  filter: contrast(1.45) sepia(0.85) hue-rotate(-15deg) brightness(0.72) blur(1.5px);
+}
+
+.vk-reticle-overlay {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  border: 1px dashed rgba(255, 176, 0, 0.55);
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  padding: 6px;
+  font-family: var(--font-mono);
+  font-size: 9.5px;
+  color: var(--phosphor-primary);
+  background: linear-gradient(180deg, transparent 60%, rgba(13, 10, 7, 0.85) 100%);
+}
+
+.vk-Waveforms {
+  display: flex;
+  flex-direction: column;
+  gap: 9px;
+  font-family: var(--font-mono);
+  font-size: 11.5px;
+}
+
+.vk-readout-row {
+  display: flex;
+  justify-content: space-between;
+  border-bottom: 1px dashed var(--crt-hairline);
+  padding-bottom: 4px;
+}
+.vk-readout-row span { color: var(--crt-text-muted); }
+.vk-readout-row strong { color: var(--phosphor-primary); }
+
+.vk-progress-pips {
+  display: flex;
+  gap: 6px;
+  margin-top: 4px;
+}
+
+.vk-pip {
+  flex: 1;
+  height: 10px;
+  background: rgba(255, 176, 0, 0.14);
+  border: 1px solid var(--crt-border);
+  border-radius: 2px;
+  transition: background-color 0.2s ease, box-shadow 0.2s ease;
+}
+.vk-pip.on {
+  background: var(--phosphor-primary);
+  box-shadow: 0 0 10px var(--phosphor-primary);
+}
+
+.vk-controls-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  padding-top: 8px;
+  border-top: 1px solid var(--crt-border);
+  z-index: 3;
+  flex-wrap: wrap;
+}
+
+/* Section Headers */
+.section-header-bar {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 16px;
+  padding-bottom: 12px;
+  border-bottom: 2px solid var(--chassis-border);
+  margin-bottom: 20px;
+  flex-wrap: wrap;
+}
+
+.section-header-bar h2 {
+  font-family: var(--font-display);
+  font-size: clamp(1.45rem, 2.3vw, 2rem);
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.02em;
+  color: var(--ink-primary);
+}
+
+.section-header-bar p {
+  font-family: var(--font-mono);
+  font-size: 12px;
+  color: var(--ink-secondary);
+}
+
+/* Section 2: Hosaka ROM Cartridges (Case Studies like Felipe's "Caixas I, II, III" + Live Runner) */
+.rom-deck-layout {
+  display: grid;
+  grid-template-columns: 350px minmax(0, 1fr);
+  gap: 20px;
+  align-items: start;
+}
+
+.rom-rack-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.rom-filter-tabs {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+  margin-bottom: 6px;
+}
+
+.rom-tab-btn {
+  padding: 5px 10px;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  background: var(--chassis-well);
+  border: 1px solid var(--chassis-border);
+  border-radius: var(--radius-xs);
+  color: var(--ink-secondary);
+}
+.rom-tab-btn.active {
+  background: var(--crt-bg);
+  color: var(--phosphor-primary);
+}
+
+.rom-cartridge-btn {
+  width: 100%;
+  text-align: left;
+  padding: 12px 14px;
+  background: var(--chassis-panel-raised);
+  border: 2px solid var(--chassis-border);
+  border-left: 8px solid var(--ink-accent);
+  border-radius: var(--radius-sm);
+  box-shadow: var(--shadow-keycap);
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  transition: transform 0.12s ease, background-color 0.15s ease;
+}
+
+.rom-cartridge-btn:hover {
+  transform: translateX(3px);
+  background: #FFFFFF;
+}
+
+.rom-cartridge-btn.active {
+  background: var(--crt-bg);
+  color: var(--crt-text);
+  border-left-color: var(--phosphor-primary);
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.28);
+}
+
+.rom-cart-top {
+  display: flex;
+  justify-content: space-between;
+  font-family: var(--font-mono);
+  font-size: 10.5px;
+  color: var(--ink-muted);
+}
+.rom-cartridge-btn.active .rom-cart-top {
+  color: var(--phosphor-secondary);
+}
+
+.rom-cart-title {
+  font-family: var(--font-display);
+  font-size: 15px;
+  font-weight: 800;
+}
+.rom-cartridge-btn.active .rom-cart-title {
+  color: var(--phosphor-primary);
+}
+
+.rom-cart-sub {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--ink-secondary);
+}
+.rom-cartridge-btn.active .rom-cart-sub {
+  color: var(--crt-text-sub);
+}
+
+/* Active ROM Reader Bay */
+.rom-reader-bay {
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  position: relative;
+  z-index: 1;
+}
+
+.rom-bay-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 12px;
+  border-bottom: 1px solid var(--crt-border);
+  padding-bottom: 14px;
+  flex-wrap: wrap;
+  z-index: 3;
+}
+
+.rom-slot-tag {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--phosphor-secondary);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+.rom-bay-title {
+  font-family: var(--font-display);
+  font-size: clamp(1.35rem, 2vw, 1.75rem);
+  font-weight: 800;
+  color: var(--phosphor-primary);
+  margin-top: 4px;
+}
+
+.rom-impact-banner {
+  background: rgba(255, 176, 0, 0.10);
+  border-left: 4px solid var(--phosphor-primary);
+  padding: 10px 14px;
+  font-family: var(--font-mono);
+  font-size: 12.5px;
+  color: var(--crt-text);
+  z-index: 3;
+}
+
+.rom-story-columns {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+  z-index: 3;
+}
+
+.rom-story-box {
+  background: var(--crt-surface);
+  border: 1px solid var(--crt-border);
+  padding: 14px;
+  border-radius: var(--radius-xs);
+}
+
+.rom-story-box h4 {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  text-transform: uppercase;
+  color: var(--phosphor-secondary);
+  margin-bottom: 8px;
+  letter-spacing: 0.06em;
+}
+
+.rom-story-box p,
+.rom-story-box li {
+  font-size: 14px;
+  color: var(--crt-text-sub);
+  line-height: 1.55;
+}
+
+.rom-story-box ul {
+  padding-left: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.rom-code-terminal {
+  background: #060503;
+  border: 1px solid var(--crt-border-strong);
+  border-radius: var(--radius-xs);
+  padding: 12px 14px;
+  font-family: var(--font-mono);
+  font-size: 12px;
+  color: var(--phosphor-green);
+  overflow-x: auto;
+  white-space: pre-wrap;
+  max-height: 185px;
+  line-height: 1.45;
+  z-index: 3;
+}
+
+.rom-stack-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 7px;
+  z-index: 3;
+}
+
+.rom-chip {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  padding: 3px 9px;
+  background: var(--crt-card);
+  border: 1px solid var(--crt-border);
+  color: var(--phosphor-primary);
+  border-radius: 2px;
+}
+
+.rom-actions-bar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  padding-top: 8px;
+  border-top: 1px solid var(--crt-border);
+  z-index: 3;
+}
+
+/* Section 3: Tactile Punch-Card Matrix Plaque (GitHub & Career Telemetry) */
+.matrix-plaque-card {
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+.matrix-stats-row {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 12px;
+}
+
+.matrix-stat-box {
+  background: var(--crt-bg);
+  color: var(--crt-text);
+  border: 2px solid var(--chassis-border);
+  padding: 12px 14px;
+  border-radius: var(--radius-sm);
+}
+
+.matrix-stat-box small {
+  display: block;
+  font-family: var(--font-mono);
+  font-size: 10.5px;
+  color: var(--crt-text-muted);
+  text-transform: uppercase;
+}
+
+.matrix-stat-box strong {
+  display: block;
+  font-family: var(--font-display);
+  font-size: 24px;
+  font-weight: 800;
+  color: var(--phosphor-primary);
+  margin-top: 2px;
+}
+
+.punch-grid-wrap {
+  background: var(--crt-bg);
+  border: 2px solid var(--chassis-border);
+  border-radius: var(--radius-sm);
+  padding: 16px;
+  overflow-x: auto;
+}
+
+.punch-grid {
+  display: grid;
+  grid-template-columns: repeat(26, minmax(18px, 1fr));
+  gap: 5px;
+  min-width: 620px;
+}
+
+.punch-pin {
+  aspect-ratio: 1;
+  border-radius: 2px;
+  border: 1px solid rgba(255, 176, 0, 0.22);
+  background: #1B150E;
+  padding: 0;
+  transition: transform 0.12s ease, background-color 0.15s ease;
+}
+.punch-pin[data-level="1"] { background: rgba(255, 176, 0, 0.32); }
+.punch-pin[data-level="2"] { background: rgba(255, 176, 0, 0.58); }
+.punch-pin[data-level="3"] { background: var(--phosphor-primary); box-shadow: 0 0 6px var(--phosphor-primary); }
+.punch-pin[data-level="4"] { background: var(--phosphor-secondary); box-shadow: 0 0 8px var(--phosphor-secondary); }
+.punch-pin:hover {
+  transform: scale(1.25);
+  z-index: 2;
+}
+
+.matrix-inspector-strip {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  font-family: var(--font-mono);
+  font-size: 12px;
+  background: var(--chassis-panel-raised);
+  border: 1.5px solid var(--chassis-border);
+  padding: 10px 14px;
+  border-radius: var(--radius-xs);
+  flex-wrap: wrap;
+}
+
+/* Section 4: Neuromancer Kuang Grade Mark XI ICEbreaker Mini-Game */
+.icebreaker-arena {
+  display: grid;
+  grid-template-columns: minmax(0, 1.15fr) minmax(320px, 0.85fr);
+  gap: 20px;
+}
+
+.ice-combat-screen {
+  padding: 22px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  gap: 16px;
+  z-index: 1;
+}
+
+.ice-boss-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px;
+  z-index: 3;
+}
+
+.ice-fighter-box {
+  background: var(--crt-surface);
+  border: 1px solid var(--crt-border);
+  padding: 12px;
+  border-radius: var(--radius-xs);
+}
+
+.ice-fighter-header {
+  display: flex;
+  justify-content: space-between;
+  font-family: var(--font-mono);
+  font-size: 11.5px;
+  font-weight: 700;
+  margin-bottom: 6px;
+}
+
+.ice-hp-bar {
+  width: 100%;
+  height: 10px;
+  background: #080604;
+  border: 1px solid var(--crt-border);
+  overflow: hidden;
+  border-radius: 2px;
+}
+
+.ice-hp-fill {
+  height: 100%;
+  background: var(--phosphor-green);
+  transition: width 0.25s ease;
+}
+.ice-hp-fill.enemy {
+  background: var(--phosphor-alert);
+}
+
+.ice-battle-log {
+  background: #060403;
+  border: 1px solid var(--crt-border);
+  padding: 12px;
+  font-family: var(--font-mono);
+  font-size: 12px;
+  min-height: 92px;
+  color: var(--crt-text-sub);
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  z-index: 3;
+}
+
+.ice-moves-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 10px;
+  z-index: 3;
+}
+
+/* Section 5: Esperanza Hardware Ports (Contact) & Seals Vault */
+.ports-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 14px;
+}
+
+.port-socket-card {
+  padding: 18px;
+  background: var(--chassis-panel-raised);
+  border: 2px solid var(--chassis-border);
+  border-radius: var(--radius-sm);
+  box-shadow: var(--shadow-keycap);
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  gap: 12px;
+  text-decoration: none;
+  transition: transform 0.12s ease, background-color 0.15s ease;
+}
+
+.port-socket-card:hover {
+  transform: translateY(-2px);
+  background: #FFFFFF;
+}
+
+.port-pin-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--ink-muted);
+}
+
+.port-socket-card h3 {
+  font-family: var(--font-display);
+  font-size: 17px;
+  font-weight: 800;
+  color: var(--ink-primary);
+}
+
+.port-socket-card p {
+  font-family: var(--font-mono);
+  font-size: 11.5px;
+  color: var(--ink-secondary);
+  word-break: break-all;
+}
+
+/* ============================================================================
+   HOSAKA DESKTOP OS MODE (WINDOW MANAGER, ICONS, TASKBAR — MADU VIANA STYLE)
+   ============================================================================ */
+.os-desktop-stage {
+  position: relative;
+  min-height: calc(100vh - 125px);
+  max-width: 1400px;
+  margin: 14px auto 24px;
+  padding: 0 max(20px, env(safe-area-inset-left));
+}
+
+.os-monitor-screen {
+  position: relative;
+  min-height: 700px;
+  padding: 20px 20px 64px;
+  background-color: var(--crt-bg);
+  background-image:
+    radial-gradient(rgba(255, 176, 0, 0.12) 1px, transparent 0),
+    linear-gradient(90deg, rgba(255, 176, 0, 0.03) 1px, transparent 1px),
+    linear-gradient(rgba(255, 176, 0, 0.03) 1px, transparent 1px);
+  background-size: 24px 24px, 48px 48px, 48px 48px;
+}
+
+.os-desktop-icons {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, 108px);
+  gap: 14px;
+  position: relative;
+  z-index: 3;
+  margin-bottom: 18px;
+}
+
+.os-desktop-icon-btn {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  padding: 10px 6px;
+  background: rgba(21, 16, 11, 0.72);
+  border: 1px solid transparent;
+  border-radius: var(--radius-xs);
+  color: var(--crt-text);
+  font-family: var(--font-mono);
+  font-size: 11px;
+  text-align: center;
+  transition: border-color 0.15s ease, background-color 0.15s ease;
+}
+
+.os-desktop-icon-btn:hover,
+.os-desktop-icon-btn.active {
+  background: rgba(255, 176, 0, 0.16);
+  border-color: var(--phosphor-primary);
+  color: var(--phosphor-primary);
+}
+
+.os-icon-glyph {
+  width: 38px;
+  height: 38px;
+  border-radius: var(--radius-xs);
+  background: var(--crt-card);
+  border: 1px solid var(--crt-border-strong);
+  display: grid;
+  place-items: center;
+  color: var(--phosphor-primary);
+}
+
+/* OS Windows Grid / Floating Workspace */
+.os-windows-layer {
+  position: relative;
+  z-index: 5;
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 16px;
+}
+
+.os-window {
+  background: var(--crt-surface);
+  border: 2px solid var(--phosphor-primary);
+  border-radius: var(--radius-sm);
+  box-shadow: var(--shadow-window);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.os-window.inactive {
+  border-color: var(--crt-border);
+  opacity: 0.92;
+}
+
+.os-window-titlebar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 8px 12px;
+  background: var(--phosphor-primary);
+  color: #120D04;
+  font-family: var(--font-mono);
+  font-size: 12px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  user-select: none;
+}
+
+.os-window.inactive .os-window-titlebar {
+  background: var(--crt-card);
+  color: var(--crt-text-sub);
+  border-bottom: 1px solid var(--crt-border);
+}
+
+.os-win-controls {
+  display: flex;
+  gap: 6px;
+}
+
+.os-win-ctrl-btn {
+  width: 22px;
+  height: 22px;
+  background: #120D04;
+  color: var(--phosphor-primary);
+  border: 1px solid #120D04;
+  border-radius: 2px;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 700;
+  display: grid;
+  place-items: center;
+}
+.os-win-ctrl-btn:hover {
+  background: var(--phosphor-alert);
+  color: #FFF;
+}
+
+.os-window-body {
+  padding: 16px;
+  color: var(--crt-text);
+  max-height: 520px;
+  overflow-y: auto;
+}
+
+/* OS Bottom Taskbar */
+.os-taskbar {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  z-index: 10;
+  background: var(--chassis-panel);
+  color: var(--ink-primary);
+  border-top: 2px solid var(--chassis-border);
+  padding: 6px 12px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.os-taskbar-apps {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+
+.os-task-pill {
+  padding: 5px 10px;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 700;
+  background: var(--chassis-panel-raised);
+  border: 1.5px solid var(--chassis-border);
+  border-radius: 2px;
+  color: var(--ink-primary);
+}
+.os-task-pill.active {
+  background: var(--crt-bg);
+  color: var(--phosphor-primary);
+}
+
+/* ============================================================================
+   SEALS / MEDALS DRAWER & COMMAND PALETTE MODAL
+   ============================================================================ */
+.modal-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 3000;
+  background: rgba(10, 8, 5, 0.76);
+  backdrop-filter: blur(4px);
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  padding: 8vh 16px 16px;
+}
+
+.modal-window {
+  width: 100%;
+  max-width: 680px;
+  background: var(--chassis-panel);
+  border: 2px solid var(--chassis-border);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-window);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+.modal-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 16px;
+  background: var(--crt-bg);
+  color: var(--phosphor-primary);
+  font-family: var(--font-mono);
+  font-size: 12.5px;
+  font-weight: 700;
+  border-bottom: 2px solid var(--chassis-border);
+}
+
+.modal-body {
+  padding: 18px;
+  max-height: 70vh;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.seals-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(195px, 1fr));
+  gap: 10px;
+}
+
+.seal-badge-card {
+  padding: 10px 12px;
+  background: var(--chassis-panel-raised);
+  border: 1.5px solid var(--chassis-border);
+  border-radius: var(--radius-xs);
+  opacity: 0.55;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.seal-badge-card.unlocked {
+  opacity: 1;
+  background: var(--crt-bg);
+  color: var(--crt-text);
+  border-color: var(--phosphor-primary);
+  box-shadow: inset 0 0 10px var(--phosphor-primary-dim);
+}
+
+.seal-badge-card strong {
+  font-family: var(--font-display);
+  font-size: 13px;
+  color: var(--ink-primary);
+}
+.seal-badge-card.unlocked strong {
+  color: var(--phosphor-primary);
+}
+
+.seal-badge-card span {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--ink-secondary);
+}
+.seal-badge-card.unlocked span {
+  color: var(--crt-text-sub);
+}
+
+/* Toast Notification */
+.hardware-toast {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  z-index: 4000;
+  background: var(--crt-bg);
+  color: var(--phosphor-primary);
+  border: 2px solid var(--phosphor-primary);
+  padding: 10px 16px;
+  border-radius: var(--radius-xs);
+  font-family: var(--font-mono);
+  font-size: 12px;
+  font-weight: 700;
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.5);
+}
+
+/* Footer Hardware Serial Plate */
+.serial-footer {
+  max-width: 1400px;
+  margin: 0 auto 28px;
+  padding: 0 max(20px, env(safe-area-inset-left));
+}
+
+.serial-footer-inner {
+  padding: 16px 20px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+  flex-wrap: wrap;
+  font-family: var(--font-mono);
+  font-size: 11.5px;
+  color: var(--ink-secondary);
+}
+
+.stack-badges-strip {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  align-items: center;
+}
+
+.stack-mini-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 9px;
+  background: var(--chassis-panel-raised);
+  border: 1px solid var(--chassis-border);
+  border-radius: 2px;
+  font-size: 11px;
+  font-weight: 700;
+}
+
+/* Responsive Breakpoints */
+@media (max-width: 1080px) {
+  .hero-deck-grid,
+  .rom-deck-layout,
+  .icebreaker-arena {
+    grid-template-columns: 1fr;
+  }
+  .ports-grid,
+  .matrix-stats-row {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  .rom-story-columns {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 640px) {
+  .hero-editorial-panel {
+    padding: 20px;
+  }
+  .vk-viewport {
+    grid-template-columns: 1fr;
+    justify-items: center;
+    text-align: center;
+  }
+  .hero-telemetry-strip,
+  .ports-grid,
+  .matrix-stats-row,
+  .ice-boss-row,
+  .ice-moves-grid {
+    grid-template-columns: 1fr;
+  }
+}
