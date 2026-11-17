@@ -109,3 +109,26 @@ export function playVangelisChord(enabled = true, chordNotes = [220, 277.18, 329
     });
   } catch {}
 }
+
+export function playRelicGlitch(enabled = true) {
+  if (!enabled) return;
+  try {
+    const ctx = getCtx();
+    if (!ctx) return;
+    const now = ctx.currentTime;
+    const freqs = [180, 520, 310];
+    freqs.forEach((f, i) => {
+      const osc = ctx.createOscillator();
+      const gain = ctx.createGain();
+      osc.type = i === 1 ? 'sawtooth' : 'square';
+      osc.frequency.setValueAtTime(f, now + i * 0.025);
+      osc.frequency.exponentialRampToValueAtTime(f * 0.65, now + i * 0.025 + 0.04);
+      gain.gain.setValueAtTime(0.028, now + i * 0.025);
+      gain.gain.exponentialRampToValueAtTime(0.0008, now + i * 0.025 + 0.045);
+      osc.connect(gain);
+      gain.connect(ctx.destination);
+      osc.start(now + i * 0.025);
+      osc.stop(now + i * 0.025 + 0.05);
+    });
+  } catch {}
+}

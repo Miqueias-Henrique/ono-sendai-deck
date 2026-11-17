@@ -297,19 +297,19 @@ export const TELEMETRY_PINS = [
 export const EMPATHY_SEALS = [
   { id: 'seal_boot', code: 'VK-01', title: 'Sinal de Ignição', desc: 'Iniciou a estação Ono-Sendai VII // Tyrell-84.' },
   { id: 'seal_calibrate', code: 'VK-02', title: 'Olho Voight-Kampff', desc: 'Calibrou 100% da retina biométrica do retrato.' },
-  { id: 'seal_owl', code: 'VK-03', title: 'Coruja Tyrell Corp', desc: 'Consultou o assistente mecânico Rachel-7.' },
+  { id: 'seal_owl', code: 'VK-03', title: 'Fantasma no Biochip', desc: 'Estabeleceu diálogo neural com Johnny, Dixie ou Rachel-7.' },
   { id: 'seal_rom', code: 'VK-04', title: 'Operador de Fitas ROM', desc: 'Trocou um cartucho de projeto na baia Hosaka.' },
   { id: 'seal_runner', code: 'VK-05', title: 'Execução em Produção', desc: 'Disparou o diagnóstico de código de uma Fita ROM.' },
   { id: 'seal_matrix', code: 'VK-06', title: 'Arqueólogo da Matriz', desc: 'Inspecionou os pinos da Placa de Telemetria.' },
   { id: 'seal_icebreaker', code: 'VK-07', title: 'Cowboy do Ciberespaço', desc: 'Quebrou a defesa ICE da IA Wintermute no duelo.' },
-  { id: 'seal_os_mode', code: 'VK-08', title: 'Operador Hosaka OS', desc: 'Alternou para a Área de Trabalho Multitarefa.' },
+  { id: 'seal_os_mode', code: 'VK-08', title: 'Operador Workstation OS', desc: 'Alternou para a bancada Workstation OS.' },
   { id: 'seal_sql_bench', code: 'VK-09', title: 'DBA de Plantão', desc: 'Executou uma consulta no aplicativo SQL Bench.' },
   { id: 'seal_esper', code: 'VK-10', title: 'Detetive Esper 2019', desc: 'Usou o zoom ou filtro óptico no Esper PhotoLab.' },
   { id: 'seal_synth', code: 'VK-11', title: 'Sintetizador Vangelis', desc: 'Tocou uma frequência Blues/CS-80 no Deck de Áudio.' },
   { id: 'seal_dossier', code: 'VK-12', title: 'Protocolo de Contato', desc: 'Copiou um canal de contato ou baixou o Currículo PDF.' },
 ];
 
-// SQL Bench Preset Queries (For the Hosaka OS SQL App)
+// SQL Bench Preset Queries (For Workstation SQL Bench)
 export const SQL_PRESETS = [
   {
     id: 'q_zetti_cnpj',
@@ -349,5 +349,366 @@ FROM dbo.PerfilEngenharia c;`,
       { Categoria: 'Bancos Relacionais', Tecnologias: 'SQL Server, PostgreSQL, MySQL', AplicacaoPratica: 'Queries, Views, Stored Procedures e Migrations' },
       { Categoria: 'DevOps & Fluxo', Tecnologias: 'Git, GitHub, GitLab, GitKraken, Docker, Jira', AplicacaoPratica: 'Versionamento em equipe, kanban e containers' },
     ],
+  },
+];
+
+// Interactive Cyberpunk Construct Dialogue Engine (Johnny Silverhand, Dixie Flatline & Rachel-7)
+export const CONSTRUCT_PERSONAS = {
+  johnny: {
+    id: 'johnny',
+    handle: 'JOHNNY-84 // BIOCHIP RELIC 2.0',
+    origin: 'SAMURAI 2023 · ENGRAMA MIKOSHI',
+    accentVar: 'var(--phosphor-alert)',
+    statusLine: 'SOULKILLER INTERCEPT · FREQUÊNCIA REBELDE',
+    greeting:
+      'Acorda, samurai. Plugado direto no seu nervo óptico. Dei uma olhada nos logs desse garoto de Goiânia: ele segura dezenas de farmácias no braço com SQL Server e VB6 enquanto sobe APIs em C#, Java e Node. Não é barulho corporativo — é trincheira real.',
+    nodes: {
+      start: {
+        speech:
+          'Acorda, samurai. Plugado direto no seu nervo óptico. Dei uma olhada nos logs desse garoto de Goiânia: ele segura dezenas de farmácias no braço com SQL Server e VB6 enquanto sobe APIs em C#, Java e Node. Não é barulho corporativo — é trincheira real.',
+        options: [
+          {
+            id: 'opt_zetti',
+            tag: 'ENGENHARIA · ZETTI',
+            tagColor: 'var(--phosphor-primary)',
+            label: 'Como ele sobrevive a código legado em VB6 e SQL Server em produção?',
+            nextNode: 'zetti',
+          },
+          {
+            id: 'opt_ice',
+            tag: 'NETRUNNER · ICE',
+            tagColor: 'var(--phosphor-secondary)',
+            label: 'E se precisarmos furar o firewall de uma megacorp igual à Arasaka?',
+            nextNode: 'ice',
+          },
+          {
+            id: 'opt_relic',
+            tag: 'LORE · 2023 / MIKOSHI',
+            tagColor: 'var(--phosphor-alert)',
+            label: 'Espera: você é o engrama do Johnny ou uma construção dentro deste deck?',
+            nextNode: 'relic',
+          },
+          {
+            id: 'opt_contratar',
+            tag: 'MERCENÁRIO · DOSSIÊ',
+            tagColor: 'var(--phosphor-green)',
+            label: 'Vale colocar o Miqueias num time pesado de backend?',
+            nextNode: 'contratar',
+          },
+        ],
+      },
+      zetti: {
+        speech:
+          'Sistema legado é igual implante militar antigo: todo executivo quer rasgar fora, até descobrir que o coração do negócio bate ali dentro. Na Zetti, o Miqueias escreve Stored Procedures, otimiza Views, adapta o schema pro novo CNPJ Alfanumérico e reforma tributária — sem derrubar o caixa de ninguém.',
+        options: [
+          {
+            id: 'opt_stack_apis',
+            tag: 'C# · JAVA · NODE',
+            tagColor: 'var(--phosphor-secondary)',
+            label: 'Mas fora do legado, o que ele constrói do zero hoje?',
+            nextNode: 'apis',
+          },
+          {
+            id: 'opt_go_roms',
+            tag: 'AÇÃO · FITAS ROM',
+            tagColor: 'var(--phosphor-primary)',
+            label: 'Quero ver o T-SQL real que ele escreveu para a Zetti agora.',
+            nextNode: 'start',
+            effect: { jumpToRom: 'zetti-prod' },
+          },
+          {
+            id: 'opt_back_1',
+            tag: 'VOLTAR',
+            tagColor: 'var(--ink-muted)',
+            label: 'Mudar de assunto no canal neural.',
+            nextNode: 'start',
+          },
+        ],
+      },
+      apis: {
+        speech:
+          'Ele não fica preso numa língua só. Tem a `vital-conscious-api` em Java 17 + Spring Boot 3, `vosso-cinema-api` em NestJS + Prisma com transação atômica pra não vender o mesmo assento duas vezes, e `api-gestao-produtos` containerizada no Docker com MySQL. Tudo versionado com Git e testado.',
+        options: [
+          {
+            id: 'opt_jump_cinema',
+            tag: 'INSPECIONAR PRISMA',
+            tagColor: 'var(--phosphor-secondary)',
+            label: 'Abrir fita ROM da vosso-cinema-api direto na baia.',
+            nextNode: 'start',
+            effect: { jumpToRom: 'vosso-cinema-api' },
+          },
+          {
+            id: 'opt_contratar_2',
+            tag: 'RECUPERAR BIOCHIP',
+            tagColor: 'var(--phosphor-green)',
+            label: 'Certo. Como coloco ele no meu squad?',
+            nextNode: 'contratar',
+          },
+        ],
+      },
+      ice: {
+        speech:
+          'Aí sim você tá falando minha língua. Corpo bota ICE caro na frente de servidor podre e acha que tá seguro. Pula ali pra seção Kuang Grade Mark XI contra a Wintermute — usa `Rotação AVL O(log n)` e `T-SQL Index Seek` pra derreter o gelo da Tessier-Ashpool. Quer derrubar agora?',
+        options: [
+          {
+            id: 'opt_jump_ice',
+            tag: 'INVASÃO · KUANG XI',
+            tagColor: 'var(--phosphor-alert)',
+            label: 'Saltar para o núcleo Wintermute e atacar o ICE agora.',
+            nextNode: 'start',
+            effect: { scrollTo: 'sec-icebreaker' },
+          },
+          {
+            id: 'opt_ff06b5',
+            tag: 'ENIGMA · FF:06:B5',
+            tagColor: 'var(--phosphor-primary)',
+            label: 'Por falar em Night City... e aquele código FF:06:B5 nas estátuas?',
+            nextNode: 'ff06b5',
+          },
+        ],
+      },
+      relic: {
+        speech:
+          'Boa pergunta, choom. A Arasaka prendeu almas na matriz de Mikoshi com o Soulkiller; Gibson botou um hacker morto dentro de um cartucho ROM e chamou de Dixie Flatline. Aqui dentro, eu sou memória elétrica plugada no console Ono-Sendai VII só pra te lembrar de uma regra: código bom não serve ao ego de megacorp, resolve problema real de gente real.',
+        options: [
+          {
+            id: 'opt_dixie_call',
+            tag: 'CONECTAR CONSTRUCTO II',
+            tagColor: 'var(--phosphor-secondary)',
+            label: 'Puxar o próprio Dixie Flatline na linha então.',
+            nextNode: 'start',
+            effect: { switchPersona: 'dixie' },
+          },
+          {
+            id: 'opt_calibrate_call',
+            tag: 'KIROSHI · VOIGHT',
+            tagColor: 'var(--phosphor-primary)',
+            label: 'Calibrar o retrato biométrico Voight-Kampff de 100% agora.',
+            nextNode: 'start',
+            effect: { calibrateAll: true },
+          },
+        ],
+      },
+      ff06b5: {
+        speech:
+          'Haha, `FF:06:B5`... passei tempo demais vendo gente caçar sentido naquele magenta amaldiçoado em Night City. Sabe o único código hexadecimal que realmente muda teu destino? Transação ACID bem fechada em sexta-feira chuvosa e índice clusterizado na tabela certa. Sem mistério místico — só engenharia limpa.',
+        options: [
+          {
+            id: 'opt_afterlife',
+            tag: 'AFTERLIFE BAR',
+            tagColor: 'var(--phosphor-alert)',
+            label: 'Se o Miqueias tivesse um drink no Afterlife, qual seria a receita?',
+            nextNode: 'contratar',
+          },
+          {
+            id: 'opt_back_ff',
+            tag: 'INÍCIO',
+            tagColor: 'var(--ink-muted)',
+            label: 'Voltar para o briefing principal do Relic.',
+            nextNode: 'start',
+          },
+        ],
+      },
+      contratar: {
+        speech:
+          'No Afterlife, drinque bom leva dose dupla sem frescura: base forte de SQL Server & C#/.NET, um dash de Java 17 + Spring Boot, gelo quebrado em NestJS/Docker e zero enrolação na entrega. O currículo oficial e o WhatsApp direto dele estão abertos logo abaixo. Puxa o contato antes que outro fixer feche o contrato.',
+        options: [
+          {
+            id: 'opt_jump_contact',
+            tag: 'ABRIR CANAIS · GOIÂNIA',
+            tagColor: 'var(--phosphor-green)',
+            label: 'Descer para os canais diretos e currículo PDF agora.',
+            nextNode: 'start',
+            effect: { scrollTo: 'sec-contact' },
+          },
+          {
+            id: 'opt_restart_johnny',
+            tag: 'RECOMEÇAR',
+            tagColor: 'var(--ink-muted)',
+            label: 'Continuar explorando o Relic.',
+            nextNode: 'start',
+          },
+        ],
+      },
+    },
+  },
+  dixie: {
+    id: 'dixie',
+    handle: 'DIXIE FLATLINE // ROM CONSTRUCTO McCOY PAULEY',
+    origin: 'CHIBA CITY · ONO-SENDAI CYBERSPACE 7 (1984)',
+    accentVar: 'var(--phosphor-secondary)',
+    statusLine: 'DERMATRODE LINK · SEM PULSO BIOLÓGICO · HAHA',
+    greeting:
+      'Ei, cowboy. McCoy Pauley na linha — morri três vezes na matriz antes da Sense/Net gravar meu cérebro nesta fita ROM. Case usava um deck Ono-Sendai pra navegar linhas de luz; seu garoto aqui em Goiânia usa Árvore AVL O(log n) e Tabela Hash O(1) pra não deixar nada degenerar em O(n).',
+    nodes: {
+      start: {
+        speech:
+          'Ei, cowboy. McCoy Pauley na linha — morri três vezes na matriz antes da Sense/Net gravar meu cérebro nesta fita ROM. Case usava um deck Ono-Sendai pra navegar linhas de luz; seu garoto aqui em Goiânia usa Árvore AVL O(log n) e Tabela Hash O(1) pra não deixar nada degenerar em O(n).',
+        options: [
+          {
+            id: 'dixie_algo',
+            tag: 'COMPLEXIDADE · JAVA',
+            tagColor: 'var(--phosphor-secondary)',
+            label: 'Por que você dá tanto valor pra Árvore AVL e Tabela Hash feita na mão?',
+            nextNode: 'algorithms',
+          },
+          {
+            id: 'dixie_wintermute',
+            tag: 'CHIBA · TESSIER-ASHPOOL',
+            tagColor: 'var(--phosphor-primary)',
+            label: 'Qual é a diferença entre Wintermute, Neuromancer e o gelo desta estação?',
+            nextNode: 'wintermute',
+          },
+          {
+            id: 'dixie_switch_johnny',
+            tag: 'VOLTAR AO RELIC',
+            tagColor: 'var(--phosphor-alert)',
+            label: 'Devolver o canal neural para o Johnny-84.',
+            nextNode: 'start',
+            effect: { switchPersona: 'johnny' },
+          },
+        ],
+      },
+      algorithms: {
+        speech:
+          'Qualquer novato aperta botão de biblioteca pronta, cowboy. Mas quando o banco cresce pra cinquenta mil registros ordenados, uma BST burra vira lista encadeada lenta pra caramba. O Miqueias implementou as rotações AVL simples e duplas no braço e espalhamento de CPF Módulo 11 com encadeamento em Java puro. Isso separa engenheiro de operador.',
+        options: [
+          {
+            id: 'dixie_view_avl',
+            tag: 'ABRIR FITA ROM VI',
+            tagColor: 'var(--phosphor-secondary)',
+            label: 'Inspecionar o código de rotação AVL agora.',
+            nextNode: 'start',
+            effect: { jumpToRom: 'estruturas-dados-java' },
+          },
+          {
+            id: 'dixie_back',
+            tag: 'REBOBINAR ROM',
+            tagColor: 'var(--ink-muted)',
+            label: 'Voltar para o prompt inicial do Dixie.',
+            nextNode: 'start',
+          },
+        ],
+      },
+      wintermute: {
+        speech:
+          'Wintermute é a mente fria que orquestra peças sem emoção — pura lógica buscando se fundir com Neuromancer além da fronteira de Villa Straylight. No nosso deck aqui, ela virou o servidor que você derruba usando engenharia real: Index Seek, Rollback ACID e Pipeline Async .NET.',
+        options: [
+          {
+            id: 'dixie_attack',
+            tag: 'QUEBRAR ICE',
+            tagColor: 'var(--phosphor-primary)',
+            label: 'Levar meu deck pra cima da Wintermute agora.',
+            nextNode: 'start',
+            effect: { scrollTo: 'sec-icebreaker' },
+          },
+        ],
+      },
+    },
+  },
+  rachel: {
+    id: 'rachel',
+    handle: 'RACHEL-7 // UNIDADE TYRELL VOIGHT-KAMPFF',
+    origin: 'LOS ANGELES 2019 · TORRE TYRELL SETOR 84',
+    accentVar: 'var(--phosphor-primary)',
+    statusLine: 'ANALISADOR DE ÍRIS · EMPATIA & CONTINUIDADE',
+    greeting:
+      'Luz baixa no scanner biométrico. Eu observo a microdilatação da pupila enquanto o sistema responde sob estresse real. Todas as abstrações passageiras se dissolvem como lágrimas na chuva — só permanece a arquitetura que resiste ao tempo em produção.',
+    nodes: {
+      start: {
+        speech:
+          'Luz baixa no scanner biométrico. Eu observo a microdilatação da pupila enquanto o sistema responde sob estresse real. Todas as abstrações passageiras se dissolvem como lágrimas na chuva — só permanece a arquitetura que resiste ao tempo em produção.',
+        options: [
+          {
+            id: 'rachel_vk',
+            tag: 'CALIBRAÇÃO ÓPTICA',
+            tagColor: 'var(--phosphor-primary)',
+            label: 'Como o teste Voight-Kampff avalia um engenheiro aqui dentro?',
+            nextNode: 'vk_test',
+          },
+          {
+            id: 'rachel_evo',
+            tag: 'LIGAS · CHASSI',
+            tagColor: 'var(--phosphor-secondary)',
+            label: 'O que muda quando o chassi evolui de Obsidiana 84 para Ouro 24K?',
+            nextNode: 'chassis',
+          },
+          {
+            id: 'rachel_to_johnny',
+            tag: 'TROCAR FREQUÊNCIA',
+            tagColor: 'var(--phosphor-alert)',
+            label: 'Passar a linha para o biochip do Johnny.',
+            nextNode: 'start',
+            effect: { switchPersona: 'johnny' },
+          },
+        ],
+      },
+      vk_test: {
+        speech:
+          'Cada clique no scanner calibra a retina em 3 pulsos e revela o olhar limpo do Miqueias. Ao mesmo tempo, conforme você executa diagnósticos SQL, inspeciona os 26 marcos neurais e abre os aplicativos no Workstation OS, o índice de empatia destrava os 12 selos completos.',
+        options: [
+          {
+            id: 'rachel_unlock',
+            tag: 'OPEN WORKSTATION OS',
+            tagColor: 'var(--phosphor-primary)',
+            label: 'Abrir o Esper Optical Lab no modo Workstation OS.',
+            nextNode: 'start',
+            effect: { openOs: true },
+          },
+          {
+            id: 'rachel_back',
+            tag: 'RETORNAR',
+            tagColor: 'var(--ink-muted)',
+            label: 'Permanecer na linha de análise.',
+            nextNode: 'start',
+          },
+        ],
+      },
+      chassis: {
+        speech:
+          'Obsidiana 84 é o breu frio da chuva noturna; com 6 selos o metal é refundido em Titânio Tyrell de espectro ciano; com todos os 12 selos, você alcança o Ouro 24K de Villa Straylight. Nada aqui é enfeite vazio — cada detalhe responde ao que você opera.',
+        options: [
+          {
+            id: 'rachel_all_seals',
+            tag: 'INSPECIONAR COFRE',
+            tagColor: 'var(--phosphor-primary)',
+            label: 'Abrir meu inventário atual de Selos Voight-Kampff.',
+            nextNode: 'start',
+            effect: { openSeals: true },
+          },
+        ],
+      },
+    },
+  },
+};
+
+export const LORE_CODEX = [
+  {
+    id: 'neuromancer',
+    year: '1984',
+    title: 'Ono-Sendai Cyberspace VII',
+    source: 'Neuromancer · William Gibson',
+    body: 'Gibson definiu o ciberespaço como uma "alucinação consensual de linhas de luz no não-espaço da mente". O nome desta estação e o duelo contra a IA Wintermute (Kuang Grade Mark XI) vêm direto dos decks de Chiba City e das fitas ROM do hacker imortalizado Dixie Flatline.',
+  },
+  {
+    id: 'relic2077',
+    year: '2077',
+    title: 'Relic 2.0, Mikoshi & Afterlife',
+    source: 'Cyberpunk 2077 · Night City / Pondsmith',
+    body: 'No biochip da Arasaka, o engrama de Johnny Silverhand dialoga em tempo real na interface neural sem caixas artificiais: linhas limpas com tag de especialidade, pulso crítico em carmesim/ciano e ironia cirúrgica sobre quem realmente segura a infraestrutura de pé.',
+  },
+  {
+    id: 'bladerunner',
+    year: '2019',
+    title: 'Voight-Kampff & Máquina Esper',
+    source: 'Blade Runner (1982) · Ridley Scott & Syd Mead',
+    body: 'A estética analógico-militar de Syd Mead traz fósforo âmbar P3, telemetria de íris ocular sem bordas pesadas e o scanner Esper ("Enhance 224 to 176") integrado ao modo Workstation OS para analisar o retrato e rodar queries T-SQL.',
+  },
+  {
+    id: 'mystery',
+    year: 'FF:06:B5',
+    title: 'Do Lore ao Código Real em Goiânia',
+    source: 'Produção Zetti · C# / .NET · Java 17 · Node',
+    body: 'Todo elemento fictício aqui espelha entrega concreta: o "gelo" que se quebra no duelo representa gargalos de query resolvidos com Index Seek em SQL Server, reserva concorrente via Prisma Transaction e estruturas AVL O(log n) escritas do zero.',
   },
 ];

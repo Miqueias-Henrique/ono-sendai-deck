@@ -1,7 +1,6 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import {
   PROFILE_DATA,
-  OWL_QUOTES,
   ROM_CARTRIDGES,
   TELEMETRY_PINS,
   EMPATHY_SEALS,
@@ -10,6 +9,7 @@ import HosakaDesktopOS from './components/HosakaDesktopOS';
 import CyberspaceTerrain from './components/CyberspaceTerrain';
 import NeuralWaveMatrix from './components/NeuralWaveMatrix';
 import WintermuteCoreSvg from './components/WintermuteCoreSvg';
+import RelicConstructDialog from './components/RelicConstructDialog';
 import { playKeyclick, playVoightKampffPulse } from './utils/soundEngine';
 
 const STORAGE_KEY_SEALS = 'ono_sendai_vk_seals_v1';
@@ -38,9 +38,8 @@ export default function App() {
 
   const [chassisOverride, setChassisOverride] = useState(null);
 
-  // Rachel-7 Companion Stream
-  const [owlSpeech, setOwlSpeech] = useState(OWL_QUOTES.uncalibrated);
-  const [tipIndex, setTipIndex] = useState(0);
+  // Live telemetry ping fed into Johnny-84 / Dixie / Rachel Relic dialogue
+  const [relicPing, setRelicPing] = useState('');
 
   // Section 01: Hosaka ROM Cartridges
   const [romCategory, setRomCategory] = useState('all');
@@ -87,9 +86,9 @@ export default function App() {
         setToastMsg(`SELO DESBLOQUEADO [${sealObj.code}]: ${sealObj.title}`);
       }
       if (next.length === 6) {
-        setOwlSpeech(OWL_QUOTES.titanium_upgrade);
+        setRelicPing('Rachel-7: 6 selos conquistados — liga da estação refundida para Titânio Escovado.');
       } else if (next.length === 12) {
-        setOwlSpeech(OWL_QUOTES.gold_upgrade);
+        setRelicPing('Johnny-84: Todos os 12 selos na mão, samurai! Ouro 24K Villa Straylight ativo.');
       }
       return next;
     });
@@ -130,12 +129,10 @@ export default function App() {
       const next = Math.min(3, prev + 1);
       playVoightKampffPulse(soundOn, next);
       if (next >= 3) {
-        setOwlSpeech(OWL_QUOTES.calibrated);
         unlockSeal('seal_calibrate');
+        setRelicPing('Rachel-7: Retina Voight-Kampff em 100% — Empatia 98.4% confirmada no olhar do engenheiro.');
       } else {
-        setOwlSpeech(
-          `CALIBRANDO LENTE VOIGHT-KAMPFF (${next}/3): Ajustando foco óptico... Pressione mais ${3 - next}x.`
-        );
+        setRelicPing(`Voight-Kampff ajustando foco óptico (${next}/3)...`);
       }
       return next;
     });
@@ -145,19 +142,8 @@ export default function App() {
     playKeyclick(soundOn, 780);
     setViewMode(mode);
     if (mode === 'os') {
-      setOwlSpeech(OWL_QUOTES.os_mode);
       unlockSeal('seal_os_mode');
-    } else {
-      setOwlSpeech(OWL_QUOTES.editorial_mode);
     }
-  };
-
-  const handlePokeOwl = () => {
-    playKeyclick(soundOn, 880);
-    unlockSeal('seal_owl');
-    const nextIdx = (tipIndex + 1) % OWL_QUOTES.tips.length;
-    setTipIndex(nextIdx);
-    setOwlSpeech(OWL_QUOTES.tips[nextIdx]);
   };
 
   const handleFilterRomCategory = (categoryId) => {
@@ -184,6 +170,7 @@ export default function App() {
     playKeyclick(soundOn, 940);
     setShowTerminalRun(true);
     unlockSeal('seal_runner');
+    setRelicPing(`Dixie Flatline: Fita "${activeRom.id}" executada com sucesso no cluster Hosaka.`);
     notify('Diagnóstico de container/banco executado com sucesso.');
   };
 
@@ -220,7 +207,7 @@ export default function App() {
 
     let dmgToIce = 0;
     let healDeck = 0;
-    let newBuff = shieldBuff;
+    const newBuff = shieldBuff;
     let playerActionLine = '';
 
     if (moveType === 'kuang_sql') {
@@ -232,7 +219,7 @@ export default function App() {
     } else if (moveType === 'acid_shield') {
       dmgToIce = 15;
       healDeck = 22;
-      newBuff = true;
+      setShieldBuff(true);
       playerActionLine = '▶ [TRANSAÇÃO ACID ROLLBACK]: Integridade restaurada (+22% Deck) e proteção ativa (-15% ICE).';
     } else if (moveType === 'sandevistan_net') {
       dmgToIce = 38;
@@ -244,6 +231,7 @@ export default function App() {
 
     if (nextIce === 0) {
       unlockSeal('seal_icebreaker');
+      setRelicPing('Johnny-84: Fortaleza Wintermute no chão! Nada segura código limpo em produção.');
       setCombatLog([
         playerActionLine,
         '★ VITÓRIA NO CIBERESPAÇO: O gelo da Tessier-Ashpool foi quebrado! Selo [VK-07] liberado.',
@@ -251,17 +239,52 @@ export default function App() {
       return;
     }
 
-    const rawEnemyDmg = Math.floor(Math.random() * 14) + 12;
+    const rawEnemyDmg = 13 + ((nextIce + playerIntegrity) % 11);
     const finalEnemyDmg = newBuff ? Math.floor(rawEnemyDmg * 0.45) : rawEnemyDmg;
     const nextPlayer = Math.min(100, Math.max(0, playerIntegrity + healDeck - finalEnemyDmg));
     setPlayerIntegrity(nextPlayer);
-    setShieldBuff(false);
+    if (moveType !== 'acid_shield') {
+      setShieldBuff(false);
+    }
 
     setCombatLog([
       playerActionLine,
       `◀ [CONTRA-ATAQUE WINTERMUTE]: Pulso defensivo causou -${finalEnemyDmg}% no seu Cyberdeck.`,
     ]);
   };
+
+  const handleRelicEffect = useCallback(
+    (effect) => {
+      if (!effect) return;
+      if (effect.jumpToRom) {
+        setViewMode('editorial');
+        setRomCategory('all');
+        setActiveRomId(effect.jumpToRom);
+        setShowTerminalRun(false);
+        unlockSeal('seal_rom');
+        setTimeout(() => {
+          document.getElementById('sec-rom-bay')?.scrollIntoView({ behavior: 'auto' });
+        }, 40);
+      } else if (effect.scrollTo) {
+        setViewMode('editorial');
+        setTimeout(() => {
+          document.getElementById(effect.scrollTo)?.scrollIntoView({ behavior: 'auto' });
+        }, 40);
+      } else if (effect.calibrateAll) {
+        setVkPulses(3);
+        playVoightKampffPulse(soundOn, 3);
+        unlockSeal('seal_calibrate');
+        setRelicPing('Rachel-7: Óptica calibrada via ponte neural Relic 2.0.');
+        notify('Retina Voight-Kampff calibrada (98.4% Empatia).');
+      } else if (effect.openOs) {
+        setViewMode('os');
+        unlockSeal('seal_os_mode');
+      } else if (effect.openSeals) {
+        setSealsModalOpen(true);
+      }
+    },
+    [soundOn, unlockSeal, notify]
+  );
 
   const visibleRoms =
     romCategory === 'all'
@@ -273,12 +296,22 @@ export default function App() {
 
   const commandItems = [
     {
-      label: 'Alternar para Bancada Hosaka OS (6 Janelas Multitarefa)',
-      sub: 'MODO OS',
+      label: 'Conversar com Johnny-84, Dixie Flatline & Rachel-7 (Relic 2.0)',
+      sub: 'CANAL NEURAL',
+      action: () => {
+        setViewMode('editorial');
+        setTimeout(() => {
+          document.getElementById('sec-relic-chat')?.scrollIntoView({ behavior: 'auto' });
+        }, 30);
+      },
+    },
+    {
+      label: 'Alternar para Bancada Hosaka OS (6 Ferramentas Integradas)',
+      sub: 'WORKSTATION',
       action: () => handleSwitchMode('os'),
     },
     {
-      label: 'Alternar para Navegação Espacial Tyrell-84',
+      label: 'Alternar para Ciberespaço Tyrell-84 (Dossiê Completo)',
       sub: 'CIBERESPAÇO',
       action: () => handleSwitchMode('editorial'),
     },
@@ -288,7 +321,7 @@ export default function App() {
       action: () => {
         setVkPulses(3);
         unlockSeal('seal_calibrate');
-        setOwlSpeech(OWL_QUOTES.calibrated);
+        setRelicPing('Rachel-7: Retina Voight-Kampff estabilizada em 98.4%.');
       },
     },
     {
@@ -308,8 +341,9 @@ export default function App() {
         setViewMode('editorial');
         setRomCategory('all');
         handleSelectRom(rom.id);
-        const el = document.getElementById('sec-rom-bay');
-        if (el) el.scrollIntoView({ behavior: 'smooth' });
+        setTimeout(() => {
+          document.getElementById('sec-rom-bay')?.scrollIntoView({ behavior: 'auto' });
+        }, 30);
       },
     })),
   ].filter(
@@ -328,7 +362,7 @@ export default function App() {
       </a>
 
       {/* ====================================================================
-          SLEEK TRANSLUCENT TOP NAVIGATION (NO HEAVY BOX CHROME)
+          FLAT BORDERLESS CYBERSPACE TOP BAR (ZERO CAPSULE-IN-CAPSULE)
           ==================================================================== */}
       <header className="top-console-bar" role="banner">
         <div className="top-console-inner">
@@ -353,7 +387,7 @@ export default function App() {
               className={`mode-switch-btn ${viewMode === 'editorial' ? 'active' : ''}`}
               onClick={() => handleSwitchMode('editorial')}
             >
-              Ciberespaço &amp; Dossiê
+              Ciberespaço &amp; Relic
             </button>
             <button
               type="button"
@@ -369,7 +403,7 @@ export default function App() {
           <div className="console-right-controls">
             <button
               type="button"
-              className="nav-ghost-btn"
+              className="cmd-link"
               onClick={() => {
                 playKeyclick(soundOn, 750);
                 setCmdOpen(true);
@@ -381,7 +415,7 @@ export default function App() {
 
             <button
               type="button"
-              className="nav-ghost-btn"
+              className="cmd-link"
               onClick={() => {
                 playKeyclick(soundOn, 690);
                 setPhosphorMode((p) => (p === 'amber' ? 'green' : 'amber'));
@@ -393,7 +427,7 @@ export default function App() {
 
             <button
               type="button"
-              className="nav-ghost-btn"
+              className="cmd-link"
               aria-pressed={soundOn}
               onClick={() => setSoundOn((s) => !s)}
               title="Ativar ou silenciar sintetizador CS-80"
@@ -403,7 +437,7 @@ export default function App() {
 
             <button
               type="button"
-              className="seals-orb-pill t-nums"
+              className="seals-status-link t-nums"
               onClick={() => {
                 playKeyclick(soundOn, 810);
                 setSealsModalOpen(true);
@@ -418,47 +452,24 @@ export default function App() {
       </header>
 
       {/* ====================================================================
-          MAIN STAGE: CYBERSPACE SPATIAL DECK VS HOSAKA OS WORKSTATION
+          MAIN STAGE: CYBERSPACE SPATIAL DECK VS HOSAKA WORKSTATION OS
           ==================================================================== */}
       <main id="main-deck">
         {viewMode === 'os' ? (
-          <>
-            <aside className="rachel-horizon-bar" aria-label="Unidade Assistente Rachel-7">
-              <div className="rachel-horizon-inner">
-                <div className="rachel-stream-left">
-                  <button
-                    type="button"
-                    className="owl-orb-btn"
-                    onClick={handlePokeOwl}
-                    aria-label="Consultar assistente mecânico Rachel-7"
-                  >
-                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--phosphor-primary)" strokeWidth="1.6">
-                      <circle cx="8.5" cy="10.5" r="2.8" />
-                      <circle cx="15.5" cy="10.5" r="2.8" />
-                      <circle cx="8.5" cy="10.5" r="0.9" fill="var(--phosphor-primary)" />
-                      <circle cx="15.5" cy="10.5" r="0.9" fill="var(--phosphor-primary)" />
-                      <path d="M12 13.5L10.6 15.8H13.4L12 13.5Z" />
-                      <path d="M4.5 7.5L7.5 5M19.5 7.5L16.5 5" />
-                    </svg>
-                  </button>
-                  <p className="rachel-speech-line">
-                    <span className="rachel-tag">RACHEL-7 // </span>
-                    {owlSpeech}
-                  </p>
-                </div>
-                <button type="button" className="ghost-pill-btn" onClick={handlePokeOwl}>
-                  Próxima transmissão ↻
-                </button>
-              </div>
-            </aside>
-            <HosakaDesktopOS
-              soundOn={soundOn}
-              unlockSeal={unlockSeal}
-              notify={notify}
-              unlockedSeals={unlockedSeals}
-              chassisStage={computedChassis}
-            />
-          </>
+          <HosakaDesktopOS
+            soundOn={soundOn}
+            unlockSeal={unlockSeal}
+            notify={notify}
+            unlockedSeals={unlockedSeals}
+            chassisStage={computedChassis}
+            onRelicPing={setRelicPing}
+            onReturnToSpace={() => {
+              setViewMode('editorial');
+              setTimeout(() => {
+                document.getElementById('sec-relic-chat')?.scrollIntoView({ behavior: 'auto' });
+              }, 40);
+            }}
+          />
         ) : (
           <div className="cyberspace-flow">
             {/* ================================================================
@@ -467,41 +478,11 @@ export default function App() {
             <section className="hero-cyberspace" aria-labelledby="hero-heading">
               <CyberspaceTerrain chassis={computedChassis} phosphor={phosphorMode} />
 
-              <aside className="rachel-horizon-bar hero-top-ticker" aria-label="Unidade Assistente Rachel-7">
-                <div className="rachel-horizon-inner">
-                  <div className="rachel-stream-left">
-                    <button
-                      type="button"
-                      className="owl-orb-btn"
-                      onClick={handlePokeOwl}
-                      title="Consultar Rachel-7 para receber transmissões e dicas"
-                      aria-label="Consultar assistente mecânico Rachel-7"
-                    >
-                      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--phosphor-primary)" strokeWidth="1.6">
-                        <circle cx="8.5" cy="10.5" r="2.8" />
-                        <circle cx="15.5" cy="10.5" r="2.8" />
-                        <circle cx="8.5" cy="10.5" r="0.9" fill="var(--phosphor-primary)" />
-                        <circle cx="15.5" cy="10.5" r="0.9" fill="var(--phosphor-primary)" />
-                        <path d="M12 13.5L10.6 15.8H13.4L12 13.5Z" />
-                        <path d="M4.5 7.5L7.5 5M19.5 7.5L16.5 5" />
-                      </svg>
-                    </button>
-                    <p className="rachel-speech-line">
-                      <span className="rachel-tag">RACHEL-7 // </span>
-                      {owlSpeech}
-                    </p>
-                  </div>
-                  <button type="button" className="ghost-pill-btn" onClick={handlePokeOwl}>
-                    Nova transmissão ↻
-                  </button>
-                </div>
-              </aside>
-
               <div className="wrap hero-grid">
                 <div className="hero-copy-col">
                   <div className="hero-eyebrow">
                     <span className="pulse-dot" aria-hidden="true" />
-                    <span>NODE BACKEND · SÉRIE 1984 / 2077 · GOIÂNIA</span>
+                    <span>NODE BACKEND · SÉRIE 1984 / 2077 · GOIÂNIA · RELIC ONLINE</span>
                   </div>
 
                   <h1 id="hero-heading" className="hero-title">
@@ -532,18 +513,25 @@ export default function App() {
 
                   <div className="hero-cta-row">
                     <a
+                      href="#sec-relic-chat"
+                      className="deck-cta"
+                      onClick={() => playKeyclick(soundOn, 780)}
+                    >
+                      Conversar com Johnny [Relic] ↓
+                    </a>
+                    <a
                       href="#sec-rom-bay"
-                      className="pill-btn primary"
-                      onClick={() => playKeyclick(soundOn, 760)}
+                      className="deck-cta secondary"
+                      onClick={() => playKeyclick(soundOn, 720)}
                     >
                       Explorar Fitas ROM [6] ↓
                     </a>
                     <button
                       type="button"
-                      className="pill-btn secondary"
+                      className="hero-text-link"
                       onClick={() => handleSwitchMode('os')}
                     >
-                      Abrir Hosaka OS ▣
+                      Hosaka OS ▣
                     </button>
                     <a
                       href={PROFILE_DATA.cvPdf}
@@ -551,7 +539,7 @@ export default function App() {
                       className="hero-text-link"
                       onClick={() => unlockSeal('seal_dossier')}
                     >
-                      Baixar Currículo PDF ↗
+                      Currículo PDF ↗
                     </a>
                   </div>
                 </div>
@@ -591,7 +579,6 @@ export default function App() {
                         transform="rotate(-90 160 160)"
                         className="iris-progress-arc"
                       />
-                      {/* Crosshair Tick Marks Outside Lens */}
                       <line x1="160" y1="2" x2="160" y2="20" stroke="var(--phosphor-primary)" strokeWidth="1.2" strokeOpacity="0.65" />
                       <line x1="160" y1="300" x2="160" y2="318" stroke="var(--phosphor-primary)" strokeWidth="1.2" strokeOpacity="0.65" />
                       <line x1="2" y1="160" x2="20" y2="160" stroke="var(--phosphor-primary)" strokeWidth="1.2" strokeOpacity="0.65" />
@@ -623,13 +610,13 @@ export default function App() {
                     </div>
 
                     {!isCalibrated ? (
-                      <button type="button" className="pill-btn primary" onClick={handleVkPulse}>
+                      <button type="button" className="deck-cta" onClick={handleVkPulse}>
                         Pulsar Calibração ({vkPulses}/3) ⚡
                       </button>
                     ) : (
                       <button
                         type="button"
-                        className="ghost-pill-btn"
+                        className="cmd-link accent"
                         onClick={() => {
                           playKeyclick(soundOn, 520);
                           setVkPulses(0);
@@ -642,6 +629,16 @@ export default function App() {
                 </div>
               </div>
             </section>
+
+            {/* ================================================================
+                INTERACTIVE BIOCHIP DIALOGUE & LORE CODEX (JOHNNY / DIXIE / RACHEL)
+                ================================================================ */}
+            <RelicConstructDialog
+              soundOn={soundOn}
+              unlockSeal={unlockSeal}
+              onTriggerEffect={handleRelicEffect}
+              externalEvent={relicPing}
+            />
 
             {/* ================================================================
                 SECTION 01: FLUXO DE FITAS ROM (BORDERLESS EDITORIAL SPLIT)
@@ -667,7 +664,7 @@ export default function App() {
                     <button
                       key={tab.id}
                       type="button"
-                      className={`filter-pill ${romCategory === tab.id ? 'active' : ''}`}
+                      className={`filter-tab ${romCategory === tab.id ? 'active' : ''}`}
                       onClick={() => handleFilterRomCategory(tab.id)}
                     >
                       {tab.label}
@@ -714,7 +711,7 @@ export default function App() {
                       href={activeRom.repoUrl}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="pill-btn primary"
+                      className="deck-cta"
                     >
                       {activeRom.linkLabel} ↗
                     </a>
@@ -739,21 +736,21 @@ export default function App() {
                     </div>
                   </div>
 
-                  {/* Soft Translucent Code Deck (No Heavy Borders) */}
+                  {/* Borderless Left-Accented Code Deck */}
                   <div className="cyberspace-code-deck">
                     <div className="code-deck-bar">
                       <span>SNIPPET SOURCE // {activeRom.id}</span>
-                      <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
+                      <div className="code-deck-actions">
                         <button
                           type="button"
-                          className="ghost-pill-btn"
+                          className="cmd-link"
                           onClick={() => handleCopyText(activeRom.codeSnippet, 'Snippet de código')}
                         >
                           Copiar código
                         </button>
                         <button
                           type="button"
-                          className="ghost-pill-btn accent-tint"
+                          className="cmd-link accent"
                           onClick={handleRunRomTerminal}
                         >
                           ▶ Rodar diagnóstico
@@ -800,7 +797,7 @@ export default function App() {
             </section>
 
             {/* ================================================================
-                SECTION 02: ONDA NEURAL DE TELEMETRIA (REPLACES 26 SQUARE PINS)
+                SECTION 02: ONDA NEURAL DE TELEMETRIA
                 ================================================================ */}
             <section id="sec-telemetry" className="space-section wrap" aria-labelledby="matrix-heading">
               <div className="section-head-open">
@@ -815,7 +812,7 @@ export default function App() {
                   href={PROFILE_DATA.github}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="ghost-pill-btn"
+                  className="cmd-link accent"
                 >
                   github.com/Miqueias-Henrique ↗
                 </a>
@@ -863,7 +860,7 @@ export default function App() {
                 </div>
                 <button
                   type="button"
-                  className="ghost-pill-btn"
+                  className="cmd-link"
                   onClick={() => {
                     playKeyclick(soundOn, 540);
                     setPlayerIntegrity(100);
@@ -910,39 +907,55 @@ export default function App() {
                     </div>
                   </div>
 
-                  <div className="ice-moves-pills">
+                  {/* Borderless Cyberpunk Combat Choice Lines */}
+                  <div className="ice-moves-list" role="group" aria-label="Rotinas de invasão contra o ICE Wintermute">
                     <button
                       type="button"
-                      className="pill-btn secondary"
+                      className="relic-choice-line"
+                      style={{ '--choice-accent': 'var(--phosphor-primary)' }}
                       onClick={() => handleIceMove('kuang_sql')}
                     >
-                      ⚡ T-SQL Index Seek (-34% ICE)
+                      <span className="choice-arrow" aria-hidden="true">▸</span>
+                      <span className="choice-tag">[T-SQL SEEK]</span>
+                      <span className="choice-text">Disparar Stored Procedure indexada (−34% ICE)</span>
                     </button>
+
                     <button
                       type="button"
-                      className="pill-btn secondary"
+                      className="relic-choice-line"
+                      style={{ '--choice-accent': 'var(--phosphor-secondary)' }}
                       onClick={() => handleIceMove('avl_burst')}
                     >
-                      ◆ Rotação AVL O(log n) (-42% ICE)
+                      <span className="choice-arrow" aria-hidden="true">▸</span>
+                      <span className="choice-tag">[AVL O(log n)]</span>
+                      <span className="choice-text">Rotação de árvore balanceada na matriz (−42% ICE)</span>
                     </button>
+
                     <button
                       type="button"
-                      className="pill-btn secondary"
+                      className="relic-choice-line"
+                      style={{ '--choice-accent': 'var(--phosphor-alert)' }}
                       onClick={() => handleIceMove('sandevistan_net')}
                     >
-                      ▶ Pipeline C#/.NET Async (-38% ICE)
+                      <span className="choice-arrow" aria-hidden="true">▸</span>
+                      <span className="choice-tag">[C# .NET ASYNC]</span>
+                      <span className="choice-text">Sobrecarregar canal assíncrono Sandevistan (−38% ICE)</span>
                     </button>
+
                     <button
                       type="button"
-                      className="pill-btn secondary"
+                      className="relic-choice-line"
+                      style={{ '--choice-accent': 'var(--phosphor-green)' }}
                       onClick={() => handleIceMove('acid_shield')}
                     >
-                      ✚ Rollback ACID (+22% Deck)
+                      <span className="choice-arrow" aria-hidden="true">▸</span>
+                      <span className="choice-tag">[ROLLBACK ACID]</span>
+                      <span className="choice-text">Reverter dano no deck (+22% Deck · −15% ICE)</span>
                     </button>
                   </div>
                 </div>
 
-                {/* Right Column: Circular Metallic Alloy Orbs (No Rectangles) */}
+                {/* Right Column: Circular Metallic Alloy Orbs */}
                 <div className="alloy-evolution-col">
                   <div>
                     <span className="section-kicker">EVOLUÇÃO DA ESTAÇÃO</span>
@@ -960,6 +973,7 @@ export default function App() {
                       onClick={() => {
                         playKeyclick(soundOn, 640);
                         setChassisOverride('obsidian');
+                        setRelicPing('Rachel-7: Estação calibrada no breu Obsidiana 84.');
                       }}
                     >
                       <span className="alloy-sphere obsidian" aria-hidden="true" />
@@ -972,6 +986,7 @@ export default function App() {
                       onClick={() => {
                         playKeyclick(soundOn, 740);
                         setChassisOverride('titanium');
+                        setRelicPing('Rachel-7: Liga alterada para Titânio Escovado Tyrell.');
                       }}
                     >
                       <span className="alloy-sphere titanium" aria-hidden="true" />
@@ -984,6 +999,7 @@ export default function App() {
                       onClick={() => {
                         playKeyclick(soundOn, 880);
                         setChassisOverride('gold-24k');
+                        setRelicPing('Johnny-84: Ouro 24K Straylight no barramento. Brilho de lenda do Afterlife.');
                       }}
                     >
                       <span className="alloy-sphere gold-24k" aria-hidden="true" />
@@ -993,7 +1009,7 @@ export default function App() {
 
                   <button
                     type="button"
-                    className="pill-btn primary"
+                    className="deck-cta"
                     style={{ width: 'fit-content' }}
                     onClick={() => setSealsModalOpen(true)}
                   >
@@ -1112,19 +1128,19 @@ export default function App() {
               </button>
             </header>
             <div className="modal-body">
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '10px' }}>
-                <span style={{ fontFamily: 'var(--font-mono)', fontSize: '12px', color: 'var(--ink-sub)' }}>
+              <div className="modal-actions-top">
+                <span className="modal-hint-text">
                   Desbloqueie explorando a estação ou teste o espectro máximo em Ouro 24K:
                 </span>
-                <div style={{ display: 'flex', gap: '8px' }}>
+                <div className="modal-btn-row">
                   <button
                     type="button"
-                    className="pill-btn primary"
+                    className="deck-cta"
                     onClick={() => {
                       const allIds = EMPATHY_SEALS.map((s) => s.id);
                       setUnlockedSeals(allIds);
                       setChassisOverride(null);
-                      setOwlSpeech(OWL_QUOTES.gold_upgrade);
+                      setRelicPing('Johnny-84: Todos os 12 Selos liberados! Ouro 24K ativado.');
                       notify('Todos os 12 Selos Voight-Kampff liberados! Chassi Ouro 24K ativo.');
                     }}
                   >
@@ -1132,7 +1148,7 @@ export default function App() {
                   </button>
                   <button
                     type="button"
-                    className="ghost-pill-btn"
+                    className="cmd-link"
                     onClick={() => {
                       setUnlockedSeals(['seal_boot']);
                       setChassisOverride(null);
@@ -1197,7 +1213,7 @@ export default function App() {
                 className="cmd-input"
                 value={cmdQuery}
                 onChange={(e) => setCmdQuery(e.target.value)}
-                placeholder="Buscar fita ROM, modo Hosaka OS, lente Voight-Kampff..."
+                placeholder="Buscar fita ROM, Johnny-84, Hosaka OS, Voight-Kampff..."
                 aria-label="Filtrar comandos da estação"
                 autoFocus
               />

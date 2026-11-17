@@ -267,7 +267,7 @@ export default function NeuralWaveMatrix({ pins, selectedPin, onHoverPin, onSele
         <div className="neural-step-controls">
           <button
             type="button"
-            className="ghost-pill-btn"
+            className="cmd-link"
             onClick={() => onStepPin(-1)}
             aria-label="Marco anterior na trajetória"
           >
@@ -275,7 +275,7 @@ export default function NeuralWaveMatrix({ pins, selectedPin, onHoverPin, onSele
           </button>
           <button
             type="button"
-            className="ghost-pill-btn"
+            className="cmd-link"
             onClick={() => onStepPin(1)}
             aria-label="Próximo marco na trajetória"
           >
