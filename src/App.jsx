@@ -102,7 +102,7 @@ export default function App() {
       ? 'gold-24k'
       : unlockedSeals.length >= 6
       ? 'titanium'
-      : 'polycarbonate');
+      : 'obsidian');
 
   // Sync data-chassis and data-phosphor attributes on <html>
   useEffect(() => {
@@ -320,7 +320,14 @@ export default function App() {
           <div className="brand-plate">
             <span className="brand-led" aria-hidden="true" />
             <span className="brand-model-code">ONO-SENDAI VII // TYRELL-84</span>
-            <span className="brand-sub-tag">CHASSI: {computedChassis.toUpperCase()}</span>
+            <span className="brand-sub-tag">
+              CHASSI:{' '}
+              {computedChassis === 'obsidian'
+                ? 'OBSIDIANA 84'
+                : computedChassis === 'titanium'
+                ? 'TITÂNIO TYRELL'
+                : 'OURO 24K'}
+            </span>
           </div>
 
           {/* Mode Switcher: Editorial Deck (Felipe style) vs Hosaka OS (Madu style) */}
@@ -921,10 +928,10 @@ export default function App() {
                   <div>
                     <span className="eyebrow-badge">EVOLUÇÃO FÍSICA DA ESTAÇÃO</span>
                     <h3 style={{ fontFamily: 'var(--font-display)', fontSize: '20px', fontWeight: 800, marginTop: '10px' }}>
-                      Policarbonato → Titânio → Ouro 24K
+                      Obsidiana 84 → Titânio → Ouro 24K
                     </h3>
                     <p style={{ fontSize: '14px', color: 'var(--ink-secondary)', marginTop: '6px' }}>
-                      Assim como um artefato vivo, cada interação na bancada grava um <strong>Selo Voight-Kampff</strong> no seu navegador. Ao atingir 6 selos, o chassi evolui para <strong>Titânio Escovado Tyrell</strong>; com 12 selos (ou usando o seletor rápido abaixo), funde-se em <strong>Ouro 24K Villa Straylight</strong>.
+                      Assim como um artefato vivo em chassi escuro Tyrell, cada interação grava um <strong>Selo Voight-Kampff</strong> no navegador. Ao atingir 6 selos, o aço escurecido evolui para <strong>Titânio Escovado Tyrell</strong>; com 12 selos (ou usando o seletor abaixo), funde-se em <strong>Ouro 24K Villa Straylight</strong>.
                     </p>
                   </div>
 
@@ -935,13 +942,13 @@ export default function App() {
                     <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
                       <button
                         type="button"
-                        className={`keycap-btn ${computedChassis === 'polycarbonate' ? 'primary' : ''}`}
+                        className={`keycap-btn ${computedChassis === 'obsidian' ? 'primary' : ''}`}
                         onClick={() => {
                           playKeyclick(soundOn, 640);
-                          setChassisOverride('polycarbonate');
+                          setChassisOverride('obsidian');
                         }}
                       >
-                        1. Policarbonato 84
+                        1. Obsidiana 84
                       </button>
                       <button
                         type="button"

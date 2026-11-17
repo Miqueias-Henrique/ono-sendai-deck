@@ -34,7 +34,7 @@ Estação retrofuturista interativa e dossiê de engenharia de **Miqueias Carval
 
 4. **Incursão Kuang Grade Mark XI (Mini-Game ICEbreaker) & Evolução de Chassi (`12 Selos VK`):**
    - Duelo tático em turnos contra a fortaleza *Wintermute* usando golpes reais de engenharia (*T-SQL Index Seek*, *Rotação Árvore AVL O(log n)*, *Pipeline C#/.NET Async* e *Rollback ACID*).
-   - **Evolução Física do Site:** Conforme você desbloqueia os **12 Selos Voight-Kampff**, o material da estação evolui de **Policarbonato 1984** (`0–5 selos`) → **Titânio Escovado Tyrell** (`6–11 selos`) → **Ouro 24K Villa Straylight** (`12/12 selos`).
+   - **Evolução Física do Site:** Conforme você desbloqueia os **12 Selos Voight-Kampff**, o material da estação evolui de **Obsidiana Tyrell 1984** (`0–5 selos`) → **Titânio Escovado Tyrell** (`6–11 selos`) → **Ouro 24K Villa Straylight** (`12/12 selos`).
 
 ---
 

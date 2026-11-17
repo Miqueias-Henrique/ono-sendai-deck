@@ -1,10 +1,10 @@
 /* ============================================================================
    ONO-SENDAI CYBERSPACE VII // TYRELL-84 RETRO-FUTURIST WORKSTATION
-   Design System & Tokens — Tactile Cassette Futurism (Blade Runner & Neuromancer)
+   Design System & Tokens — Nocturnal Cassette Futurism (Blade Runner & Neuromancer)
    Zero violet/lavender tokens. Dynamic Hardware Chassis Evolution:
-   - [data-chassis="polycarbonate"] (Default 0–5 seals: Warm Braun/Hosaka Ivory & Amber CRT)
-   - [data-chassis="titanium"]      (6–11 seals: Brushed Tyrell Steel & Ice Phosphor)
-   - [data-chassis="gold-24k"]      (12/12 seals: Villa Straylight 24K Gold & Amber/Emerald)
+   - [data-chassis="obsidian"] (Default 0–5 seals: Anodized Gunmetal & Amber P3 CRT)
+   - [data-chassis="titanium"] (6–11 seals: Brushed Tyrell Steel & Ice Teal CRT)
+   - [data-chassis="gold-24k"] (12/12 seals: Villa Straylight 24K Gold Brass & Obsidian)
    ============================================================================ */
 
 :root {
@@ -13,23 +13,23 @@
   --font-sans: 'Space Grotesk', system-ui, -apple-system, sans-serif;
   --font-mono: 'IBM Plex Mono', 'JetBrains Mono', ui-monospace, monospace;
 
-  /* Hardware Chassis Stage 1: Hosaka Polycarbonate (1984 Ivory / Bakelite / Amber Phosphor) */
-  --chassis-bg: #E6DFD1;
-  --chassis-bg-deep: #D8CFC0;
-  --chassis-panel: #EFEAE0;
-  --chassis-panel-raised: #F7F4EC;
-  --chassis-well: #CFC5B4;
-  --chassis-bevel-light: #FFFDF8;
-  --chassis-bevel-dark: #A69B88;
-  --chassis-border: #3D352B;
-  --chassis-screw: #786D5C;
+  /* Hardware Chassis Stage 1: Tyrell Obsidian Gunmetal (Nocturnal 1984 Bakelite & Steel) */
+  --chassis-bg: #0B0C0E;
+  --chassis-bg-deep: #070809;
+  --chassis-panel: #14161A;
+  --chassis-panel-raised: #1D2026;
+  --chassis-well: #0E1013;
+  --chassis-bevel-light: rgba(255, 210, 130, 0.14);
+  --chassis-bevel-dark: #050507;
+  --chassis-border: #323741;
+  --chassis-screw: #4E5461;
 
-  /* CRT Phosphor Monitor Surfaces (Always high-contrast dark inside screens/windows) */
-  --crt-bg: #0D0A07;
-  --crt-surface: #15100B;
-  --crt-card: #1E1710;
-  --crt-card-hover: #281F15;
-  --crt-border: rgba(255, 176, 0, 0.36);
+  /* CRT Phosphor Monitor Surfaces (Deep vacuum tube contrast) */
+  --crt-bg: #080705;
+  --crt-surface: #100D08;
+  --crt-card: #18130C;
+  --crt-card-hover: #221A10;
+  --crt-border: rgba(255, 176, 0, 0.34);
   --crt-border-strong: rgba(255, 176, 0, 0.72);
   --crt-hairline: rgba(255, 240, 200, 0.10);
 
@@ -41,82 +41,82 @@
   --phosphor-alert: #FF4D1A;        /* Tyrell Vermilion / Voight-Kampff Warning */
   --phosphor-green: #38F27F;        /* P1 Green Terminal */
 
-  /* Typography on Chassis (Light Editorial Surface) */
-  --ink-primary: #1B1712;
-  --ink-secondary: #4A4135;
-  --ink-muted: #756958;
-  --ink-accent: #B8420A;
+  /* Typography on Anodized Dark Chassis */
+  --ink-primary: #F3EDE0;
+  --ink-secondary: #C5BCA8;
+  --ink-muted: #867E6E;
+  --ink-accent: #FFB000;
 
-  /* Typography on CRT (Dark Monitor Surface) */
+  /* Typography on CRT Monitor Surface */
   --crt-text: #FDF6E2;
-  --crt-text-sub: #D9C9A3;
-  --crt-text-muted: #968769;
+  --crt-text-sub: #DDD0B0;
+  --crt-text-muted: #9A8C6E;
 
-  /* Elevation & Mechanical Keycap Shadows */
-  --shadow-chassis: 0 2px 0 var(--chassis-bevel-light) inset, 0 -2px 0 var(--chassis-bevel-dark) inset, 0 6px 18px rgba(27, 23, 18, 0.12);
-  --shadow-keycap: 0 2px 0 #FFFDF8 inset, 0 -3px 0 #9E927E inset, 0 3px 0 #2B241C, 0 5px 10px rgba(0, 0, 0, 0.18);
-  --shadow-keycap-active: 0 1px 0 #9E927E inset, 0 1px 0 #2B241C, 0 2px 4px rgba(0, 0, 0, 0.15);
-  --shadow-window: 0 22px 55px rgba(10, 7, 4, 0.55), 0 0 0 2px var(--chassis-border);
+  /* Elevation & Mechanical Keycap Shadows (Dark Tactile Switches) */
+  --shadow-chassis: 0 1px 0 var(--chassis-bevel-light) inset, 0 -2px 0 rgba(0, 0, 0, 0.55) inset, 0 12px 32px rgba(0, 0, 0, 0.45);
+  --shadow-keycap: 0 1px 0 rgba(255, 255, 255, 0.12) inset, 0 -2px 0 rgba(0, 0, 0, 0.45) inset, 0 3px 0 #050607, 0 6px 12px rgba(0, 0, 0, 0.35);
+  --shadow-keycap-active: 0 1px 0 rgba(0, 0, 0, 0.45) inset, 0 1px 0 #050607, 0 2px 4px rgba(0, 0, 0, 0.30);
+  --shadow-window: 0 26px 64px rgba(0, 0, 0, 0.72), 0 0 0 1.5px var(--chassis-border);
 
   --radius-xs: 3px;
   --radius-sm: 5px;
   --radius-md: 8px;
 }
 
-/* Stage 2: Tyrell Brushed Titanium (6+ Seals) */
+/* Stage 2: Tyrell Brushed Dark Titanium (6+ Seals) */
 html[data-chassis="titanium"] {
-  --chassis-bg: #D5DCE2;
-  --chassis-bg-deep: #C1CBD4;
-  --chassis-panel: #E3E8ED;
-  --chassis-panel-raised: #F1F5F8;
-  --chassis-well: #B3BFC9;
-  --chassis-bevel-light: #FFFFFF;
-  --chassis-bevel-dark: #8694A1;
-  --chassis-border: #252E38;
-  --chassis-screw: #576573;
+  --chassis-bg: #080D12;
+  --chassis-bg-deep: #05080B;
+  --chassis-panel: #101821;
+  --chassis-panel-raised: #172330;
+  --chassis-well: #0B1117;
+  --chassis-bevel-light: rgba(0, 229, 184, 0.16);
+  --chassis-bevel-dark: #040608;
+  --chassis-border: #2C3E50;
+  --chassis-screw: #4F6880;
 
-  --crt-bg: #070C10;
-  --crt-surface: #0D151C;
-  --crt-card: #13202B;
-  --crt-card-hover: #1A2C3B;
+  --crt-bg: #050A0E;
+  --crt-surface: #0A131A;
+  --crt-card: #101D28;
+  --crt-card-hover: #162837;
   --crt-border: rgba(0, 229, 184, 0.38);
   --crt-border-strong: rgba(0, 229, 184, 0.78);
 
   --phosphor-primary: #00E5B8;
   --phosphor-primary-dim: rgba(0, 229, 184, 0.16);
   --phosphor-secondary: #FFB000;
-  --ink-primary: #12181F;
-  --ink-secondary: #344250;
-  --ink-muted: #5C6D7E;
-  --ink-accent: #0A7B68;
+  --ink-primary: #EBF5FA;
+  --ink-secondary: #AFC4D4;
+  --ink-muted: #70879A;
+  --ink-accent: #00E5B8;
 }
 
-/* Stage 3: Straylight 24K Gold Orbital Core (12/12 Seals) */
+/* Stage 3: Straylight 24K Gold & Dark Brass Core (12/12 Seals) */
 html[data-chassis="gold-24k"] {
-  --chassis-bg: #E8D5A5;
-  --chassis-bg-deep: #D4B97B;
-  --chassis-panel: #F3E4BC;
-  --chassis-panel-raised: #FCF3D9;
-  --chassis-well: #C4A664;
-  --chassis-bevel-light: #FFFDF2;
-  --chassis-bevel-dark: #9B7B38;
-  --chassis-border: #3B2907;
-  --chassis-screw: #806122;
+  --chassis-bg: #0C0904;
+  --chassis-bg-deep: #070502;
+  --chassis-panel: #171208;
+  --chassis-panel-raised: #221A0C;
+  --chassis-well: #100C05;
+  --chassis-bevel-light: rgba(255, 200, 55, 0.22);
+  --chassis-bevel-dark: #050301;
+  --chassis-border: #594317;
+  --chassis-screw: #8C6A23;
 
-  --crt-bg: #0A0803;
-  --crt-surface: #141006;
-  --crt-card: #1F1809;
-  --crt-card-hover: #2B220D;
+  --crt-bg: #080602;
+  --crt-surface: #120E05;
+  --crt-card: #1C1507;
+  --crt-card-hover: #261D0A;
   --crt-border: rgba(255, 200, 55, 0.45);
   --crt-border-strong: rgba(255, 200, 55, 0.88);
 
   --phosphor-primary: #FFC837;
   --phosphor-primary-dim: rgba(255, 200, 55, 0.18);
   --phosphor-secondary: #38F27F;
-  --ink-primary: #1F1504;
-  --ink-secondary: #4D360E;
-  --ink-muted: #7A5B21;
-  --ink-accent: #9E3B08;
+  --ink-primary: #FDF3D7;
+  --ink-secondary: #D9BF87;
+  --ink-muted: #98804C;
+  --ink-accent: #FFC837;
 }
 
 /* Phosphor Switcher Override (Amber P3 vs Green P1) */
@@ -142,6 +142,7 @@ html {
   font-family: var(--font-sans);
   font-size: 16px;
   line-height: 1.5;
+  color-scheme: dark;
   -webkit-font-smoothing: antialiased;
 }
 
@@ -149,9 +150,10 @@ body {
   min-height: 100vh;
   background-color: var(--chassis-bg);
   background-image:
-    radial-gradient(rgba(27, 23, 18, 0.06) 1px, transparent 0),
-    linear-gradient(180deg, rgba(255, 255, 255, 0.28) 0%, rgba(0, 0, 0, 0.04) 100%);
-  background-size: 20px 20px, 100% 100%;
+    radial-gradient(ellipse 75% 45% at 82% -5%, rgba(255, 176, 0, 0.09), transparent 60%),
+    radial-gradient(ellipse 65% 45% at 15% 100%, rgba(0, 229, 184, 0.06), transparent 60%),
+    radial-gradient(rgba(255, 220, 150, 0.06) 1px, transparent 0);
+  background-size: 100% 100%, 100% 100%, 22px 22px;
   color: var(--ink-primary);
   overflow-x: hidden;
   transition: background-color 0.35s ease, color 0.25s ease;
@@ -290,7 +292,9 @@ button {
 }
 
 .keycap-btn:hover {
-  background: #FFFFFF;
+  background: #272B33;
+  border-color: var(--phosphor-primary);
+  color: var(--phosphor-primary);
 }
 
 .keycap-btn:active,
@@ -303,11 +307,13 @@ button {
   background: var(--phosphor-primary);
   color: #120D04;
   border-color: #120D04;
-  box-shadow: 0 2px 0 rgba(255,255,255,0.45) inset, 0 -3px 0 rgba(0,0,0,0.28) inset, 0 3px 0 #120D04, 0 5px 10px rgba(0,0,0,0.22);
+  box-shadow: 0 2px 0 rgba(255,255,255,0.45) inset, 0 -3px 0 rgba(0,0,0,0.28) inset, 0 3px 0 #120D04, 0 5px 10px rgba(0,0,0,0.32);
 }
 
 .keycap-btn.primary:hover {
-  filter: brightness(1.06);
+  background: var(--phosphor-primary);
+  color: #120D04;
+  filter: brightness(1.09);
 }
 
 .keycap-btn.alert {
@@ -335,9 +341,10 @@ button {
   position: sticky;
   top: 0;
   z-index: 200;
-  background: var(--chassis-panel);
+  background: rgba(18, 20, 24, 0.94);
+  backdrop-filter: blur(8px);
   border-bottom: 2px solid var(--chassis-border);
-  box-shadow: 0 4px 14px rgba(27, 23, 18, 0.10);
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.45);
   padding: 8px max(20px, env(safe-area-inset-left));
 }
 
@@ -372,13 +379,13 @@ button {
   font-size: 14px;
   letter-spacing: 0.08em;
   text-transform: uppercase;
-  color: var(--ink-primary);
+  color: var(--phosphor-primary);
 }
 
 .brand-sub-tag {
   font-family: var(--font-mono);
   font-size: 11px;
-  color: var(--ink-muted);
+  color: var(--ink-secondary);
   padding: 2px 7px;
   background: var(--chassis-well);
   border: 1px solid var(--chassis-border);
@@ -411,10 +418,10 @@ button {
 }
 
 .mode-switch-btn.active {
-  background: var(--crt-bg);
-  color: var(--phosphor-primary);
-  border-color: var(--chassis-border);
-  box-shadow: 0 1px 4px rgba(0,0,0,0.25);
+  background: var(--phosphor-primary);
+  color: #110C04;
+  border-color: #110C04;
+  box-shadow: 0 1px 6px var(--phosphor-primary-dim);
 }
 
 .console-right-controls {
@@ -430,22 +437,27 @@ button {
   font-size: 11px;
   font-weight: 700;
   background: var(--chassis-panel-raised);
+  color: var(--ink-primary);
   border: 1.5px solid var(--chassis-border);
   border-radius: var(--radius-xs);
-  box-shadow: 0 2px 0 var(--chassis-border);
+  box-shadow: 0 2px 0 #050607;
   display: inline-flex;
   align-items: center;
   gap: 6px;
 }
+.mini-rocker-btn:hover {
+  border-color: var(--phosphor-primary);
+  color: var(--phosphor-primary);
+}
 .mini-rocker-btn:active {
   transform: translateY(1px);
-  box-shadow: 0 1px 0 var(--chassis-border);
+  box-shadow: 0 1px 0 #050607;
 }
 
 .seals-counter-pill {
   background: var(--crt-bg);
   color: var(--phosphor-primary);
-  border: 1.5px solid var(--chassis-border);
+  border: 1.5px solid var(--phosphor-primary);
   padding: 5px 11px;
   border-radius: var(--radius-xs);
   font-family: var(--font-mono);
@@ -454,7 +466,7 @@ button {
   display: inline-flex;
   align-items: center;
   gap: 7px;
-  box-shadow: inset 0 0 8px rgba(255, 176, 0, 0.25);
+  box-shadow: inset 0 0 8px var(--phosphor-primary-dim);
 }
 
 /* ============================================================================
@@ -562,9 +574,9 @@ button {
   font-weight: 700;
   letter-spacing: 0.08em;
   text-transform: uppercase;
-  color: var(--ink-accent);
+  color: var(--phosphor-secondary);
   background: var(--chassis-well);
-  border: 1px solid var(--chassis-border);
+  border: 1px solid var(--crt-border);
   padding: 4px 10px;
   border-radius: var(--radius-xs);
   width: fit-content;
@@ -581,8 +593,9 @@ button {
 }
 
 .hero-title span.highlight-tag {
-  background: var(--crt-bg);
+  background: var(--phosphor-primary-dim);
   color: var(--phosphor-primary);
+  border: 1px solid var(--crt-border-strong);
   padding: 0 10px;
   border-radius: var(--radius-xs);
   display: inline-block;
@@ -601,7 +614,7 @@ button {
   grid-template-columns: repeat(3, 1fr);
   gap: 10px;
   padding-top: 12px;
-  border-top: 1.5px dashed var(--chassis-bevel-dark);
+  border-top: 1.5px dashed var(--chassis-border);
 }
 
 .telemetry-cell {
@@ -704,7 +717,7 @@ button {
   position: absolute;
   inset: 0;
   pointer-events: none;
-  border: 1px dashed rgba(255, 176, 0, 0.55);
+  border: 1px dashed var(--crt-border-strong);
   display: flex;
   align-items: flex-end;
   justify-content: space-between;
@@ -741,7 +754,7 @@ button {
 .vk-pip {
   flex: 1;
   height: 10px;
-  background: rgba(255, 176, 0, 0.14);
+  background: var(--phosphor-primary-dim);
   border: 1px solid var(--crt-border);
   border-radius: 2px;
   transition: background-color 0.2s ease, box-shadow 0.2s ease;
@@ -843,14 +856,16 @@ button {
 
 .rom-cartridge-btn:hover {
   transform: translateX(3px);
-  background: #FFFFFF;
+  background: #252932;
+  border-color: var(--phosphor-primary);
 }
 
 .rom-cartridge-btn.active {
   background: var(--crt-bg);
   color: var(--crt-text);
+  border-color: var(--phosphor-primary);
   border-left-color: var(--phosphor-primary);
-  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.28);
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.45);
 }
 
 .rom-cart-top {
@@ -920,7 +935,7 @@ button {
 }
 
 .rom-impact-banner {
-  background: rgba(255, 176, 0, 0.10);
+  background: var(--phosphor-primary-dim);
   border-left: 4px solid var(--phosphor-primary);
   padding: 10px 14px;
   font-family: var(--font-mono);
@@ -1193,7 +1208,8 @@ button {
 
 .port-socket-card:hover {
   transform: translateY(-2px);
-  background: #FFFFFF;
+  background: #252932;
+  border-color: var(--phosphor-primary);
 }
 
 .port-pin-header {
@@ -1351,7 +1367,7 @@ button {
 }
 .os-win-ctrl-btn:hover {
   background: var(--phosphor-alert);
-  color: #FFF;
+  color: #0D0A07;
 }
 
 .os-window-body {
@@ -1461,7 +1477,7 @@ button {
   background: var(--chassis-panel-raised);
   border: 1.5px solid var(--chassis-border);
   border-radius: var(--radius-xs);
-  opacity: 0.55;
+  opacity: 0.78;
   display: flex;
   flex-direction: column;
   gap: 4px;
@@ -1544,8 +1560,10 @@ button {
   background: var(--chassis-panel-raised);
   border: 1px solid var(--chassis-border);
   border-radius: 2px;
+  font-family: var(--font-mono);
   font-size: 11px;
   font-weight: 700;
+  color: var(--ink-primary);
 }
 
 /* Responsive Breakpoints */
