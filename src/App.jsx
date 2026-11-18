@@ -1,19 +1,32 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, useRef, lazy, Suspense } from 'react';
 import {
   PROFILE_DATA,
   ROM_CARTRIDGES,
   TELEMETRY_PINS,
   EMPATHY_SEALS,
 } from './data/portfolioData';
-import HosakaDesktopOS from './components/HosakaDesktopOS';
 import CyberspaceTerrain from './components/CyberspaceTerrain';
 import NeuralWaveMatrix from './components/NeuralWaveMatrix';
-import WintermuteCoreSvg from './components/WintermuteCoreSvg';
 import RelicConstructDialog from './components/RelicConstructDialog';
-import { playKeyclick, playVoightKampffPulse } from './utils/soundEngine';
+import BreachProtocol from './components/BreachProtocol';
+import { playKeyclick, playVoightKampffPulse, playRelicGlitch } from './utils/soundEngine';
+import useModalFocus from './utils/useModalFocus';
+
+// Workstation OS is only fetched when the visitor switches mode (smaller first load)
+const HosakaDesktopOS = lazy(() => import('./components/HosakaDesktopOS'));
 
 const STORAGE_KEY_SEALS = 'ono_sendai_vk_seals_v1';
 const IRIS_CIRCUMFERENCE = 2 * Math.PI * 138;
+
+// Hidden keyboard sequences (typed anywhere outside inputs)
+const KONAMI = ['arrowup', 'arrowup', 'arrowdown', 'arrowdown', 'arrowleft', 'arrowright', 'arrowleft', 'arrowright', 'b', 'a'];
+const SECRET_WORDS = {
+  ff06b5: 'FF:06:B5 // Sinal magenta interceptado. Johnny-84: "Tem gente que caça esse código há anos. O Miqueias caça Table Scan."',
+  samurai: 'SAMURAI // "Never Fade Away" tocando no barramento. Johnny-84: "Wake up, choom — tem query pra otimizar."',
+  wakeup: 'WAKE UP, SAMURAI // Johnny-84: "We have a city to burn" — mas aqui a gente só queima latência.',
+  afterlife: 'AFTERLIFE // Rogue deixou um recado: "Esse backend aí tem cara de lenda. Contrata antes da Arasaka."',
+};
+
 
 export default function App() {
   const [viewMode, setViewMode] = useState('editorial');
@@ -48,15 +61,6 @@ export default function App() {
 
   // Section 02: Neural Wave Telemetry Pin
   const [selectedPin, setSelectedPin] = useState(TELEMETRY_PINS[TELEMETRY_PINS.length - 1]);
-
-  // Section 03: Neuromancer Kuang Grade Mark XI ICEbreaker
-  const [playerIntegrity, setPlayerIntegrity] = useState(100);
-  const [iceShield, setIceShield] = useState(100);
-  const [shieldBuff, setShieldBuff] = useState(false);
-  const [combatLog, setCombatLog] = useState([
-    'CONEXÃO MATRIZ ESTABELECIDA: Alvo -> Núcleo IA Wintermute (Tessier-Ashpool).',
-    'Dispare uma rotina Backend para romper o gelo neural (ICE).',
-  ]);
 
   // Modals & Notifications
   const [sealsModalOpen, setSealsModalOpen] = useState(false);
@@ -123,6 +127,79 @@ export default function App() {
     window.addEventListener('keydown', onKeyDown);
     return () => window.removeEventListener('keydown', onKeyDown);
   }, []);
+
+  // One-shot chromatic glitch across the deck (CSS handles reduced motion)
+  const triggerGlitch = useCallback(() => {
+    const root = document.documentElement;
+    root.classList.remove('is-glitching');
+    // Force reflow so the animation can replay
+    void root.offsetWidth;
+    root.classList.add('is-glitching');
+    setTimeout(() => root.classList.remove('is-glitching'), 700);
+  }, []);
+
+  // Easter eggs: Konami code + secret words typed anywhere outside form fields
+  const keyTrailRef = useRef([]);
+  useEffect(() => {
+    const onSecretKey = (e) => {
+      const tag = e.target?.tagName;
+      if (tag === 'INPUT' || tag === 'TEXTAREA' || e.ctrlKey || e.metaKey || e.altKey) return;
+      const key = (e.key || '').toLowerCase();
+      if (!key) return;
+      const trail = [...keyTrailRef.current, key].slice(-12);
+      keyTrailRef.current = trail;
+
+      if (KONAMI.every((k, i) => trail[trail.length - KONAMI.length + i] === k)) {
+        keyTrailRef.current = [];
+        triggerGlitch();
+        playRelicGlitch(soundOn);
+        setPhosphorMode((p) => (p === 'amber' ? 'green' : 'amber'));
+        setRelicPing('Dixie Flatline: Código Konami na matriz? Respeito, cowboy — espectro de fósforo invertido.');
+        notify('↑↑↓↓←→←→BA // Espectro de fósforo invertido.');
+        return;
+      }
+
+      const typed = trail.filter((k) => k.length === 1).join('');
+      const word = Object.keys(SECRET_WORDS).find((w) => typed.endsWith(w));
+      if (word) {
+        keyTrailRef.current = [];
+        triggerGlitch();
+        playRelicGlitch(soundOn);
+        setRelicPing(SECRET_WORDS[word]);
+        notify(SECRET_WORDS[word].split(' // ')[0] + ' // easter egg desbloqueado');
+      }
+    };
+    window.addEventListener('keydown', onSecretKey);
+    return () => window.removeEventListener('keydown', onSecretKey);
+  }, [soundOn, notify, triggerGlitch]);
+
+  // Fluid section reveal (IntersectionObserver, no layout shift)
+  useEffect(() => {
+    if (viewMode !== 'editorial') return undefined;
+    const els = Array.from(document.querySelectorAll('.reveal:not(.is-visible)'));
+    if (!('IntersectionObserver' in window)) {
+      els.forEach((el) => el.classList.add('is-visible'));
+      return undefined;
+    }
+    const io = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            entry.target.classList.add('is-visible');
+            io.unobserve(entry.target);
+          }
+        });
+      },
+      { rootMargin: '0px 0px -6% 0px', threshold: 0.04 }
+    );
+    els.forEach((el) => io.observe(el));
+    return () => io.disconnect();
+  }, [viewMode]);
+
+  const sealsDialogRef = useRef(null);
+  const cmdDialogRef = useRef(null);
+  useModalFocus(sealsModalOpen, sealsDialogRef);
+  useModalFocus(cmdOpen, cmdDialogRef);
 
   const handleVkPulse = () => {
     setVkPulses((prev) => {
@@ -195,64 +272,6 @@ export default function App() {
     handleSelectTelemetryPin(TELEMETRY_PINS[nextIdx]);
   };
 
-  const handleIceMove = (moveType) => {
-    playKeyclick(soundOn, 660);
-    if (iceShield <= 0 || playerIntegrity <= 0) {
-      setPlayerIntegrity(100);
-      setIceShield(100);
-      setShieldBuff(false);
-      setCombatLog(['MATRIZ REINICIADA: Nova incursão contra o gelo Wintermute.']);
-      return;
-    }
-
-    let dmgToIce = 0;
-    let healDeck = 0;
-    const newBuff = shieldBuff;
-    let playerActionLine = '';
-
-    if (moveType === 'kuang_sql') {
-      dmgToIce = 34;
-      playerActionLine = '▶ [T-SQL INDEX SEEK]: Stored Procedure otimizada aplicada (-34% ICE).';
-    } else if (moveType === 'avl_burst') {
-      dmgToIce = 42;
-      playerActionLine = '▶ [ROTAÇÃO ÁRVORE AVL O(log n)]: Rebalanceamento neural na matriz (-42% ICE).';
-    } else if (moveType === 'acid_shield') {
-      dmgToIce = 15;
-      healDeck = 22;
-      setShieldBuff(true);
-      playerActionLine = '▶ [TRANSAÇÃO ACID ROLLBACK]: Integridade restaurada (+22% Deck) e proteção ativa (-15% ICE).';
-    } else if (moveType === 'sandevistan_net') {
-      dmgToIce = 38;
-      playerActionLine = '▶ [PIPELINE C#/.NET ASYNC]: Fluxo concorrente de alta vazão (-38% ICE).';
-    }
-
-    const nextIce = Math.max(0, iceShield - dmgToIce);
-    setIceShield(nextIce);
-
-    if (nextIce === 0) {
-      unlockSeal('seal_icebreaker');
-      setRelicPing('Johnny-84: Fortaleza Wintermute no chão! Nada segura código limpo em produção.');
-      setCombatLog([
-        playerActionLine,
-        '★ VITÓRIA NO CIBERESPAÇO: O gelo da Tessier-Ashpool foi quebrado! Selo [VK-07] liberado.',
-      ]);
-      return;
-    }
-
-    const rawEnemyDmg = 13 + ((nextIce + playerIntegrity) % 11);
-    const finalEnemyDmg = newBuff ? Math.floor(rawEnemyDmg * 0.45) : rawEnemyDmg;
-    const nextPlayer = Math.min(100, Math.max(0, playerIntegrity + healDeck - finalEnemyDmg));
-    setPlayerIntegrity(nextPlayer);
-    if (moveType !== 'acid_shield') {
-      setShieldBuff(false);
-    }
-
-    setCombatLog([
-      playerActionLine,
-      `◀ [CONTRA-ATAQUE WINTERMUTE]: Pulso defensivo causou -${finalEnemyDmg}% no seu Cyberdeck.`,
-    ]);
-  };
-
   const handleRelicEffect = useCallback(
     (effect) => {
       if (!effect) return;
@@ -302,6 +321,26 @@ export default function App() {
         setViewMode('editorial');
         setTimeout(() => {
           document.getElementById('sec-relic-chat')?.scrollIntoView({ behavior: 'auto' });
+        }, 30);
+      },
+    },
+    {
+      label: 'Jogar Breach Protocol contra o ICE Wintermute',
+      sub: 'MINIGAME',
+      action: () => {
+        setViewMode('editorial');
+        setTimeout(() => {
+          document.getElementById('sec-icebreaker')?.scrollIntoView({ behavior: 'auto' });
+        }, 30);
+      },
+    },
+    {
+      label: 'Contato direto: e-mail, WhatsApp, LinkedIn e Currículo PDF',
+      sub: 'RECRUTAMENTO',
+      action: () => {
+        setViewMode('editorial');
+        setTimeout(() => {
+          document.getElementById('sec-contact')?.scrollIntoView({ behavior: 'auto' });
         }, 30);
       },
     },
@@ -379,26 +418,26 @@ export default function App() {
             </span>
           </div>
 
-          <div className="mode-switch-group" role="tablist" aria-label="Modo de Operação">
+          <nav className="mode-switch-group" aria-label="Modo de operação">
             <button
               type="button"
-              role="tab"
-              aria-selected={viewMode === 'editorial'}
+              aria-pressed={viewMode === 'editorial'}
               className={`mode-switch-btn ${viewMode === 'editorial' ? 'active' : ''}`}
               onClick={() => handleSwitchMode('editorial')}
             >
-              Ciberespaço &amp; Relic
+              <span className="label-full">Ciberespaço &amp; Relic</span>
+              <span className="label-short" aria-hidden="true">Ciberespaço</span>
             </button>
             <button
               type="button"
-              role="tab"
-              aria-selected={viewMode === 'os'}
+              aria-pressed={viewMode === 'os'}
               className={`mode-switch-btn ${viewMode === 'os' ? 'active' : ''}`}
               onClick={() => handleSwitchMode('os')}
             >
-              Hosaka OS [6 Apps]
+              <span className="label-full">Hosaka OS [6 Apps]</span>
+              <span className="label-short" aria-hidden="true">Hosaka OS</span>
             </button>
-          </div>
+          </nav>
 
           <div className="console-right-controls">
             <button
@@ -409,8 +448,10 @@ export default function App() {
                 setCmdOpen(true);
               }}
               title="Abrir paleta de comandos (Ctrl+K)"
+              aria-label="Abrir paleta de comandos (Ctrl+K)"
             >
-              Ctrl+K
+              <span className="label-full">Ctrl+K</span>
+              <span className="label-short">⌘ Menu</span>
             </button>
 
             <button
@@ -421,18 +462,22 @@ export default function App() {
                 setPhosphorMode((p) => (p === 'amber' ? 'green' : 'amber'));
               }}
               title="Alternar espectro entre Âmbar P3 e Verde P1"
+              aria-label={`Espectro de fósforo: ${phosphorMode === 'amber' ? 'Âmbar P3' : 'Verde P1'}`}
             >
-              {phosphorMode === 'amber' ? 'Âmbar P3' : 'Verde P1'}
+              <span className="label-full">{phosphorMode === 'amber' ? 'Âmbar P3' : 'Verde P1'}</span>
+              <span className="label-short">{phosphorMode === 'amber' ? 'P3' : 'P1'}</span>
             </button>
 
             <button
               type="button"
               className="cmd-link"
               aria-pressed={soundOn}
+              aria-label="Som do sintetizador CS-80"
               onClick={() => setSoundOn((s) => !s)}
               title="Ativar ou silenciar sintetizador CS-80"
             >
-              {soundOn ? 'Som On' : 'Mudo'}
+              <span className="label-full">{soundOn ? 'Som On' : 'Mudo'}</span>
+              <span className="label-short">{soundOn ? '♪ On' : '♪ Off'}</span>
             </button>
 
             <button
@@ -456,20 +501,28 @@ export default function App() {
           ==================================================================== */}
       <main id="main-deck">
         {viewMode === 'os' ? (
-          <HosakaDesktopOS
-            soundOn={soundOn}
-            unlockSeal={unlockSeal}
-            notify={notify}
-            unlockedSeals={unlockedSeals}
-            chassisStage={computedChassis}
-            onRelicPing={setRelicPing}
-            onReturnToSpace={() => {
-              setViewMode('editorial');
-              setTimeout(() => {
-                document.getElementById('sec-relic-chat')?.scrollIntoView({ behavior: 'auto' });
-              }, 40);
-            }}
-          />
+          <Suspense
+            fallback={
+              <div className="os-loading wrap" role="status">
+                Inicializando bancada Hosaka H-84 Workstation OS…
+              </div>
+            }
+          >
+            <HosakaDesktopOS
+              soundOn={soundOn}
+              unlockSeal={unlockSeal}
+              notify={notify}
+              unlockedSeals={unlockedSeals}
+              chassisStage={computedChassis}
+              onRelicPing={setRelicPing}
+              onReturnToSpace={() => {
+                setViewMode('editorial');
+                setTimeout(() => {
+                  document.getElementById('sec-relic-chat')?.scrollIntoView({ behavior: 'auto' });
+                }, 40);
+              }}
+            />
+          </Suspense>
         ) : (
           <div className="cyberspace-flow">
             {/* ================================================================
@@ -482,18 +535,18 @@ export default function App() {
                 <div className="hero-copy-col">
                   <div className="hero-eyebrow">
                     <span className="pulse-dot" aria-hidden="true" />
-                    <span>NODE BACKEND · SÉRIE 1984 / 2077 · GOIÂNIA · RELIC ONLINE</span>
+                    <span>DISPONÍVEL · BACKEND JÚNIOR · C# / .NET &amp; SQL SERVER · GOIÂNIA / REMOTO</span>
                   </div>
 
                   <h1 id="hero-heading" className="hero-title">
                     Miqueias Carvalho.{' '}
-                    <span className="hero-accent-phrase">Da query em produção</span> à arquitetura de APIs.
+                    <span className="hero-accent-phrase">Da query crítica em produção</span> à arquitetura limpa de APIs.
                   </h1>
 
                   <p className="hero-lead">
                     {PROFILE_DATA.summary} Atualmente na <strong>Zetti</strong> sustentando bancos{' '}
-                    <strong>SQL Server</strong> para dezenas de farmácias e graduando em Engenharia de Software na{' '}
-                    <strong>UNIFAN (2027)</strong>.
+                    <strong>SQL Server</strong> e módulos <strong>VB6</strong> para dezenas de farmácias, e graduando em
+                    Engenharia de Software na <strong>UNIFAN (2027)</strong>.
                   </p>
 
                   <div className="hero-specs-ledger">
@@ -502,12 +555,12 @@ export default function App() {
                       <strong>Zetti · SQL Server &amp; VB6</strong>
                     </div>
                     <div className="hero-spec-item">
-                      <small>ECOSISTEMA DE SERVIÇOS</small>
-                      <strong>C# / .NET · Java 17 · Node.js</strong>
+                      <small>APIS &amp; ARQUITETURA</small>
+                      <strong>C# / .NET · Java 17 · NestJS</strong>
                     </div>
                     <div className="hero-spec-item">
                       <small>FORMAÇÃO SUPERIOR</small>
-                      <strong>Eng. Software · UNIFAN</strong>
+                      <strong>Eng. Software · UNIFAN 2027</strong>
                     </div>
                   </div>
 
@@ -525,6 +578,13 @@ export default function App() {
                       onClick={() => playKeyclick(soundOn, 720)}
                     >
                       Explorar Fitas ROM [6] ↓
+                    </a>
+                    <a
+                      href="#sec-icebreaker"
+                      className="hero-text-link"
+                      onClick={() => playKeyclick(soundOn, 740)}
+                    >
+                      Breach Protocol ↓
                     </a>
                     <button
                       type="button"
@@ -643,13 +703,15 @@ export default function App() {
             {/* ================================================================
                 SECTION 01: FLUXO DE FITAS ROM (BORDERLESS EDITORIAL SPLIT)
                 ================================================================ */}
-            <section id="sec-rom-bay" className="space-section wrap" aria-labelledby="rom-heading">
+            <section id="sec-rom-bay" className="space-section wrap reveal" aria-labelledby="rom-heading">
               <div className="section-head-open">
                 <div>
                   <span className="section-kicker">01 / ARQUITETURA &amp; PRODUÇÃO</span>
-                  <h2 id="rom-heading">Fitas ROM Hosaka</h2>
+                  <h2 id="rom-heading" className="glitch-title" data-text="Fitas ROM Hosaka">
+                    Fitas ROM Hosaka
+                  </h2>
                   <p>
-                    Bastidores técnicos em SQL Server, VB6 e APIs REST reais com snippets executáveis.
+                    O que foi construído, como foi arquitetado e o resultado técnico em SQL Server, VB6, Java 17 e Node.js.
                   </p>
                 </div>
 
@@ -849,171 +911,64 @@ export default function App() {
             {/* ================================================================
                 SECTION 03: NÚCLEO WINTERMUTE & FORJA DA LIGA METÁLICA
                 ================================================================ */}
-            <section id="sec-icebreaker" className="space-section wrap" aria-labelledby="ice-heading">
+            <section id="sec-icebreaker" className="space-section wrap reveal" aria-labelledby="ice-heading">
               <div className="section-head-open">
                 <div>
-                  <span className="section-kicker">03 / CIBERESPAÇO &amp; QUIMERA TESSIER-ASHPOOL</span>
-                  <h2 id="ice-heading">Incursão Kuang Grade Mark XI</h2>
+                  <span className="section-kicker">03 / BREACH PROTOCOL · ICE TESSIER-ASHPOOL</span>
+                  <h2 id="ice-heading" className="glitch-title" data-text="Invada o ICE Wintermute">
+                    Invada o ICE Wintermute
+                  </h2>
                   <p>
-                    Quebre a fortaleza Wintermute combinando SQL Server, Árvore AVL e pipelines .NET.
+                    Minigame no estilo netrunner de Night City: cada daemon enviado revela uma competência real do
+                    Miqueias. Comece pela primeira linha e alterne coluna e linha.
                   </p>
                 </div>
-                <button
-                  type="button"
-                  className="cmd-link"
-                  onClick={() => {
-                    playKeyclick(soundOn, 540);
-                    setPlayerIntegrity(100);
-                    setIceShield(100);
-                    setShieldBuff(false);
-                    setCombatLog(['MATRIZ REINICIADA: Selecione uma rotina de ataque no ciberespaço.']);
-                  }}
-                >
-                  Reiniciar Matriz ↺
-                </button>
               </div>
 
-              <div className="icebreaker-spatial-grid">
-                <div className="ice-combat-open">
-                  <div className="ice-core-hud">
-                    <WintermuteCoreSvg iceShield={iceShield} playerIntegrity={playerIntegrity} />
+              <BreachProtocol
+                soundOn={soundOn}
+                unlockSeal={unlockSeal}
+                onRelicPing={setRelicPing}
+                notify={notify}
+              />
 
-                    <div className="ice-beams-stack">
-                      <div className="ice-beam-row">
-                        <div className="ice-beam-meta">
-                          <span style={{ color: 'var(--phosphor-green)' }}>CYBERDECK ONO-SENDAI</span>
-                          <span className="t-nums">{playerIntegrity}%</span>
-                        </div>
-                        <div className="ice-beam-track">
-                          <div className="ice-beam-fill player" style={{ width: `${playerIntegrity}%` }} />
-                        </div>
-                      </div>
-
-                      <div className="ice-beam-row">
-                        <div className="ice-beam-meta">
-                          <span style={{ color: 'var(--phosphor-alert)' }}>FORTALEZA WINTERMUTE ICE</span>
-                          <span className="t-nums">{iceShield}%</span>
-                        </div>
-                        <div className="ice-beam-track">
-                          <div className="ice-beam-fill enemy" style={{ width: `${iceShield}%` }} />
-                        </div>
-                      </div>
-
-                      <div className="ice-stream-log" aria-live="polite">
-                        {combatLog.map((entry, idx) => (
-                          <div key={idx}>{entry}</div>
-                        ))}
-                      </div>
-                    </div>
-                  </div>
-
-                  {/* Borderless Cyberpunk Combat Choice Lines */}
-                  <div className="ice-moves-list" role="group" aria-label="Rotinas de invasão contra o ICE Wintermute">
-                    <button
-                      type="button"
-                      className="relic-choice-line"
-                      style={{ '--choice-accent': 'var(--phosphor-primary)' }}
-                      onClick={() => handleIceMove('kuang_sql')}
-                    >
-                      <span className="choice-arrow" aria-hidden="true">▸</span>
-                      <span className="choice-tag">[T-SQL SEEK]</span>
-                      <span className="choice-text">Disparar Stored Procedure indexada (−34% ICE)</span>
-                    </button>
-
-                    <button
-                      type="button"
-                      className="relic-choice-line"
-                      style={{ '--choice-accent': 'var(--phosphor-secondary)' }}
-                      onClick={() => handleIceMove('avl_burst')}
-                    >
-                      <span className="choice-arrow" aria-hidden="true">▸</span>
-                      <span className="choice-tag">[AVL O(log n)]</span>
-                      <span className="choice-text">Rotação de árvore balanceada na matriz (−42% ICE)</span>
-                    </button>
-
-                    <button
-                      type="button"
-                      className="relic-choice-line"
-                      style={{ '--choice-accent': 'var(--phosphor-alert)' }}
-                      onClick={() => handleIceMove('sandevistan_net')}
-                    >
-                      <span className="choice-arrow" aria-hidden="true">▸</span>
-                      <span className="choice-tag">[C# .NET ASYNC]</span>
-                      <span className="choice-text">Sobrecarregar canal assíncrono Sandevistan (−38% ICE)</span>
-                    </button>
-
-                    <button
-                      type="button"
-                      className="relic-choice-line"
-                      style={{ '--choice-accent': 'var(--phosphor-green)' }}
-                      onClick={() => handleIceMove('acid_shield')}
-                    >
-                      <span className="choice-arrow" aria-hidden="true">▸</span>
-                      <span className="choice-tag">[ROLLBACK ACID]</span>
-                      <span className="choice-text">Reverter dano no deck (+22% Deck · −15% ICE)</span>
-                    </button>
-                  </div>
+              {/* Slim alloy strip: chassis evolution driven by the 12 seals */}
+              <div className="alloy-strip">
+                <div className="alloy-strip-copy">
+                  <span className="section-kicker">EVOLUÇÃO DA ESTAÇÃO</span>
+                  <p>
+                    Destrave os 12 <strong>Selos Voight-Kampff</strong> explorando o deck — 6 refundem a carcaça em
+                    Titânio, 12 em Ouro 24K. Ou teste cada liga agora:
+                  </p>
                 </div>
 
-                {/* Right Column: Circular Metallic Alloy Orbs */}
-                <div className="alloy-evolution-col">
-                  <div>
-                    <span className="section-kicker">EVOLUÇÃO DA ESTAÇÃO</span>
-                    <h3 className="alloy-title">Obsidiana 84 → Titânio → Ouro 24K</h3>
-                    <p className="alloy-desc">
-                      Explore a bancada para destravar os 12 <strong>Selos Voight-Kampff</strong> e refundir o
-                      espectro cromático do ciberespaço — ou teste cada liga metálica diretamente abaixo:
-                    </p>
-                  </div>
-
-                  <div className="alloy-orbs-row" role="group" aria-label="Selecionar liga metálica da estação">
+                <div className="alloy-orbs-row" role="group" aria-label="Selecionar liga metálica da estação">
+                  {[
+                    { id: 'obsidian', label: 'Obsidiana 84', pitch: 640, ping: 'Rachel-7: Estação calibrada no breu Obsidiana 84.' },
+                    { id: 'titanium', label: 'Titânio Tyrell', pitch: 740, ping: 'Rachel-7: Liga alterada para Titânio Escovado Tyrell.' },
+                    { id: 'gold-24k', label: 'Ouro 24K', pitch: 880, ping: 'Johnny-84: Ouro 24K Straylight no barramento. Brilho de lenda do Afterlife.' },
+                  ].map((alloy) => (
                     <button
+                      key={alloy.id}
                       type="button"
-                      className={`alloy-orb-btn ${computedChassis === 'obsidian' ? 'active' : ''}`}
+                      aria-pressed={computedChassis === alloy.id}
+                      className={`alloy-orb-btn ${computedChassis === alloy.id ? 'active' : ''}`}
                       onClick={() => {
-                        playKeyclick(soundOn, 640);
-                        setChassisOverride('obsidian');
-                        setRelicPing('Rachel-7: Estação calibrada no breu Obsidiana 84.');
+                        playKeyclick(soundOn, alloy.pitch);
+                        setChassisOverride(alloy.id);
+                        setRelicPing(alloy.ping);
                       }}
                     >
-                      <span className="alloy-sphere obsidian" aria-hidden="true" />
-                      <span>1. Obsidiana 84</span>
+                      <span className={`alloy-sphere ${alloy.id}`} aria-hidden="true" />
+                      <span>{alloy.label}</span>
                     </button>
-
-                    <button
-                      type="button"
-                      className={`alloy-orb-btn ${computedChassis === 'titanium' ? 'active' : ''}`}
-                      onClick={() => {
-                        playKeyclick(soundOn, 740);
-                        setChassisOverride('titanium');
-                        setRelicPing('Rachel-7: Liga alterada para Titânio Escovado Tyrell.');
-                      }}
-                    >
-                      <span className="alloy-sphere titanium" aria-hidden="true" />
-                      <span>2. Titânio Tyrell</span>
-                    </button>
-
-                    <button
-                      type="button"
-                      className={`alloy-orb-btn ${computedChassis === 'gold-24k' ? 'active' : ''}`}
-                      onClick={() => {
-                        playKeyclick(soundOn, 880);
-                        setChassisOverride('gold-24k');
-                        setRelicPing('Johnny-84: Ouro 24K Straylight no barramento. Brilho de lenda do Afterlife.');
-                      }}
-                    >
-                      <span className="alloy-sphere gold-24k" aria-hidden="true" />
-                      <span>3. Ouro 24K Straylight</span>
-                    </button>
-                  </div>
-
+                  ))}
                   <button
                     type="button"
-                    className="deck-cta"
-                    style={{ width: 'fit-content' }}
+                    className="cmd-link accent"
                     onClick={() => setSealsModalOpen(true)}
                   >
-                    Abrir Cofre de Selos ({unlockedSeals.length}/12) ★
+                    Cofre de Selos {unlockedSeals.length}/12 ★
                   </button>
                 </div>
               </div>
@@ -1022,13 +977,15 @@ export default function App() {
             {/* ================================================================
                 SECTION 04: CANAIS DIRETOS (ARCHITECTURAL RULED LEDGER)
                 ================================================================ */}
-            <section id="sec-contact" className="space-section wrap" aria-labelledby="ports-heading">
+            <section id="sec-contact" className="space-section wrap reveal" aria-labelledby="ports-heading">
               <div className="section-head-open">
                 <div>
                   <span className="section-kicker">04 / CONEXÃO DIRETA</span>
-                  <h2 id="ports-heading">Canais &amp; Dossiê Oficial</h2>
+                  <h2 id="ports-heading" className="glitch-title" data-text="Canais & Dossiê Oficial">
+                    Canais &amp; Dossiê Oficial
+                  </h2>
                   <p>
-                    Converse sobre oportunidades Backend C#/.NET, SQL Server, Java ou Node.js em Goiânia ou remoto.
+                    Disponível para vagas Backend Júnior · C#/.NET · SQL Server · Java 17 · Node.js em Goiânia ou remoto.
                   </p>
                 </div>
               </div>
@@ -1098,7 +1055,10 @@ export default function App() {
           <span>Miqueias Carvalho · Goiânia, GO</span>
         </div>
         <div className="footer-stack-line">
-          C# / .NET · SQL Server · VB6 · Java 17 · Spring Boot 3 · Node.js &amp; NestJS · Docker
+          C# / .NET · SQL Server · VB6 · Java 17 · Spring Boot 3 · Node.js &amp; NestJS · Docker ·{' '}
+          <span className="footer-secret-hint" title="Experimente digitar no teclado fora de campos de texto">
+            [easter eggs: ff06b5 · samurai · ↑↑↓↓←→←→BA]
+          </span>
         </div>
       </footer>
 
@@ -1113,7 +1073,7 @@ export default function App() {
           aria-labelledby="seals-modal-title"
           onClick={() => setSealsModalOpen(false)}
         >
-          <div className="modal-window" onClick={(e) => e.stopPropagation()}>
+          <div ref={sealsDialogRef} className="modal-window" onClick={(e) => e.stopPropagation()}>
             <header className="modal-header">
               <span id="seals-modal-title">
                 ★ INVENTÁRIO VOIGHT-KAMPFF ({unlockedSeals.length}/12)
@@ -1195,7 +1155,7 @@ export default function App() {
           aria-labelledby="cmd-modal-title"
           onClick={() => setCmdOpen(false)}
         >
-          <div className="modal-window" onClick={(e) => e.stopPropagation()}>
+          <div ref={cmdDialogRef} className="modal-window" onClick={(e) => e.stopPropagation()}>
             <header className="modal-header">
               <span id="cmd-modal-title">⌘ TERMINAL DE COMANDO RÁPIDO ONO-SENDAI</span>
               <button

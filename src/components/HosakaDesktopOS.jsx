@@ -131,9 +131,17 @@ export default function HosakaDesktopOS({
     let reply = '';
 
     if (cmd === 'help') {
-      reply = 'COMANDOS: johnny | zetti | stack | projetos | ff:06:b5 | mikoshi | unifan | contato | clear';
+      reply = 'COMANDOS: johnny | zetti | stack | projetos | breach | ff:06:b5 | mikoshi | afterlife | wake up | unifan | contato | clear';
     } else if (cmd === 'johnny' || cmd === 'samurai') {
       reply = 'JOHNNY-84: "Corta o excesso, choom. A Zetti usa SQL Server e VB6 de verdade; o resto é só vitrine."';
+    } else if (cmd === 'wake up' || cmd === 'wakeup') {
+      reply = 'RELIC OVERRIDE // "Wake the f*** up, Samurai — we have a database to index."';
+    } else if (cmd === 'never fade away' || cmd === 'neverfadeaway') {
+      reply = 'SAMURAI 2023 // "A thing of beauty, I know — will never fade away." Código limpo também não.';
+    } else if (cmd === 'afterlife') {
+      reply = 'ROGUE AMENDIARES // "Drink Miqueias Carvalho: dose dupla de SQL Server & C#/.NET, dash de Java 17 e gelo quebrado em NestJS."';
+    } else if (cmd === 'breach') {
+      reply = 'BREACH PROTOCOL // Volte ao Ciberespaço (Seção 03) para invadir a matriz 5×5 e enviar DATAMINE_V1, ICEPICK e MASS_VULNERABILITY.';
     } else if (cmd === 'ff:06:b5' || cmd === 'ff06b5') {
       reply = 'RELIC // FF:06:B5: Enigmas são ótimos, mas índice B-Tree bem calibrado economiza horas de plantão.';
     } else if (cmd === 'mikoshi' || cmd === 'arasaka') {
@@ -153,7 +161,7 @@ export default function HosakaDesktopOS({
       setCliInput('');
       return;
     } else {
-      reply = `Dixie Flatline: Sinal "${raw}" processado. Tente "johnny", "zetti", "stack", "projetos" ou "ff:06:b5".`;
+      reply = `Dixie Flatline: Sinal "${raw}" processado. Tente "johnny", "zetti", "stack", "breach", "wake up" ou "ff:06:b5".`;
     }
 
     setCliHistory((prev) => [...prev.slice(-10), `cowboy@ono-sendai:~$ ${raw}`, reply]);
@@ -537,15 +545,14 @@ export default function HosakaDesktopOS({
     <section className="os-workstation-stage wrap" aria-label="Estação de Trabalho Hosaka H-84">
       {/* Borderless Top Kernel Rail */}
       <div className="os-top-rail">
-        <div className="os-app-dock" role="tablist" aria-label="Módulos da Workstation OS">
+        <div className="os-app-dock" role="group" aria-label="Módulos da Workstation OS">
           {OS_APPS.map((app) => {
             const isCurrent = activeApp === app.id;
             return (
               <button
                 key={app.id}
                 type="button"
-                role="tab"
-                aria-selected={isCurrent}
+                aria-pressed={isCurrent}
                 className={`os-dock-tab ${isCurrent ? 'active' : ''}`}
                 onClick={() => handleSelectApp(app.id)}
               >

@@ -45,42 +45,53 @@ export default function CyberspaceTerrain({ chassis = 'obsidian', phosphor = 'am
     const el = stageRef.current;
     if (!el) return undefined;
 
+    if (
+      typeof window !== 'undefined' &&
+      window.matchMedia?.('(prefers-reduced-motion: reduce)').matches
+    ) {
+      return undefined;
+    }
+
     let disposed = false;
     const palette = getCyberspacePalette(chassis, phosphor);
 
-    fx.mount(el, dotTerrain, {
-      palette,
-      params: {
-        spacing: 14,
-        dot: 2.7,
-        amplitude: 0.21,
-        waveScale: 0.85,
-        speed: 0.09,
-        opacity: 0.86,
-        shade: 0.78,
-        crest: 0.94,
-        horizon: 0.23,
-        fog: 0.36,
-        haze: 0.44,
-        calm: 0.78,
-        calmX: 0.25,
-        calmY: 0.48,
-      },
-      seed: 1984,
-    })
-      .then((ctrl) => {
-        if (disposed) {
-          ctrl?.destroy();
-          return;
-        }
-        ctrlRef.current = ctrl;
+    const rafId = requestAnimationFrame(() => {
+      if (disposed) return;
+      fx.mount(el, dotTerrain, {
+        palette,
+        params: {
+          spacing: 14,
+          dot: 2.7,
+          amplitude: 0.21,
+          waveScale: 0.85,
+          speed: 0.09,
+          opacity: 0.86,
+          shade: 0.78,
+          crest: 0.94,
+          horizon: 0.23,
+          fog: 0.36,
+          haze: 0.44,
+          calm: 0.78,
+          calmX: 0.25,
+          calmY: 0.48,
+        },
+        seed: 1984,
       })
-      .catch(() => {
-        // Fallback CSS handled automatically by fx.js
-      });
+        .then((ctrl) => {
+          if (disposed) {
+            ctrl?.destroy();
+            return;
+          }
+          ctrlRef.current = ctrl;
+        })
+        .catch(() => {
+          // Fallback CSS handled automatically by fx.js
+        });
+    });
 
     return () => {
       disposed = true;
+      cancelAnimationFrame(rafId);
       if (ctrlRef.current) {
         ctrlRef.current.destroy();
         ctrlRef.current = null;

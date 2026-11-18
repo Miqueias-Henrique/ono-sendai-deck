@@ -12,7 +12,7 @@ export const PROFILE_DATA = {
   education: 'Bacharelado em Engenharia de Software · UNIFAN (Conclusão 2027)',
   currentJob: 'Estagiário de Desenvolvimento na Zetti (08/12/2025 – Atual)',
   summary:
-    'Desenvolvedor de software focado em sustentação de sistemas críticos em produção, otimização de bancos de dados relacionais (SQL Server, PostgreSQL, MySQL) e construção de APIs REST escaláveis em C#/.NET, Java (Spring Boot) e Node.js (TypeScript/NestJS).',
+    'Desenvolvedor backend focado em sustentação de sistemas críticos em produção, otimização de bancos relacionais (SQL Server, PostgreSQL, MySQL) e construção de APIs REST escaláveis em C#/.NET, Java 17 (Spring Boot 3) e Node.js (TypeScript/NestJS).',
   email: 'miqueiashenriquecarvalho@gmail.com',
   whatsapp: 'https://wa.me/5562984862849',
   phoneDisplay: '+55 (62) 98486-2849',
@@ -38,13 +38,13 @@ export const OWL_QUOTES = {
     'CHASSI MÁXIMO → OURO 24K VILLA STRAYLIGHT: Todos os 12 Selos de Empatia conquistados! Núcleo Wintermute e Dixie Flatline destravados em capacidade total.',
   tips: [
     'DICA DE DECK: Clique nos pinos luminosos da Placa de Telemetria para inspecionar meses de commits e entregas reais.',
-    'DICA VOIGHT-KAMPFF: No Duelo Kuang Mark XI, use "Stored Procedure Shield" antes do golpe pesado da IA Wintermute.',
+    'DICA BREACH: No Breach Protocol, comece na 1ª linha e alterne coluna e linha para enviar os 3 daemons.',
     'DICA ESPER: Pressione Ctrl+K (ou clique em COMANDOS) para saltar instantaneamente para qualquer repositório ou ferramenta.',
     'HISTÓRICO ZETTI: Miqueias atua diariamente com queries, views, stored procedures em SQL Server e manutenção de regras fiscais em VB6.',
   ],
 };
 
-// ROM Cartridges (Like Felipe's "Caixa I, II, III" + real code & terminal simulation)
+// ROM Cartridges (What / How / Result framing + real code & terminal simulation)
 export const ROM_CARTRIDGES = [
   {
     id: 'zetti-prod',
@@ -53,14 +53,15 @@ export const ROM_CARTRIDGES = [
     title: 'Zetti Sistemas Farmacêuticos (SQL Server & VB6)',
     period: 'Dez/2025 – Atual · Em Produção',
     headline: 'Sustentação crítica e adequação fiscal para dezenas de farmácias em operação diária.',
-    impact: 'Queries, Views e Stored Procedures em SQL Server + evolução para o novo CNPJ Alfanumérico e reforma tributária.',
+    impact:
+      'O QUE: sustentação de ERP farmacêutico em produção · COMO: T-SQL (Stored Procedures, Views, Index Seek) e evolução de módulos VB6 · RESULTADO: adequação ao CNPJ Alfanumérico (14 posições) e novos cálculos tributários sem downtime nas filiais.',
     context:
-      'Atuação diária como Estagiário de Desenvolvimento na Zetti, mantendo sistemas legados em Visual Basic 6 (VB6) integrados a bancos SQL Server de alta demanda no varejo farmacêutico.',
+      'Atuação diária na Zetti (desde 08/12/2025) mantendo sistemas legados em Visual Basic 6 integrados a bancos SQL Server de alta demanda no varejo farmacêutico, garantindo continuidade operacional em caixa, estoque e fechamento fiscal.',
     engineering: [
-      'Criação e otimização de queries complexas, views e stored procedures em SQL Server para relatórios e regras de negócio.',
-      'Manutenção evolutiva e corretiva em módulos VB6 em produção, garantindo estabilidade em fechamentos fiscais.',
-      'Adequação de esquemas de banco e validações para o novo formato de CNPJ Alfanumérico e novos cálculos de impostos.',
-      'Fluxo de trabalho ágil com Git, GitKraken e Jira junto ao time de engenharia.',
+      'Otimização de queries, views e stored procedures em SQL Server com foco em planos de execução por Index Seek e zero bloqueio desnecessário.',
+      'Manutenção evolutiva e corretiva em módulos VB6 críticos, preservando retrocompatibilidade e estabilidade em fechamentos fiscais.',
+      'Adequação de schemas, máscaras e validações para o novo formato de CNPJ Alfanumérico e cálculos da reforma tributária.',
+      'Fluxo de engenharia rastreado com Git, GitKraken e Jira em entregas contínuas junto ao time.',
     ],
     stack: ['SQL Server', 'T-SQL', 'Stored Procedures', 'VB6', 'C# / .NET', 'GitKraken', 'Jira'],
     repoUrl: 'https://www.linkedin.com/in/miqueias-henrique-88503b218/',
@@ -95,14 +96,15 @@ END;`,
     title: 'api-gestao-produtos (Node.js, TypeScript & TypeORM)',
     period: 'Repositório Público · GitHub',
     headline: 'API RESTful containerizada com autenticação, migrations, TypeORM, MySQL e documentação Swagger.',
-    impact: 'Ambiente 100% reprodutível via Docker Compose com separação limpa em Controllers, Services e Entities.',
+    impact:
+      'O QUE: API de catálogo, estoque e categorias · COMO: Node.js + TypeScript em camadas (Controllers/Services/Entities), TypeORM Migrations e Docker Compose · RESULTADO: ambiente 100% reprodutível (API + MySQL 8) com contrato OpenAPI interativo.',
     context:
-      'Construída para resolver o gerenciamento completo de catálogo de produtos, estoque e categorias com validação estrita de payload e persistência relacional.',
+      'Construída para resolver o gerenciamento completo de produtos, saldo de estoque e categorias com validação estrita de payload, paginação performática e persistência relacional versionada.',
     engineering: [
-      'Arquitetura em camadas utilizando Node.js, TypeScript, Express e TypeORM conectado ao MySQL.',
-      'Versionamento de esquema de banco de dados via TypeORM Migrations.',
-      'Documentação interativa de todos os endpoints via OpenAPI / Swagger UI.',
-      'Orquestração de containers (API + MySQL) pronta para subida imediata com Docker Compose.',
+      'Separação em camadas com Node.js, TypeScript, Express e TypeORM conectado ao MySQL 8.',
+      'Evolução determinística de schema via TypeORM Migrations e buscas paginadas (`findAndCount`).',
+      'Documentação interativa de todos os endpoints e schemas via OpenAPI / Swagger UI (`/api-docs`).',
+      'Orquestração de containers (API + banco MySQL com healthcheck) pronta para subida imediata com `docker compose up`.',
     ],
     stack: ['TypeScript', 'Node.js', 'Express', 'TypeORM', 'MySQL', 'Swagger', 'Docker'],
     repoUrl: 'https://github.com/Miqueias-Henrique/api-gestao-produtos',
@@ -134,13 +136,14 @@ export class ProductService {
     title: 'vosso-cinema-api (NestJS, Prisma & PostgreSQL)',
     period: 'Repositório Público · GitHub',
     headline: 'Backend modular em NestJS para gestão de filmes, salas, sessões e reserva concorrente de assentos.',
-    impact: 'Injeção de dependência, DTOs validados com class-validator e modelagem relacional forte em PostgreSQL.',
+    impact:
+      'O QUE: backend de bilheteria e sessões de cinema · COMO: módulos NestJS, DTOs validados e `$transaction` no Prisma + PostgreSQL · RESULTADO: reserva atômica livre de venda dupla (race condition) integrada ao frontend `vosso-cinema-web`.',
     context:
-      'Desenvolvida para sustentar a operação completa de um complexo de cinema, garantindo que dois clientes não reservem o mesmo assento na mesma sessão.',
+      'Desenvolvida para sustentar a operação completa de um complexo de cinema (filmes, salas, sessões e ingressos), garantindo consistência transacional quando múltiplos clientes disputam o mesmo assento.',
     engineering: [
-      'Módulos isolados no padrão NestJS (Movies, Rooms, Sessions, Tickets) com tipagem ponta a ponta no Prisma ORM.',
-      'Validação automática de contratos de entrada com Pipes e DTOs e documentação Swagger automática.',
-      'Integração com o frontend vosso-cinema-web para fluxo completo de bilheteria.',
+      'Arquitetura modular no padrão NestJS (`Movies`, `Rooms`, `Sessions`, `Tickets`) com injeção de dependência e tipagem ponta a ponta no Prisma ORM.',
+      'Reserva atômica com `prisma.$transaction` lançando `ConflictException` (HTTP 409) em conflito de assento.',
+      'Validação automática de contratos de entrada com `ValidationPipe`/`class-validator` e documentação Swagger.',
     ],
     stack: ['NestJS', 'TypeScript', 'Prisma ORM', 'PostgreSQL', 'Swagger', 'REST API'],
     repoUrl: 'https://github.com/Miqueias-Henrique/vosso-cinema-api',
@@ -168,13 +171,14 @@ PASS  test/sessions.e2e-spec.ts (6 passed, 0 failed in 1.12s)`,
     title: 'vital-conscious-api (Java 17, Spring Boot 3 & JPA)',
     period: 'Repositório Público · GitHub',
     headline: 'API RESTful em Java 17 e Spring Boot 3 com Spring Data JPA e PostgreSQL.',
-    impact: 'Padrões corporativos do ecossistema Java/Spring aplicados a monitoramento e registros estruturados.',
+    impact:
+      'O QUE: API REST corporativa de registros vitais · COMO: Java 17, Spring Boot 3, Spring Data JPA/Hibernate e Bean Validation · RESULTADO: contratos REST padronizados (`ResponseEntity`, HTTP 201/400/404) e persistência relacional em PostgreSQL.',
     context:
-      'Projeto de engenharia de software explorando a robustez do Spring Boot 3, mapeamento objeto-relacional com Hibernate/JPA e tratamento global de exceções.',
+      'Projeto de engenharia backend aplicando os padrões corporativos do ecossistema Java 17 e Spring Boot 3: inversão de controle, DTOs imutáveis, validação declarativa e mapeamento objeto-relacional limpo.',
     engineering: [
       'Entidades JPA mapeadas com relacionamentos otimizados e repositórios Spring Data.',
-      'Controllers REST padronizados com ResponseEntity, Bean Validation e códigos HTTP semânticos.',
-      'Persistência relacional em PostgreSQL com configuração pronta para desenvolvimento e produção.',
+      'Controllers REST padronizados com `ResponseEntity`, `@Valid` Bean Validation e tratamento global de erros.',
+      'Persistência relacional em PostgreSQL empacotada via Maven e validada por suíte de testes.',
     ],
     stack: ['Java 17', 'Spring Boot 3', 'Spring Data JPA', 'PostgreSQL', 'Maven'],
     repoUrl: 'https://github.com/Miqueias-Henrique/vital-conscious-api',
@@ -204,13 +208,14 @@ public class VitalRecordController {
     title: 'controle-estoque-javafx (JavaFX, JDBC & PostgreSQL)',
     period: 'Repositório Público · GitHub',
     headline: 'Sistema desktop completo em JavaFX com conexão JDBC direta ao PostgreSQL e padrão arquitetural DAO.',
-    impact: 'Operação de inventário com CRUD transacional, busca em tempo real e desacoplamento total entre UI e SQL.',
+    impact:
+      'O QUE: sistema desktop de inventário e estoque · COMO: Java 17 + JavaFX em MVC e persistência JDBC pura via padrão DAO · RESULTADO: CRUD transacional seguro contra SQL Injection (`PreparedStatement`) e desacoplamento total entre UI e SQL.',
     context:
-      'Aplicação desktop construída sem depender de ORMs pesados para demonstrar domínio de SQL puro via PreparedStatement, gerenciamento de conexões JDBC e arquitetura MVC/DAO.',
+      'Aplicação desktop construída deliberadamente sem ORMs para demonstrar domínio de SQL puro via JDBC, gerenciamento de recursos com `try-with-resources` e separação entre camada de apresentação e acesso a dados.',
     engineering: [
-      'Implementação de Data Access Objects (DAO) com PreparedStatements seguros contra SQL Injection.',
-      'Interface gráfica responsiva em JavaFX com tabelas reativas, filtros e alertas de estoque mínimo.',
-      'Banco de dados PostgreSQL modelado com integridade referencial.',
+      'Data Access Objects (`ProdutoDAO`) com `PreparedStatement` parametrizado e fechamento determinístico de conexões.',
+      'Interface JavaFX (FXML + Controllers) com `TableView` reativa, busca instantânea e alertas de estoque mínimo.',
+      'Schema PostgreSQL com chaves estrangeiras e restrições de integridade.',
     ],
     stack: ['Java 17', 'JavaFX', 'JDBC', 'PostgreSQL', 'Padrão DAO', 'MVC'],
     repoUrl: 'https://github.com/Miqueias-Henrique/controle-estoque-javafx',
@@ -235,13 +240,14 @@ public void atualizarEstoque(int idProduto, int novaQuantidade) throws SQLExcept
     title: 'Tabela Hash CPF & Catálogo Árvore AVL vs BST (Java)',
     period: '2 Repositórios Públicos · GitHub',
     headline: 'Implementações do zero de Tabela Hash com encadeamento separado e Árvore AVL auto-balanceada.',
-    impact: 'Busca em O(1) médio para validação de CPFs e garantia de O(log n) no pior caso com rotações AVL.',
+    impact:
+      'O QUE: estruturas de dados implementadas do zero em Java · COMO: Hash Table com dispersão de CPF (Módulo 11) e Árvore AVL com rotações simples/duplas (`|FB| <= 1`) · RESULTADO: busca em `O(1)` médio e `O(log n)` garantido sob entradas ordenadas que degeneram uma BST comum em `O(n)`.',
     context:
-      'Conjunto de dois projetos fundamentais de Ciência da Computação (`tabela-hash-cpf-java` e `catalogo-livros-avl-bst`) provando domínio de ponteiros, espalhamento, colisões e balanceamento de árvores.',
+      'Dois repositórios públicos (`tabela-hash-cpf-java` e `catalogo-livros-avl-bst`) construídos sem coleções prontas para demonstrar domínio de ponteiros, tratamento de colisão, fator de balanceamento e análise assintótica.',
     engineering: [
-      'Tabela Hash com função de dispersão customizada para CPF (Módulo 11) e tratamento de colisão por listas encadeadas.',
-      'Comparativo empírico entre Árvore Binária de Busca (BST) comum e Árvore AVL com rotações simples e duplas.',
-      'Testes automatizados e CLI interativa (`quiz-cli-java` com JUnit 5).',
+      'Tabela Hash com função de espalhamento para CPF, validação oficial de dígitos verificadores (Módulo 11) e listas encadeadas.',
+      'Comparativo entre BST clássica e Árvore AVL com rotações LL, RR, LR e RL mantendo altura logarítmica.',
+      'Testes unitários com JUnit 5 e interface de linha de comando (`quiz-cli-java`).',
     ],
     stack: ['Java 17', 'Estruturas de Dados', 'Árvore AVL', 'Tabela Hash O(1)', 'JUnit 5', 'Complexidade'],
     repoUrl: 'https://github.com/Miqueias-Henrique/catalogo-livros-avl-bst',
@@ -448,15 +454,22 @@ export const CONSTRUCT_PERSONAS = {
       },
       ice: {
         speech:
-          'Aí sim você tá falando minha língua. Corpo bota ICE caro na frente de servidor podre e acha que tá seguro. Pula ali pra seção Kuang Grade Mark XI contra a Wintermute — usa `Rotação AVL O(log n)` e `T-SQL Index Seek` pra derreter o gelo da Tessier-Ashpool. Quer derrubar agora?',
+          'Aí sim você tá falando minha língua. Corpo bota ICE caro na frente de servidor podre e acha que tá seguro. Na Seção 03 tem um Breach Protocol real (`1C 55 BD E9 7A FF`): alterna linha e coluna pra subir os 3 daemons — `DATAMINE_V1` (SQL Server), `ICEPICK` (C#/.NET) e `MASS_VULNERABILITY` (Java 17/NestJS). Quer invadir agora?',
         options: [
           {
             id: 'opt_jump_ice',
-            tag: 'INVASÃO · KUANG XI',
+            tag: 'BREACH · WINTERMUTE',
             tagColor: 'var(--phosphor-alert)',
-            label: 'Saltar para o núcleo Wintermute e atacar o ICE agora.',
+            label: 'Saltar para o Breach Protocol e enviar os daemons agora.',
             nextNode: 'start',
             effect: { scrollTo: 'sec-icebreaker' },
+          },
+          {
+            id: 'opt_samurai_lore',
+            tag: 'SAMURAI · 2023',
+            tagColor: 'var(--phosphor-secondary)',
+            label: 'E a banda Samurai e a queda da Torre Arasaka em 2023?',
+            nextNode: 'samurai',
           },
           {
             id: 'opt_ff06b5',
@@ -464,6 +477,27 @@ export const CONSTRUCT_PERSONAS = {
             tagColor: 'var(--phosphor-primary)',
             label: 'Por falar em Night City... e aquele código FF:06:B5 nas estátuas?',
             nextNode: 'ff06b5',
+          },
+        ],
+      },
+      samurai: {
+        speech:
+          'Em 2023 a gente achava que bastava tocar "Never Fade Away" no talo e descer de helicóptero na Torre Arasaka pra mudar o mundo. Hoje eu sei que o que derruba sistema mal-feito não é discurso — é engenheiro que conhece o banco por dentro, versiona cada migration e não esconde sujeira debaixo de abstração.',
+        options: [
+          {
+            id: 'opt_samurai_breach',
+            tag: 'SUBIR DAEMONS',
+            tagColor: 'var(--phosphor-alert)',
+            label: 'Bora honrar a Samurai quebrando o ICE no Breach Protocol.',
+            nextNode: 'start',
+            effect: { scrollTo: 'sec-icebreaker' },
+          },
+          {
+            id: 'opt_samurai_back',
+            tag: 'VOLTAR',
+            tagColor: 'var(--ink-muted)',
+            label: 'Voltar para o canal principal do Relic.',
+            nextNode: 'start',
           },
         ],
       },
@@ -560,6 +594,13 @@ export const CONSTRUCT_PERSONAS = {
             nextNode: 'wintermute',
           },
           {
+            id: 'dixie_straylight',
+            tag: 'KUANG MARK XI · BREACH',
+            tagColor: 'var(--phosphor-green)',
+            label: 'Como funciona a invasão à matriz Wintermute na Seção 03?',
+            nextNode: 'straylight',
+          },
+          {
             id: 'dixie_switch_johnny',
             tag: 'VOLTAR AO RELIC',
             tagColor: 'var(--phosphor-alert)',
@@ -592,15 +633,36 @@ export const CONSTRUCT_PERSONAS = {
       },
       wintermute: {
         speech:
-          'Wintermute é a mente fria que orquestra peças sem emoção — pura lógica buscando se fundir com Neuromancer além da fronteira de Villa Straylight. No nosso deck aqui, ela virou o servidor que você derruba usando engenharia real: Index Seek, Rollback ACID e Pipeline Async .NET.',
+          'Wintermute é a mente fria de Berna que planeja jogadas; Neuromancer é a personalidade em Rio que guarda os mortos. Em Villa Straylight as duas tentavam virar a matriz inteira. Aqui a gente traduziu essa incursão em um Breach Protocol hexadecimal onde cada daemon enviado destrava uma competência real.',
         options: [
           {
             id: 'dixie_attack',
-            tag: 'QUEBRAR ICE',
+            tag: 'ABRIR BREACH PROTOCOL',
             tagColor: 'var(--phosphor-primary)',
             label: 'Levar meu deck pra cima da Wintermute agora.',
             nextNode: 'start',
             effect: { scrollTo: 'sec-icebreaker' },
+          },
+        ],
+      },
+      straylight: {
+        speech:
+          'Regra clássica de netrunner: seu primeiro clique é sempre na linha 1 da matriz 5×5; depois você alterna coluna, linha, coluna, linha até encher o buffer de 6 slots. Se travar na rota, clica em "Pedir dica ao Dixie" que eu acendo o próximo hex válido pra você.',
+        options: [
+          {
+            id: 'dixie_go_breach',
+            tag: 'INICIAR UPLOAD',
+            tagColor: 'var(--phosphor-secondary)',
+            label: 'Descer para a matriz do Breach Protocol agora.',
+            nextNode: 'start',
+            effect: { scrollTo: 'sec-icebreaker' },
+          },
+          {
+            id: 'dixie_back_2',
+            tag: 'VOLTAR',
+            tagColor: 'var(--ink-muted)',
+            label: 'Voltar para o início da fita ROM.',
+            nextNode: 'start',
           },
         ],
       },
@@ -634,6 +696,13 @@ export const CONSTRUCT_PERSONAS = {
             nextNode: 'chassis',
           },
           {
+            id: 'rachel_tears',
+            tag: 'ROY BATTY · 2019',
+            tagColor: 'var(--phosphor-green)',
+            label: 'Por que você fala em "lágrimas na chuva" quando olha para sistemas?',
+            nextNode: 'tears',
+          },
+          {
             id: 'rachel_to_johnny',
             tag: 'TROCAR FREQUÊNCIA',
             tagColor: 'var(--phosphor-alert)',
@@ -645,7 +714,7 @@ export const CONSTRUCT_PERSONAS = {
       },
       vk_test: {
         speech:
-          'Cada clique no scanner calibra a retina em 3 pulsos e revela o olhar limpo do Miqueias. Ao mesmo tempo, conforme você executa diagnósticos SQL, inspeciona os 26 marcos neurais e abre os aplicativos no Workstation OS, o índice de empatia destrava os 12 selos completos.',
+          'Cada clique no scanner calibra a retina em 3 pulsos e revela o olhar limpo do Miqueias. Ao mesmo tempo, conforme você executa diagnósticos SQL, envia daemons no Breach Protocol e abre os aplicativos no Workstation OS, o índice de empatia destrava os 12 selos completos.',
         options: [
           {
             id: 'rachel_unlock',
@@ -675,6 +744,27 @@ export const CONSTRUCT_PERSONAS = {
             label: 'Abrir meu inventário atual de Selos Voight-Kampff.',
             nextNode: 'start',
             effect: { openSeals: true },
+          },
+        ],
+      },
+      tears: {
+        speech:
+          'Porque frameworks da moda vêm e vão a cada estação, mas dados financeiros e fiscais em produção precisam atravessar anos intactos. Quando o Miqueias cuida de SQL Server e VB6 na Zetti enquanto projeta APIs em C#/.NET, Java 17 e NestJS, ele constrói a ponte entre a memória que já existe e o futuro que precisa escalar.',
+        options: [
+          {
+            id: 'rachel_tears_contact',
+            tag: 'DOSSIÊ OFICIAL',
+            tagColor: 'var(--phosphor-green)',
+            label: 'Ir para os canais diretos e baixar o currículo PDF.',
+            nextNode: 'start',
+            effect: { scrollTo: 'sec-contact' },
+          },
+          {
+            id: 'rachel_tears_back',
+            tag: 'RETORNAR',
+            tagColor: 'var(--ink-muted)',
+            label: 'Voltar para o início da análise Voight-Kampff.',
+            nextNode: 'start',
           },
         ],
       },

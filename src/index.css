@@ -17,7 +17,7 @@
   --ink-primary: #F3EDE2;
   --ink-sub: #B7B0A3;
   --ink-secondary: #B7B0A3;
-  --ink-muted: #767067;
+  --ink-muted: #948D82;
 
   --phosphor-primary: #FFB000;
   --phosphor-primary-dim: rgba(255, 176, 0, 0.14);
@@ -46,7 +46,7 @@ html[data-chassis="titanium"] {
   --ink-primary: #EDF5FA;
   --ink-sub: #A5BBCB;
   --ink-secondary: #A5BBCB;
-  --ink-muted: #657D8F;
+  --ink-muted: #829BAE;
 
   --phosphor-primary: #00E5B8;
   --phosphor-primary-dim: rgba(0, 229, 184, 0.16);
@@ -64,7 +64,7 @@ html[data-chassis="gold-24k"] {
   --ink-primary: #FDF3D7;
   --ink-sub: #D6BE88;
   --ink-secondary: #D6BE88;
-  --ink-muted: #8E7847;
+  --ink-muted: #AC945C;
 
   --phosphor-primary: #FFC837;
   --phosphor-primary-dim: rgba(255, 200, 55, 0.18);
@@ -110,6 +110,35 @@ body {
   transition: background-color 0.4s ease, color 0.3s ease;
 }
 
+/* Subtle CRT scanline veil (borderless atmospheric detail, zero interaction interference) */
+body::after {
+  content: '';
+  position: fixed;
+  inset: 0;
+  z-index: 900;
+  pointer-events: none;
+  background: repeating-linear-gradient(
+    to bottom,
+    transparent 0px,
+    transparent 2px,
+    rgba(0, 0, 0, 0.22) 3px
+  );
+  opacity: 0.28;
+}
+
+/* One-shot easter-egg chromatic glitch */
+@keyframes relicPageGlitch {
+  0% { filter: none; transform: translate3d(0, 0, 0); }
+  22% { filter: drop-shadow(-3px 0 var(--phosphor-alert)) drop-shadow(3px 0 var(--phosphor-secondary)); transform: translate3d(-2px, 0, 0); }
+  48% { filter: drop-shadow(2px 0 var(--phosphor-primary)) contrast(1.12); transform: translate3d(2px, -1px, 0); }
+  76% { filter: drop-shadow(-2px 0 var(--phosphor-secondary)); transform: translate3d(-1px, 1px, 0); }
+  100% { filter: none; transform: translate3d(0, 0, 0); }
+}
+
+html.is-glitching body {
+  animation: relicPageGlitch 0.55s steps(2, end);
+}
+
 button, a, input, select, textarea {
   font: inherit;
   color: inherit;
@@ -128,6 +157,10 @@ button {
 
 .t-nums {
   font-variant-numeric: tabular-nums;
+}
+
+.label-short {
+  display: none;
 }
 
 .sr-only {
@@ -626,6 +659,28 @@ button {
 .space-section {
   padding-top: clamp(68px, 9vh, 110px);
   padding-bottom: clamp(28px, 4.5vh, 52px);
+}
+
+.reveal {
+  opacity: 0;
+  transform: translateY(14px);
+  transition: opacity 0.55s cubic-bezier(0.22, 1, 0.36, 1), transform 0.55s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.reveal.is-visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.glitch-title {
+  position: relative;
+  display: inline-block;
+}
+
+.glitch-title:hover {
+  text-shadow:
+    -1.5px 0 var(--phosphor-alert),
+    1.5px 0 var(--phosphor-secondary);
 }
 
 .section-head-open {
@@ -1430,31 +1485,165 @@ button {
 }
 
 /* ============================================================================
-   SECTION 03: WINTERMUTE RADIAL CORE & METALLIC ALLOY ORBS
+   SECTION 03: BREACH PROTOCOL (HEX MATRIX + DAEMONS + ALLOY STRIP)
+   Zero boxes-inside-boxes: pure typographic matrix with hairline rules
    ============================================================================ */
-.icebreaker-spatial-grid {
+.breach-stage {
   display: grid;
-  grid-template-columns: minmax(0, 1.2fr) minmax(300px, 0.8fr);
-  gap: clamp(32px, 5vw, 64px);
-  align-items: center;
+  grid-template-columns: minmax(290px, 0.92fr) minmax(0, 1.08fr);
+  gap: clamp(28px, 4.5vw, 60px);
+  align-items: start;
 }
 
-.ice-combat-open {
+.breach-matrix-col {
   display: flex;
   flex-direction: column;
-  gap: 24px;
+  gap: 14px;
 }
 
-.ice-core-hud {
+.breach-meta-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 12px;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: 0.06em;
+  color: var(--ink-muted);
+}
+
+.breach-timer {
+  color: var(--phosphor-primary);
+}
+
+.breach-timer.is-critical {
+  color: var(--phosphor-alert);
+}
+
+.breach-timer-track {
+  width: 100%;
+  height: 2px;
+  background: var(--hairline);
+  overflow: hidden;
+}
+
+.breach-timer-fill {
+  width: 100%;
+  height: 100%;
+  background: var(--phosphor-primary);
+  transform-origin: left center;
+  transition: transform 0.1s linear;
+}
+
+.breach-matrix {
+  display: flex;
+  flex-direction: column;
+  border-top: 1px solid var(--hairline);
+  border-bottom: 1px solid var(--hairline);
+  padding: 8px 0;
+  gap: 2px;
+}
+
+.breach-row {
   display: grid;
-  grid-template-columns: 220px minmax(0, 1fr);
-  gap: 28px;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 4px;
+}
+
+.breach-cell {
+  background: transparent;
+  border: none;
+  border-bottom: 2px solid transparent;
+  padding: 11px 0;
+  font-family: var(--font-mono);
+  font-size: 1.02rem;
+  font-weight: 500;
+  letter-spacing: 0.08em;
+  color: var(--ink-muted);
+  text-align: center;
+  transition: color 0.15s ease, background-color 0.15s ease, border-color 0.15s ease;
+}
+
+.breach-cell:disabled {
+  cursor: default;
+}
+
+.breach-cell.in-line {
+  color: var(--ink-primary);
+  background: var(--phosphor-primary-dim);
+  border-bottom-color: var(--phosphor-primary);
+  cursor: pointer;
+}
+
+.breach-cell.in-line:hover {
+  color: var(--phosphor-primary);
+  background: rgba(255, 176, 0, 0.24);
+}
+
+.breach-cell.is-echo {
+  color: var(--phosphor-secondary);
+}
+
+.breach-cell.is-hint {
+  color: var(--phosphor-green);
+  border-bottom-color: var(--phosphor-green);
+  box-shadow: inset 0 -2px 0 var(--phosphor-green);
+}
+
+.breach-cell.is-used {
+  color: var(--ink-muted);
+  opacity: 0.35;
+  background: transparent;
+  border-bottom-color: transparent;
+}
+
+.breach-buffer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+  padding-top: 6px;
+  font-family: var(--font-mono);
+  font-size: 12px;
+}
+
+.breach-buffer-label {
+  font-size: 10.5px;
+  letter-spacing: 0.1em;
+  color: var(--ink-muted);
+}
+
+.breach-buffer-slots {
+  display: flex;
+  gap: 14px;
+}
+
+.breach-slot {
+  color: var(--ink-muted);
+  letter-spacing: 0.08em;
+}
+
+.breach-slot.filled {
+  color: var(--phosphor-primary);
+  font-weight: 500;
+}
+
+.breach-side-col {
+  display: flex;
+  flex-direction: column;
+  gap: 22px;
+}
+
+.breach-core-row {
+  display: grid;
+  grid-template-columns: 168px minmax(0, 1fr);
+  gap: 22px;
   align-items: center;
 }
 
 .wintermute-core-visual {
-  width: 220px;
-  height: 220px;
+  width: 168px;
+  height: 168px;
   flex-shrink: 0;
 }
 
@@ -1479,49 +1668,7 @@ button {
   to { transform: rotate(0deg); }
 }
 
-.ice-beams-stack {
-  display: flex;
-  flex-direction: column;
-  gap: 18px;
-}
-
-.ice-beam-row {
-  display: flex;
-  flex-direction: column;
-  gap: 7px;
-}
-
-.ice-beam-meta {
-  display: flex;
-  justify-content: space-between;
-  font-family: var(--font-mono);
-  font-size: 11.5px;
-  font-weight: 500;
-}
-
-.ice-beam-track {
-  width: 100%;
-  height: 3px;
-  background: rgba(255, 255, 255, 0.08);
-  overflow: hidden;
-}
-
-.ice-beam-fill {
-  height: 100%;
-  transition: width 0.3s cubic-bezier(0.22, 1, 0.36, 1);
-}
-
-.ice-beam-fill.player {
-  background: var(--phosphor-green);
-  box-shadow: 0 0 12px var(--phosphor-green);
-}
-
-.ice-beam-fill.enemy {
-  background: var(--phosphor-alert);
-  box-shadow: 0 0 12px var(--phosphor-alert);
-}
-
-.ice-stream-log {
+.breach-log {
   padding-left: 14px;
   border-left: 2px solid var(--hairline-strong);
   font-family: var(--font-mono);
@@ -1530,53 +1677,129 @@ button {
   color: var(--ink-sub);
   display: flex;
   flex-direction: column;
-  gap: 5px;
+  gap: 6px;
 }
 
-.ice-moves-list {
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 6px 16px;
-}
-
-/* Circular Metallic Alloy Cores */
-.alloy-evolution-col {
+.breach-daemons {
   display: flex;
   flex-direction: column;
-  gap: 24px;
-  padding-left: 28px;
-  border-left: 1px solid var(--hairline);
+  gap: 10px;
 }
 
-.alloy-title {
-  font-family: var(--font-display);
-  font-size: 1.45rem;
+.breach-daemons-kicker {
+  font-family: var(--font-mono);
+  font-size: 10.5px;
+  letter-spacing: 0.1em;
+  color: var(--ink-muted);
+}
+
+.breach-daemon {
+  display: grid;
+  grid-template-columns: 112px minmax(0, 1fr);
+  gap: 16px;
+  align-items: baseline;
+  padding: 10px 0 10px 14px;
+  border-left: 2px solid var(--hairline);
+  transition: border-color 0.2s ease, opacity 0.2s ease;
+}
+
+.breach-daemon.is-complete {
+  border-left-color: var(--phosphor-green);
+}
+
+.breach-daemon.is-failed {
+  border-left-color: var(--phosphor-alert);
+  opacity: 0.6;
+}
+
+.breach-daemon-seq {
+  display: flex;
+  gap: 8px;
+  font-family: var(--font-mono);
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--ink-sub);
+}
+
+.breach-daemon-seq span.hit {
+  color: var(--phosphor-green);
+}
+
+.breach-daemon-seq span.next {
+  color: var(--phosphor-primary);
+  border-bottom: 1px solid var(--phosphor-primary);
+}
+
+.breach-daemon-info {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.breach-daemon-info strong {
+  font-family: var(--font-mono);
+  font-size: 12px;
   font-weight: 500;
   color: var(--ink-primary);
-  margin-top: 4px;
 }
 
-.alloy-desc {
-  font-size: 0.94rem;
+.breach-daemon-state {
+  color: var(--phosphor-green);
+}
+
+.breach-daemon.is-failed .breach-daemon-state {
+  color: var(--phosphor-alert);
+}
+
+.breach-daemon-info span {
+  font-size: 0.88rem;
   color: var(--ink-sub);
-  margin-top: 8px;
-  line-height: 1.6;
+  line-height: 1.45;
+}
+
+.breach-actions {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  flex-wrap: wrap;
+}
+
+/* Slim horizontal alloy evolution strip below Breach Protocol */
+.alloy-strip {
+  margin-top: 38px;
+  padding-top: 24px;
+  border-top: 1px solid var(--hairline);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px;
+  flex-wrap: wrap;
+}
+
+.alloy-strip-copy {
+  max-width: 52ch;
+}
+
+.alloy-strip-copy p {
+  font-size: 0.92rem;
+  color: var(--ink-sub);
+  line-height: 1.55;
 }
 
 .alloy-orbs-row {
   display: flex;
-  gap: 20px;
+  align-items: center;
+  gap: 18px;
   flex-wrap: wrap;
 }
 
 .alloy-orb-btn {
   background: transparent;
   border: none;
-  display: flex;
-  flex-direction: column;
+  display: inline-flex;
   align-items: center;
-  gap: 9px;
-  padding: 6px;
+  gap: 8px;
+  padding: 6px 4px;
   color: var(--ink-sub);
   font-family: var(--font-mono);
   font-size: 11.5px;
@@ -1585,7 +1808,6 @@ button {
 
 .alloy-orb-btn:hover {
   color: var(--ink-primary);
-  transform: translateY(-2px);
 }
 
 .alloy-orb-btn.active {
@@ -1593,8 +1815,8 @@ button {
 }
 
 .alloy-sphere {
-  width: 52px;
-  height: 52px;
+  width: 24px;
+  height: 24px;
   border-radius: 50%;
   border: 1.5px solid var(--hairline);
   transition: box-shadow 0.25s ease, border-color 0.25s ease, transform 0.25s ease;
@@ -1603,7 +1825,7 @@ button {
 .alloy-orb-btn.active .alloy-sphere {
   border-color: var(--phosphor-primary);
   transform: scale(1.08);
-  box-shadow: 0 0 24px var(--phosphor-primary-dim);
+  box-shadow: 0 0 16px var(--phosphor-primary-dim);
 }
 
 .alloy-sphere.obsidian {
@@ -1616,6 +1838,17 @@ button {
 
 .alloy-sphere.gold-24k {
   background: radial-gradient(circle at 32% 28%, #FFF0A8, #B57F15 55%, #160F02 100%);
+}
+
+.os-loading {
+  padding: 64px 0;
+  font-family: var(--font-mono);
+  font-size: 13px;
+  color: var(--phosphor-primary);
+}
+
+.footer-secret-hint {
+  color: var(--ink-muted);
 }
 
 /* ============================================================================
@@ -2188,8 +2421,19 @@ button {
 @media (prefers-reduced-motion: reduce) {
   .iris-orbit-ring,
   .core-spin-slow,
-  .core-spin-reverse {
+  .core-spin-reverse,
+  html.is-glitching body {
     animation: none;
+  }
+
+  body::after {
+    display: none;
+  }
+
+  .reveal {
+    opacity: 1;
+    transform: none;
+    transition: none;
   }
 }
 
@@ -2200,7 +2444,7 @@ button {
   .hero-grid,
   .relic-dialogue-grid,
   .rom-split-stage,
-  .icebreaker-spatial-grid,
+  .breach-stage,
   .os-workstation-canvas.is-split,
   .os-rom-split {
     grid-template-columns: 1fr;
@@ -2210,13 +2454,6 @@ button {
   .os-secondary-split-pane {
     padding-left: 0;
     padding-top: 28px;
-    border-left: none;
-    border-top: 1px solid var(--hairline);
-  }
-
-  .alloy-evolution-col {
-    padding-left: 0;
-    padding-top: 24px;
     border-left: none;
     border-top: 1px solid var(--hairline);
   }
@@ -2238,16 +2475,46 @@ button {
     width: calc(100% - 32px);
   }
 
+  .label-full {
+    display: none;
+  }
+
+  .label-short {
+    display: inline;
+  }
+
   .top-console-bar {
-    padding: 10px 16px;
+    padding: 8px 16px;
   }
 
   .top-console-inner {
-    gap: 10px;
+    gap: 6px 12px;
+  }
+
+  .brand-divider,
+  .brand-sub-tag {
+    display: none;
+  }
+
+  .brand-model-code {
+    font-size: 13px;
+  }
+
+  .mode-switch-group {
+    gap: 14px;
+  }
+
+  .mode-switch-btn {
+    padding: 4px 2px;
+    font-size: 11.5px;
   }
 
   .console-right-controls {
-    gap: 14px;
+    width: 100%;
+    justify-content: space-between;
+    gap: 10px;
+    padding-top: 6px;
+    border-top: 1px solid var(--hairline);
   }
 
   .hero-cyberspace {
@@ -2286,8 +2553,8 @@ button {
 
   .rom-prose-grid,
   .open-metrics-strip,
-  .ice-core-hud,
-  .ice-moves-list,
+  .breach-core-row,
+  .breach-daemon,
   .os-esper-grid {
     grid-template-columns: 1fr;
   }
@@ -2309,7 +2576,19 @@ button {
   }
 
   .os-app-dock {
-    gap: 10px 14px;
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    max-width: 100%;
+    gap: 16px;
+    scrollbar-width: none;
+  }
+
+  .os-app-dock::-webkit-scrollbar {
+    display: none;
+  }
+
+  .os-dock-tab {
+    flex-shrink: 0;
   }
 
   .os-rail-actions .cmd-link:first-child {

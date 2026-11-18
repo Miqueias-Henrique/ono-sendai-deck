@@ -34,17 +34,33 @@ function generateFreeReply(personaId, query) {
   if (q.includes('chiba') || q.includes('gibson') || q.includes('case') || q.includes('molly')) {
     return 'Chiba City foi onde Case trocou nervos queimados por um Ono-Sendai Cyberspace 7 emprestado. Este deck usa o mesmo espírito: enxugar o excesso visual e deixar só sinal útil, onda neural e código que compila.';
   }
+  if (q.includes('breach') || q.includes('daemon') || q.includes('1c') || q.includes('55') || q.includes('bd')) {
+    return personaId === 'dixie'
+      ? 'Breach Protocol ativo na Seção 03, cowboy: comece na linha 1 da matriz 5×5 e alterne coluna e linha para enviar DATAMINE_V1, ICEPICK e MASS_VULNERABILITY.'
+      : 'Johnny-84: Quer invadir de verdade? Desce na Seção 03 e manda os 3 daemons no Breach Protocol (`1C 55 BD E9 7A FF`) antes do relógio zerar.';
+  }
+  if (q.includes('samurai') || q.includes('never fade') || q.includes('silverhand') || q.includes('2023')) {
+    return 'Johnny-84: "A thing of beauty, I know — will never fade away." Em 2023 a Samurai fazia barulho na Torre Arasaka; hoje o barulho bom é query em 3ms e deploy sem rollback.';
+  }
+  if (q.includes('sandevistan') || q.includes('kiroshi') || q.includes('trauma') || q.includes('cyberware') || q.includes('netrunner')) {
+    return personaId === 'rachel'
+      ? 'Implantes Kiroshi ampliam a visão, mas é a disciplina de engenharia que enxerga gargalos antes que virem incidente em produção.'
+      : 'Johnny-84: Sandevistan nenhum salva código mal indexado, choom. O que acelera sistema de verdade é Index Seek no SQL Server e rotina assíncrona bem escrita.';
+  }
+  if (q.includes('esper') || q.includes('blade runner') || q.includes('tears') || q.includes('chuva') || q.includes('voight')) {
+    return 'Rachel-7: No terminal Esper 2019 (disponível no Hosaka OS) você pode aplicar zoom óptico no retrato e inspecionar a telemetria biométrica Voight-Kampff.';
+  }
   if (q.includes('oi') || q.includes('olá') || q.includes('ola') || q.includes('salve') || q.includes('eai')) {
     return personaId === 'dixie'
-      ? 'E aí, cowboy. Fita ROM girando a 640K sem engasgo. Pergunta sobre Zetti, Java AVL, Wintermute ou clique numa linha de diálogo.'
+      ? 'E aí, cowboy. Fita ROM girando a 640K sem engasgo. Pergunta sobre Zetti, Java AVL, Breach Protocol ou clique numa linha de diálogo.'
       : 'Johnny-84: Fala, choom. A cidade lá fora tá cheia de site igual cheio de caixinha brilhante. Aqui o papo é direto: código em produção, SQL afiado e ZERO enfeite corporativo.';
   }
 
   return personaId === 'rachel'
     ? `Consulta processada sobre "${query}": Miqueias une base acadêmica sólida em Engenharia de Software (UNIFAN 2027) com experiência prática diária em SQL Server, VB6, C#/.NET, Java 17 e Node.js.`
     : personaId === 'dixie'
-    ? `Sinal recebido sobre "${query}", cowboy. Dica rápida: tente perguntar por "zetti", "stack", "ff:06:b5", "mikoshi", "wintermute" ou "contratar", ou clique nas opções de diálogo acima.`
-    : `Johnny-84 sobre "${query}": gostei da curiosidade, samurai. Se quiser resposta na veia, manda um "zetti", "stack", "arasaka", "ff:06:b5" ou "afterlife" — ou usa os tópicos diretos logo acima.`;
+    ? `Sinal recebido sobre "${query}", cowboy. Dica rápida: tente perguntar por "zetti", "stack", "breach", "ff:06:b5", "mikoshi" ou "contratar", ou clique nas opções de diálogo acima.`
+    : `Johnny-84 sobre "${query}": gostei da curiosidade, samurai. Se quiser resposta na veia, manda um "zetti", "stack", "breach", "samurai", "ff:06:b5" ou "afterlife" — ou usa os tópicos diretos logo acima.`;
 }
 
 export default function RelicConstructDialog({
@@ -165,20 +181,19 @@ export default function RelicConstructDialog({
   return (
     <section
       id="sec-relic-chat"
-      className="space-section wrap relic-construct-section"
+      className="space-section wrap relic-construct-section reveal"
       aria-labelledby="relic-heading"
     >
       {/* Borderless Top Rail Header */}
       <div className="relic-top-rail">
-        <div className="relic-persona-tabs" role="tablist" aria-label="Canal do Constructo Neural">
+        <div className="relic-persona-tabs" role="group" aria-label="Canal do Constructo Neural">
           {Object.values(CONSTRUCT_PERSONAS).map((p, idx) => {
             const active = p.id === personaId;
             return (
               <button
                 key={p.id}
                 type="button"
-                role="tab"
-                aria-selected={active}
+                aria-pressed={active}
                 className={`relic-tab-link ${active ? 'active' : ''}`}
                 style={{ '--tab-accent': p.accentVar }}
                 onClick={() => handleSelectPersona(p.id)}
@@ -221,7 +236,7 @@ export default function RelicConstructDialog({
             <span>{persona.origin}</span>
           </div>
 
-          <h2 id="relic-heading" className="relic-section-title">
+          <h2 id="relic-heading" className="relic-section-title glitch-title" data-text="Diálogo Neural Aberto">
             Diálogo Neural Aberto
           </h2>
 
@@ -275,7 +290,7 @@ export default function RelicConstructDialog({
               className="relic-prompt-input"
               value={customInput}
               onChange={(e) => setCustomInput(e.target.value)}
-              placeholder="Pergunte sobre Zetti, stack, Arasaka, FF:06:B5..."
+              placeholder="Pergunte sobre Zetti, stack, Breach, Samurai, FF:06:B5..."
               spellCheck={false}
             />
             <button type="submit" className="relic-send-link">
@@ -285,7 +300,7 @@ export default function RelicConstructDialog({
 
           <div className="relic-quick-topics" aria-label="Tópicos rápidos de lore e engenharia">
             <span>Atalhos:</span>
-            {['zetti', 'stack', 'arasaka', 'ff:06:b5', 'blackwall', 'afterlife'].map((topic) => (
+            {['zetti', 'stack', 'breach', 'samurai', 'arasaka', 'ff:06:b5', 'afterlife'].map((topic) => (
               <button
                 key={topic}
                 type="button"
@@ -301,14 +316,13 @@ export default function RelicConstructDialog({
 
       {/* Slim Hairline Cyberpunk Lore & Aesthetics Codex */}
       <div className="relic-lore-codex">
-        <div className="codex-nav-strip" role="tablist" aria-label="Referências e Estética Cyberpunk">
+        <div className="codex-nav-strip" role="group" aria-label="Referências e Estética Cyberpunk">
           <span className="codex-label">ARQUIVO LORE &amp; REFERÊNCIAS //</span>
           {LORE_CODEX.map((item) => (
             <button
               key={item.id}
               type="button"
-              role="tab"
-              aria-selected={item.id === activeLoreId}
+              aria-pressed={item.id === activeLoreId}
               className={`codex-tab-btn ${item.id === activeLoreId ? 'active' : ''}`}
               onClick={() => {
                 playKeyclick(soundOn, 700);
