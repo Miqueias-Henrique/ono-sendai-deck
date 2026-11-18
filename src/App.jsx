@@ -9,7 +9,13 @@ import CyberspaceTerrain from './components/CyberspaceTerrain';
 import NeuralWaveMatrix from './components/NeuralWaveMatrix';
 import RelicConstructDialog from './components/RelicConstructDialog';
 import BreachProtocol from './components/BreachProtocol';
-import { playKeyclick, playVoightKampffPulse, playRelicGlitch } from './utils/soundEngine';
+import RomSignalLab from './components/RomSignalLab';
+import {
+  playKeyclick,
+  playVoightKampffPulse,
+  playRelicGlitch,
+  setAmbientDrone,
+} from './utils/soundEngine';
 import useModalFocus from './utils/useModalFocus';
 
 // Workstation OS is only fetched when the visitor switches mode (smaller first load)
@@ -17,6 +23,30 @@ const HosakaDesktopOS = lazy(() => import('./components/HosakaDesktopOS'));
 
 const STORAGE_KEY_SEALS = 'ono_sendai_vk_seals_v1';
 const IRIS_CIRCUMFERENCE = 2 * Math.PI * 138;
+
+const SECTORS = [
+  { id: 'hero-top', code: '00', label: 'Hero' },
+  { id: 'sec-relic-chat', code: '01', label: 'Relic' },
+  { id: 'sec-rom-bay', code: '02', label: 'ROMs' },
+  { id: 'sec-telemetry', code: '03', label: 'Onda' },
+  { id: 'sec-icebreaker', code: '04', label: 'Breach' },
+  { id: 'sec-contact', code: '05', label: 'Contato' },
+];
+
+const RECRUITER_BRIEFING_TEXT = [
+  `DOSSIÊ TÉCNICO — ${PROFILE_DATA.fullName}`,
+  `Cargo Alvo: ${PROFILE_DATA.role}`,
+  `Localização: Goiânia - GO (Disponível Remoto / Presencial / Híbrido)`,
+  `Experiência Atual: ${PROFILE_DATA.currentJob}`,
+  `  • SQL Server em produção (queries, views, stored procedures, Index Seek)`,
+  `  • Sustentação de módulos fiscais em VB6 para dezenas de farmácias`,
+  `  • Adequação técnica ao CNPJ Alfanumérico (NT 2026) e reforma tributária`,
+  `Stack Principal: C# / .NET · SQL Server · VB6 · Java 17 (Spring Boot 3, JPA, JavaFX DAO) · Node.js / TypeScript (NestJS, Express, Prisma, TypeORM) · PostgreSQL · MySQL · Docker · Git/Jira`,
+  `Formação: ${PROFILE_DATA.education}`,
+  `GitHub (27 repos): ${PROFILE_DATA.github}`,
+  `LinkedIn: ${PROFILE_DATA.linkedin}`,
+  `E-mail: ${PROFILE_DATA.email} | WhatsApp: ${PROFILE_DATA.phoneDisplay}`,
+].join('\n');
 
 // Hidden keyboard sequences (typed anywhere outside inputs)
 const KONAMI = ['arrowup', 'arrowup', 'arrowdown', 'arrowdown', 'arrowleft', 'arrowright', 'arrowleft', 'arrowright', 'b', 'a'];
@@ -32,6 +62,7 @@ export default function App() {
   const [viewMode, setViewMode] = useState('editorial');
   const [phosphorMode, setPhosphorMode] = useState('amber');
   const [soundOn, setSoundOn] = useState(true);
+  const [ambientOn, setAmbientOn] = useState(false);
 
   // Voight-Kampff Biometric Calibration (0..3 pulses)
   const [vkPulses, setVkPulses] = useState(0);
@@ -62,8 +93,13 @@ export default function App() {
   // Section 02: Neural Wave Telemetry Pin
   const [selectedPin, setSelectedPin] = useState(TELEMETRY_PINS[TELEMETRY_PINS.length - 1]);
 
+  // Active sector for desktop rail + scroll progress hairline ref
+  const [activeSector, setActiveSector] = useState('hero-top');
+  const scrollBarRef = useRef(null);
+
   // Modals & Notifications
   const [sealsModalOpen, setSealsModalOpen] = useState(false);
+  const [briefingModalOpen, setBriefingModalOpen] = useState(false);
   const [cmdOpen, setCmdOpen] = useState(false);
   const [cmdQuery, setCmdQuery] = useState('');
   const [toastMsg, setToastMsg] = useState('');
@@ -77,6 +113,42 @@ export default function App() {
     const t = setTimeout(() => setToastMsg(''), 3200);
     return () => clearTimeout(t);
   }, [toastMsg]);
+
+  // Clean up procedural ambient synth on unmount
+  useEffect(() => () => setAmbientDrone(false), []);
+
+  // GPU-composited scroll progress hairline along bottom of top bar
+  useEffect(() => {
+    const onScroll = () => {
+      if (!scrollBarRef.current) return;
+      const max = Math.max(1, document.documentElement.scrollHeight - window.innerHeight);
+      const ratio = Math.min(1, Math.max(0, window.scrollY / max));
+      scrollBarRef.current.style.transform = `scaleX(${ratio.toFixed(4)})`;
+    };
+    onScroll();
+    window.addEventListener('scroll', onScroll, { passive: true });
+    return () => window.removeEventListener('scroll', onScroll);
+  }, [viewMode]);
+
+  // Active section tracker for desktop floating sector rail
+  useEffect(() => {
+    if (viewMode !== 'editorial' || !('IntersectionObserver' in window)) return undefined;
+    const nodes = SECTORS.map((s) => document.getElementById(s.id)).filter(Boolean);
+    if (!nodes.length) return undefined;
+    const io = new IntersectionObserver(
+      (entries) => {
+        const visible = entries
+          .filter((e) => e.isIntersecting)
+          .sort((a, b) => b.intersectionRatio - a.intersectionRatio);
+        if (visible[0]?.target?.id) {
+          setActiveSector(visible[0].target.id);
+        }
+      },
+      { rootMargin: '-22% 0px -48% 0px', threshold: [0.05, 0.25, 0.5] }
+    );
+    nodes.forEach((n) => io.observe(n));
+    return () => io.disconnect();
+  }, [viewMode]);
 
   const unlockSeal = useCallback((sealId) => {
     setUnlockedSeals((prev) => {
@@ -97,6 +169,21 @@ export default function App() {
       return next;
     });
   }, []);
+
+  const handleToggleAmbient = useCallback(() => {
+    setAmbientOn((prev) => {
+      const next = !prev;
+      setAmbientDrone(next);
+      if (next) {
+        unlockSeal('seal_synth');
+        setRelicPing('Rachel-7: Drone analógico CS-80 (Ré menor) sintonizado no ciberespaço.');
+        notify('Drone Noturno CS-80 ligado (WebAudio puro).');
+      } else {
+        notify('Drone Noturno CS-80 desligado.');
+      }
+      return next;
+    });
+  }, [unlockSeal, notify]);
 
   const computedChassis =
     chassisOverride ||
@@ -122,6 +209,7 @@ export default function App() {
       } else if (e.key === 'Escape') {
         setCmdOpen(false);
         setSealsModalOpen(false);
+        setBriefingModalOpen(false);
       }
     };
     window.addEventListener('keydown', onKeyDown);
@@ -197,8 +285,10 @@ export default function App() {
   }, [viewMode]);
 
   const sealsDialogRef = useRef(null);
+  const briefingDialogRef = useRef(null);
   const cmdDialogRef = useRef(null);
   useModalFocus(sealsModalOpen, sealsDialogRef);
+  useModalFocus(briefingModalOpen, briefingDialogRef);
   useModalFocus(cmdOpen, cmdDialogRef);
 
   const handleVkPulse = () => {
@@ -314,6 +404,16 @@ export default function App() {
     visibleRoms.find((r) => r.id === activeRomId) || visibleRoms[0] || ROM_CARTRIDGES[0];
 
   const commandItems = [
+    {
+      label: 'Abrir Briefing Recrutador 30s (Dossiê Técnico Copiável)',
+      sub: 'RECRUTAMENTO',
+      action: () => setBriefingModalOpen(true),
+    },
+    {
+      label: ambientOn ? 'Desligar Drone Noturno CS-80 (WebAudio)' : 'Ligar Drone Noturno CS-80 (Blade Runner Synth)',
+      sub: ambientOn ? 'AUDIO ON' : 'AUDIO OFF',
+      action: () => handleToggleAmbient(),
+    },
     {
       label: 'Conversar com Johnny-84, Dixie Flatline & Rachel-7 (Relic 2.0)',
       sub: 'CANAL NEURAL',
@@ -470,11 +570,21 @@ export default function App() {
 
             <button
               type="button"
+              className={`cmd-link desktop-only-control ${ambientOn ? 'accent' : ''}`}
+              aria-pressed={ambientOn}
+              onClick={handleToggleAmbient}
+              title="Ligar ou desligar o drone analógico contínuo CS-80 (WebAudio)"
+            >
+              <span>{ambientOn ? 'CS-80 ●' : 'CS-80'}</span>
+            </button>
+
+            <button
+              type="button"
               className="cmd-link"
               aria-pressed={soundOn}
-              aria-label="Som do sintetizador CS-80"
+              aria-label="Efeitos sonoros do teclado e terminal"
               onClick={() => setSoundOn((s) => !s)}
-              title="Ativar ou silenciar sintetizador CS-80"
+              title="Ativar ou silenciar efeitos sonoros"
             >
               <span className="label-full">{soundOn ? 'Som On' : 'Mudo'}</span>
               <span className="label-short">{soundOn ? '♪ On' : '♪ Off'}</span>
@@ -494,7 +604,32 @@ export default function App() {
             </button>
           </div>
         </div>
+        <div className="console-progress-track" aria-hidden="true">
+          <div ref={scrollBarRef} className="console-progress-bar" />
+        </div>
       </header>
+
+      {/* Subtle Wide-Desktop Spatial Sector Rail (>= 1440px only) */}
+      {viewMode === 'editorial' && (
+        <nav className="sector-rail" aria-label="Navegação rápida por setores">
+          {SECTORS.map((sec) => {
+            const isActive = activeSector === sec.id;
+            return (
+              <a
+                key={sec.id}
+                href={`#${sec.id}`}
+                className={`sector-rail-item ${isActive ? 'active' : ''}`}
+                aria-current={isActive ? 'location' : undefined}
+                onClick={() => playKeyclick(soundOn, 720)}
+              >
+                <span className="sector-rail-code t-nums">{sec.code}</span>
+                <span className="sector-rail-tick" aria-hidden="true" />
+                <span className="sector-rail-label">{sec.label}</span>
+              </a>
+            );
+          })}
+        </nav>
+      )}
 
       {/* ====================================================================
           MAIN STAGE: CYBERSPACE SPATIAL DECK VS HOSAKA WORKSTATION OS
@@ -510,6 +645,8 @@ export default function App() {
           >
             <HosakaDesktopOS
               soundOn={soundOn}
+              ambientOn={ambientOn}
+              onToggleAmbient={handleToggleAmbient}
               unlockSeal={unlockSeal}
               notify={notify}
               unlockedSeals={unlockedSeals}
@@ -528,7 +665,7 @@ export default function App() {
             {/* ================================================================
                 SECTION 0: FULL-BLEED CYBERSPACE HERO + ORBITAL IRIS SCANNER
                 ================================================================ */}
-            <section className="hero-cyberspace" aria-labelledby="hero-heading">
+            <section id="hero-top" className="hero-cyberspace" aria-labelledby="hero-heading">
               <CyberspaceTerrain chassis={computedChassis} phosphor={phosphorMode} />
 
               <div className="wrap hero-grid">
@@ -591,7 +728,18 @@ export default function App() {
                       className="hero-text-link"
                       onClick={() => handleSwitchMode('os')}
                     >
-                      Hosaka OS ▣
+                      Hosaka OS →
+                    </button>
+                    <button
+                      type="button"
+                      className="hero-text-link"
+                      onClick={() => {
+                        playKeyclick(soundOn, 820);
+                        setBriefingModalOpen(true);
+                        unlockSeal('seal_dossier');
+                      }}
+                    >
+                      Briefing 30s ↗
                     </button>
                     <a
                       href={PROFILE_DATA.cvPdf}
@@ -599,7 +747,7 @@ export default function App() {
                       className="hero-text-link"
                       onClick={() => unlockSeal('seal_dossier')}
                     >
-                      Currículo PDF ↗
+                      Currículo PDF ↓
                     </a>
                   </div>
                 </div>
@@ -698,6 +846,7 @@ export default function App() {
               unlockSeal={unlockSeal}
               onTriggerEffect={handleRelicEffect}
               externalEvent={relicPing}
+              onOpenBriefing={() => setBriefingModalOpen(true)}
             />
 
             {/* ================================================================
@@ -706,12 +855,12 @@ export default function App() {
             <section id="sec-rom-bay" className="space-section wrap reveal" aria-labelledby="rom-heading">
               <div className="section-head-open">
                 <div>
-                  <span className="section-kicker">01 / ARQUITETURA &amp; PRODUÇÃO</span>
+                  <span className="section-kicker">01 / ARQUITETURA &amp; LABORATÓRIO AO VIVO</span>
                   <h2 id="rom-heading" className="glitch-title" data-text="Fitas ROM Hosaka">
                     Fitas ROM Hosaka
                   </h2>
                   <p>
-                    O que foi construído, como foi arquitetado e o resultado técnico em SQL Server, VB6, Java 17 e Node.js.
+                    Teste ao vivo cada sistema real: validador NT-2026 CNPJ Alfanumérico, simulador ACID de concorrência, Árvore AVL interativa e código-fonte.
                   </p>
                 </div>
 
@@ -797,6 +946,14 @@ export default function App() {
                       </ul>
                     </div>
                   </div>
+
+                  {/* Interactive Borderless Vector Architecture & Algorithm Lab */}
+                  <RomSignalLab
+                    romId={activeRom.id}
+                    soundOn={soundOn}
+                    unlockSeal={unlockSeal}
+                    onRelicPing={setRelicPing}
+                  />
 
                   {/* Borderless Left-Accented Code Deck */}
                   <div className="cyberspace-code-deck">
@@ -988,6 +1145,16 @@ export default function App() {
                     Disponível para vagas Backend Júnior · C#/.NET · SQL Server · Java 17 · Node.js em Goiânia ou remoto.
                   </p>
                 </div>
+                <button
+                  type="button"
+                  className="deck-cta"
+                  onClick={() => {
+                    playKeyclick(soundOn, 860);
+                    setBriefingModalOpen(true);
+                  }}
+                >
+                  Briefing Recrutador (30s) ↗
+                </button>
               </div>
 
               <div className="contact-ledger">
@@ -1173,7 +1340,7 @@ export default function App() {
                 className="cmd-input"
                 value={cmdQuery}
                 onChange={(e) => setCmdQuery(e.target.value)}
-                placeholder="Buscar fita ROM, Johnny-84, Hosaka OS, Voight-Kampff..."
+                placeholder="Buscar fita ROM, Johnny-84, Briefing 30s, CS-80..."
                 aria-label="Filtrar comandos da estação"
                 autoFocus
               />
@@ -1192,6 +1359,102 @@ export default function App() {
                     <small>{item.sub}</small>
                   </button>
                 ))}
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* ====================================================================
+          MODAL 3: BRIEFING EXECUTIVO 30S PARA RECRUTADORES & TECH LEADS
+          ==================================================================== */}
+      {briefingModalOpen && (
+        <div
+          className="modal-backdrop"
+          role="dialog"
+          aria-modal="true"
+          aria-labelledby="briefing-modal-title"
+          onClick={() => setBriefingModalOpen(false)}
+        >
+          <div ref={briefingDialogRef} className="modal-window briefing-modal" onClick={(e) => e.stopPropagation()}>
+            <header className="modal-header">
+              <span id="briefing-modal-title">DOSSIÊ EXECUTIVO (30s) // MIQUEIAS CARVALHO</span>
+              <button
+                type="button"
+                className="modal-close-btn"
+                aria-label="Fechar briefing executivo"
+                onClick={() => setBriefingModalOpen(false)}
+              >
+                ×
+              </button>
+            </header>
+            <div className="modal-body">
+              <div className="briefing-lead-row">
+                <div>
+                  <strong className="briefing-name">{PROFILE_DATA.fullName}</strong>
+                  <p className="briefing-role">{PROFILE_DATA.role} · Goiânia, GO (Remoto / Híbrido)</p>
+                </div>
+                <div className="modal-btn-row">
+                  <button
+                    type="button"
+                    className="deck-cta"
+                    onClick={() => handleCopyText(RECRUITER_BRIEFING_TEXT, 'Briefing Executivo 30s')}
+                  >
+                    Copiar Briefing →
+                  </button>
+                  <a
+                    href={PROFILE_DATA.cvPdf}
+                    download="Curriculo_Miqueias_Carvalho.pdf"
+                    className="cmd-link accent"
+                    onClick={() => unlockSeal('seal_dossier')}
+                  >
+                    Baixar PDF ⬇
+                  </a>
+                </div>
+              </div>
+
+              <div className="briefing-ledger">
+                <div className="briefing-row">
+                  <span className="briefing-key">PRODUÇÃO ATUAL</span>
+                  <div>
+                    <strong>{PROFILE_DATA.currentJob}</strong>
+                    <p>
+                      Manutenção e otimização diária de queries, views e stored procedures em <strong>SQL Server</strong>,
+                      evolução de módulos fiscais em <strong>VB6</strong> para dezenas de farmácias, adequação ao{' '}
+                      <strong>CNPJ Alfanumérico (NT 2026)</strong> e cálculos da reforma tributária.
+                    </p>
+                  </div>
+                </div>
+                <div className="briefing-row">
+                  <span className="briefing-key">STACK BACKEND</span>
+                  <div>
+                    <strong>C# / .NET · SQL Server · VB6 · Java 17 (Spring Boot 3) · Node.js (NestJS)</strong>
+                    <p>
+                      PostgreSQL, MySQL, Prisma ORM, TypeORM, Spring Data JPA, JDBC DAO, Docker Compose, OpenAPI/Swagger,
+                      GitKraken e Jira.
+                    </p>
+                  </div>
+                </div>
+                <div className="briefing-row">
+                  <span className="briefing-key">DESTAQUES GITHUB</span>
+                  <div>
+                    <strong>27 repositórios públicos</strong>
+                    <p>
+                      <code>api-gestao-produtos</code> (TS/TypeORM/Docker) · <code>vosso-cinema-api</code> (NestJS/Prisma ACID) ·{' '}
+                      <code>vital-conscious-api</code> (Java 17/Spring Boot 3) · <code>controle-estoque-javafx</code> (JDBC DAO) ·{' '}
+                      <code>catalogo-livros-avl-bst</code> &amp; <code>tabela-hash-cpf-java</code>.
+                    </p>
+                  </div>
+                </div>
+                <div className="briefing-row">
+                  <span className="briefing-key">FORMAÇÃO &amp; CONTATO</span>
+                  <div>
+                    <strong>{PROFILE_DATA.education}</strong>
+                    <p className="t-nums">
+                      {PROFILE_DATA.email} · WhatsApp {PROFILE_DATA.phoneDisplay}
+                    </p>
+                  </div>
+                </div>
               </div>
             </div>
           </div>

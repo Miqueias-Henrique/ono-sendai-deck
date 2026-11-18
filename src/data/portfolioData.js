@@ -102,9 +102,9 @@ END;`,
       'Construída para resolver o gerenciamento completo de produtos, saldo de estoque e categorias com validação estrita de payload, paginação performática e persistência relacional versionada.',
     engineering: [
       'Separação em camadas com Node.js, TypeScript, Express e TypeORM conectado ao MySQL 8.',
-      'Evolução determinística de schema via TypeORM Migrations e buscas paginadas (`findAndCount`).',
-      'Documentação interativa de todos os endpoints e schemas via OpenAPI / Swagger UI (`/api-docs`).',
-      'Orquestração de containers (API + banco MySQL com healthcheck) pronta para subida imediata com `docker compose up`.',
+      'Evolução determinística de schema via TypeORM Migrations e buscas paginadas (findAndCount).',
+      'Documentação interativa de todos os endpoints e schemas via OpenAPI / Swagger UI (/api-docs).',
+      'Orquestração de containers (API + banco MySQL com healthcheck) pronta para subida imediata com docker compose up.',
     ],
     stack: ['TypeScript', 'Node.js', 'Express', 'TypeORM', 'MySQL', 'Swagger', 'Docker'],
     repoUrl: 'https://github.com/Miqueias-Henrique/api-gestao-produtos',
@@ -137,13 +137,13 @@ export class ProductService {
     period: 'Repositório Público · GitHub',
     headline: 'Backend modular em NestJS para gestão de filmes, salas, sessões e reserva concorrente de assentos.',
     impact:
-      'O QUE: backend de bilheteria e sessões de cinema · COMO: módulos NestJS, DTOs validados e `$transaction` no Prisma + PostgreSQL · RESULTADO: reserva atômica livre de venda dupla (race condition) integrada ao frontend `vosso-cinema-web`.',
+      'O QUE: backend de bilheteria e sessões de cinema · COMO: módulos NestJS, DTOs validados e $transaction no Prisma + PostgreSQL · RESULTADO: reserva atômica livre de venda dupla (race condition) integrada ao frontend vosso-cinema-web.',
     context:
       'Desenvolvida para sustentar a operação completa de um complexo de cinema (filmes, salas, sessões e ingressos), garantindo consistência transacional quando múltiplos clientes disputam o mesmo assento.',
     engineering: [
-      'Arquitetura modular no padrão NestJS (`Movies`, `Rooms`, `Sessions`, `Tickets`) com injeção de dependência e tipagem ponta a ponta no Prisma ORM.',
-      'Reserva atômica com `prisma.$transaction` lançando `ConflictException` (HTTP 409) em conflito de assento.',
-      'Validação automática de contratos de entrada com `ValidationPipe`/`class-validator` e documentação Swagger.',
+      'Arquitetura modular no padrão NestJS (Movies, Rooms, Sessions, Tickets) com injeção de dependência e tipagem ponta a ponta no Prisma ORM.',
+      'Reserva atômica com prisma.$transaction lançando ConflictException (HTTP 409) em conflito de assento.',
+      'Validação automática de contratos de entrada com ValidationPipe / class-validator e documentação Swagger.',
     ],
     stack: ['NestJS', 'TypeScript', 'Prisma ORM', 'PostgreSQL', 'Swagger', 'REST API'],
     repoUrl: 'https://github.com/Miqueias-Henrique/vosso-cinema-api',
@@ -172,12 +172,12 @@ PASS  test/sessions.e2e-spec.ts (6 passed, 0 failed in 1.12s)`,
     period: 'Repositório Público · GitHub',
     headline: 'API RESTful em Java 17 e Spring Boot 3 com Spring Data JPA e PostgreSQL.',
     impact:
-      'O QUE: API REST corporativa de registros vitais · COMO: Java 17, Spring Boot 3, Spring Data JPA/Hibernate e Bean Validation · RESULTADO: contratos REST padronizados (`ResponseEntity`, HTTP 201/400/404) e persistência relacional em PostgreSQL.',
+      'O QUE: API REST corporativa de registros vitais · COMO: Java 17, Spring Boot 3, Spring Data JPA/Hibernate e Bean Validation · RESULTADO: contratos REST padronizados (ResponseEntity, HTTP 201/400/404) e persistência relacional em PostgreSQL.',
     context:
       'Projeto de engenharia backend aplicando os padrões corporativos do ecossistema Java 17 e Spring Boot 3: inversão de controle, DTOs imutáveis, validação declarativa e mapeamento objeto-relacional limpo.',
     engineering: [
       'Entidades JPA mapeadas com relacionamentos otimizados e repositórios Spring Data.',
-      'Controllers REST padronizados com `ResponseEntity`, `@Valid` Bean Validation e tratamento global de erros.',
+      'Controllers REST padronizados com ResponseEntity, @Valid Bean Validation e tratamento global de erros.',
       'Persistência relacional em PostgreSQL empacotada via Maven e validada por suíte de testes.',
     ],
     stack: ['Java 17', 'Spring Boot 3', 'Spring Data JPA', 'PostgreSQL', 'Maven'],
@@ -209,12 +209,12 @@ public class VitalRecordController {
     period: 'Repositório Público · GitHub',
     headline: 'Sistema desktop completo em JavaFX com conexão JDBC direta ao PostgreSQL e padrão arquitetural DAO.',
     impact:
-      'O QUE: sistema desktop de inventário e estoque · COMO: Java 17 + JavaFX em MVC e persistência JDBC pura via padrão DAO · RESULTADO: CRUD transacional seguro contra SQL Injection (`PreparedStatement`) e desacoplamento total entre UI e SQL.',
+      'O QUE: sistema desktop de inventário e estoque · COMO: Java 17 + JavaFX em MVC e persistência JDBC pura via padrão DAO · RESULTADO: CRUD transacional seguro contra SQL Injection (PreparedStatement) e desacoplamento total entre UI e SQL.',
     context:
-      'Aplicação desktop construída deliberadamente sem ORMs para demonstrar domínio de SQL puro via JDBC, gerenciamento de recursos com `try-with-resources` e separação entre camada de apresentação e acesso a dados.',
+      'Aplicação desktop construída deliberadamente sem ORMs para demonstrar domínio de SQL puro via JDBC, gerenciamento de recursos com try-with-resources e separação entre camada de apresentação e acesso a dados.',
     engineering: [
-      'Data Access Objects (`ProdutoDAO`) com `PreparedStatement` parametrizado e fechamento determinístico de conexões.',
-      'Interface JavaFX (FXML + Controllers) com `TableView` reativa, busca instantânea e alertas de estoque mínimo.',
+      'Data Access Objects (ProdutoDAO) com PreparedStatement parametrizado e fechamento determinístico de conexões.',
+      'Interface JavaFX (FXML + Controllers) com TableView reativa, busca instantânea e alertas de estoque mínimo.',
       'Schema PostgreSQL com chaves estrangeiras e restrições de integridade.',
     ],
     stack: ['Java 17', 'JavaFX', 'JDBC', 'PostgreSQL', 'Padrão DAO', 'MVC'],
@@ -241,13 +241,13 @@ public void atualizarEstoque(int idProduto, int novaQuantidade) throws SQLExcept
     period: '2 Repositórios Públicos · GitHub',
     headline: 'Implementações do zero de Tabela Hash com encadeamento separado e Árvore AVL auto-balanceada.',
     impact:
-      'O QUE: estruturas de dados implementadas do zero em Java · COMO: Hash Table com dispersão de CPF (Módulo 11) e Árvore AVL com rotações simples/duplas (`|FB| <= 1`) · RESULTADO: busca em `O(1)` médio e `O(log n)` garantido sob entradas ordenadas que degeneram uma BST comum em `O(n)`.',
+      'O QUE: estruturas de dados implementadas do zero em Java · COMO: Hash Table com dispersão de CPF (Módulo 11) e Árvore AVL com rotações simples/duplas (|FB| ≤ 1) · RESULTADO: busca em O(1) médio e O(log n) garantido sob entradas ordenadas que degeneram uma BST comum em O(n).',
     context:
-      'Dois repositórios públicos (`tabela-hash-cpf-java` e `catalogo-livros-avl-bst`) construídos sem coleções prontas para demonstrar domínio de ponteiros, tratamento de colisão, fator de balanceamento e análise assintótica.',
+      'Dois repositórios públicos (tabela-hash-cpf-java e catalogo-livros-avl-bst) construídos sem coleções prontas para demonstrar domínio de ponteiros, tratamento de colisão, fator de balanceamento e análise assintótica.',
     engineering: [
       'Tabela Hash com função de espalhamento para CPF, validação oficial de dígitos verificadores (Módulo 11) e listas encadeadas.',
       'Comparativo entre BST clássica e Árvore AVL com rotações LL, RR, LR e RL mantendo altura logarítmica.',
-      'Testes unitários com JUnit 5 e interface de linha de comando (`quiz-cli-java`).',
+      'Testes unitários com JUnit 5 e interface de linha de comando (quiz-cli-java).',
     ],
     stack: ['Java 17', 'Estruturas de Dados', 'Árvore AVL', 'Tabela Hash O(1)', 'JUnit 5', 'Complexidade'],
     repoUrl: 'https://github.com/Miqueias-Henrique/catalogo-livros-avl-bst',

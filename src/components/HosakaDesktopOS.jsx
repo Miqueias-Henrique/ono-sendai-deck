@@ -42,8 +42,75 @@ const SYNTH_PADS = [
   },
 ];
 
+function executeMiniSql(sqlText, baseRows) {
+  let rows = [...baseRows];
+  const upper = sqlText.toUpperCase();
+  let usedFilter = false;
+  let usedSort = false;
+
+  // Safe lightweight WHERE matching: LIKE '%term%' or = 'value'
+  const likeMatch = sqlText.match(/WHERE\s+[\w.]+\s+LIKE\s+'%([^']+)%'/i);
+  const eqMatch = sqlText.match(/WHERE\s+([\w.]+)\s*=\s*'([^']+)'/i);
+
+  if (likeMatch) {
+    const needle = likeMatch[1].toLowerCase();
+    rows = rows.filter((r) =>
+      Object.values(r).some((v) => String(v).toLowerCase().includes(needle))
+    );
+    usedFilter = true;
+  } else if (eqMatch) {
+    const colRaw = eqMatch[1].split('.').pop().toLowerCase();
+    const val = eqMatch[2].toLowerCase();
+    const matched = rows.filter((r) => {
+      const key = Object.keys(r).find((k) => k.toLowerCase() === colRaw);
+      if (!key) return true;
+      return String(r[key]).toLowerCase() === val;
+    });
+    rows = matched;
+    usedFilter = true;
+  }
+
+  // ORDER BY col ASC/DESC
+  const orderMatch = sqlText.match(/ORDER\s+BY\s+([\w.]+)(?:\s+(ASC|DESC))?/i);
+  if (orderMatch && rows.length > 1) {
+    const colRaw = orderMatch[1].split('.').pop().toLowerCase();
+    const dir = (orderMatch[2] || 'ASC').toUpperCase();
+    const key = Object.keys(rows[0]).find((k) => k.toLowerCase() === colRaw);
+    if (key) {
+      rows.sort((a, b) => {
+        const av = a[key];
+        const bv = b[key];
+        const cmp =
+          typeof av === 'number' && typeof bv === 'number'
+            ? av - bv
+            : String(av).localeCompare(String(bv), 'pt-BR');
+        return dir === 'DESC' ? -cmp : cmp;
+      });
+      usedSort = true;
+    }
+  }
+
+  // TOP N support
+  const topMatch = upper.match(/SELECT\s+TOP\s+(\d+)/);
+  if (topMatch) {
+    const n = Number.parseInt(topMatch[1], 10);
+    if (n > 0) rows = rows.slice(0, n);
+  }
+
+  const planNodes = [
+    { op: 'INDEX SEEK', cost: usedSort ? '54%' : '68%', sub: 'B-Tree Clustered' },
+    { op: usedFilter ? 'FILTER PRED' : 'COMPUTE', cost: usedFilter ? '18%' : '14%', sub: usedFilter ? 'WHERE Match' : 'Projection' },
+    { op: usedSort ? 'SORT STREAM' : 'STREAM AGG', cost: usedSort ? '20%' : '10%', sub: usedSort ? 'ORDER BY' : 'Zero Spill' },
+    { op: 'SELECT OUT', cost: '8%', sub: `${rows.length} rows` },
+  ];
+
+  return { rows, planNodes };
+}
+
 export default function HosakaDesktopOS({
   soundOn,
+  ambientOn,
+  onToggleAmbient,
   unlockSeal,
   notify,
   unlockedSeals,
@@ -61,6 +128,7 @@ export default function HosakaDesktopOS({
   const [selectedSqlId, setSelectedSqlId] = useState(SQL_PRESETS[0].id);
   const [customSql, setCustomSql] = useState(SQL_PRESETS[0].sql);
   const [sqlResultRows, setSqlResultRows] = useState(SQL_PRESETS[0].rows);
+  const [sqlPlan, setSqlPlan] = useState(() => executeMiniSql(SQL_PRESETS[0].sql, SQL_PRESETS[0].rows).planNodes);
   const [sqlExecStatus, setSqlExecStatus] = useState('PRONTO · 3 REGISTROS RETORNADOS (1.4ms)');
 
   // Esper 2019 PhotoLab state
@@ -87,9 +155,11 @@ export default function HosakaDesktopOS({
     playKeyclick(soundOn, 840);
     setSelectedSqlId(preset.id);
     setCustomSql(preset.sql);
-    setSqlResultRows(preset.rows);
-    const execMs = (0.75 + preset.rows.length * 0.24).toFixed(2);
-    setSqlExecStatus(`EXECUÇÃO OK · ${preset.rows.length} REGISTROS (${execMs}ms)`);
+    const { rows, planNodes } = executeMiniSql(preset.sql, preset.rows);
+    setSqlResultRows(rows);
+    setSqlPlan(planNodes);
+    const execMs = (0.75 + rows.length * 0.24).toFixed(2);
+    setSqlExecStatus(`EXECUÇÃO OK · ${rows.length} REGISTROS (${execMs}ms)`);
     unlockSeal('seal_sql_bench');
     notify('Consulta SQL executada no cluster Hosaka.');
     onRelicPing?.('Johnny-84: Query disparada direto no SQL Bench sem engasgar uma tabela.');
@@ -99,8 +169,10 @@ export default function HosakaDesktopOS({
     playKeyclick(soundOn, 920);
     unlockSeal('seal_sql_bench');
     const currentPreset = SQL_PRESETS.find((p) => p.id === selectedSqlId) || SQL_PRESETS[0];
-    setSqlResultRows(currentPreset.rows);
-    setSqlExecStatus(`PLANO DE EXECUÇÃO: INDEX SEEK · ${currentPreset.rows.length} LINHAS`);
+    const { rows, planNodes } = executeMiniSql(customSql, currentPreset.rows);
+    setSqlResultRows(rows);
+    setSqlPlan(planNodes);
+    setSqlExecStatus(`PLANO DE EXECUÇÃO: INDEX SEEK · ${rows.length} LINHA(S) RETORNADA(S)`);
     notify('Plano de execução SQL validado (Index Seek).');
     onRelicPing?.('Dixie Flatline: Plano Index Seek limpo — nada de Table Scan aqui, cowboy.');
   };
@@ -295,6 +367,31 @@ export default function HosakaDesktopOS({
 
       <div className="os-status-readout t-nums">STATUS: {sqlExecStatus}</div>
 
+      {/* Borderless SVG SQL Server Execution Plan */}
+      <div className="os-sql-plan-strip" aria-label="Plano de execução SQL Server">
+        <span className="rom-lab-kicker">PLANO DE EXECUÇÃO ESTIMADO // SSMS COST GRAPH</span>
+        <svg viewBox="0 0 580 84" className="rom-pipeline-svg" role="img" aria-label="Árvore de custo do plano de execução T-SQL">
+          <line x1="64" y1="30" x2="514" y2="30" stroke="var(--phosphor-secondary)" strokeWidth="1.4" strokeDasharray="3 4" />
+          {sqlPlan.map((node, idx) => {
+            const x = 64 + idx * 150;
+            return (
+              <g key={`${node.op}-${idx}`}>
+                <circle cx={x} cy="30" r="16" fill="var(--bg)" stroke="var(--phosphor-primary)" strokeWidth="1.6" />
+                <text x={x} y="34" textAnchor="middle" fill="var(--phosphor-primary)" fontSize="9.5" fontFamily="var(--font-mono)">
+                  {node.cost}
+                </text>
+                <text x={x} y="62" textAnchor="middle" fill="var(--ink-primary)" fontSize="9.5" fontFamily="var(--font-mono)">
+                  {node.op}
+                </text>
+                <text x={x} y="76" textAnchor="middle" fill="var(--ink-muted)" fontSize="8.8" fontFamily="var(--font-mono)">
+                  {node.sub}
+                </text>
+              </g>
+            );
+          })}
+        </svg>
+      </div>
+
       <div className="os-table-scroll">
         <table className="os-ledger-table">
           <thead>
@@ -304,15 +401,21 @@ export default function HosakaDesktopOS({
             </tr>
           </thead>
           <tbody>
-            {sqlResultRows.map((row, idx) => (
-              <tr key={idx}>
-                {Object.values(row).map((val, cIdx) => (
-                  <td key={cIdx} className="t-nums">
-                    {val}
-                  </td>
-                ))}
+            {sqlResultRows.length > 0 ? (
+              sqlResultRows.map((row, idx) => (
+                <tr key={idx}>
+                  {Object.values(row).map((val, cIdx) => (
+                    <td key={cIdx} className="t-nums">
+                      {val}
+                    </td>
+                  ))}
+                </tr>
+              ))
+            ) : (
+              <tr>
+                <td className="t-nums">0 linhas retornadas para o filtro WHERE informado.</td>
               </tr>
-            ))}
+            )}
           </tbody>
         </table>
       </div>
@@ -403,13 +506,25 @@ export default function HosakaDesktopOS({
           <span className="section-kicker">04 / YAMAHA CS-80 WEBAUDIO SYNTH</span>
           <h3>Sintetizador Analógico de Fósforo</h3>
         </div>
-        <span className="os-status-readout t-nums">
-          FREQUÊNCIA ATIVA: {lastPad.freqLabel}
-        </span>
+        <div className="code-deck-actions">
+          {onToggleAmbient && (
+            <button
+              type="button"
+              className="deck-cta"
+              aria-pressed={ambientOn}
+              onClick={onToggleAmbient}
+            >
+              {ambientOn ? '■ Parar Drone Noturno CS-80' : '▶ Ligar Drone Noturno CS-80'}
+            </button>
+          )}
+          <span className="os-status-readout t-nums">
+            FREQUÊNCIA ATIVA: {lastPad.freqLabel}
+          </span>
+        </div>
       </div>
 
       <p className="os-rom-summary">
-        Acordes dente-de-serra filtrados em tempo real via WebAudio API sem arquivos MP3 externos, modelados nos filtros passa-baixa de Los Angeles 2019.
+        Acordes dente-de-serra e drone contínuo filtrados em tempo real via WebAudio API sem arquivos MP3 externos, modelados nos filtros passa-baixa de Los Angeles 2019.
       </p>
 
       <svg viewBox="0 0 640 44" style={{ width: '100%', maxWidth: '640px', height: '44px' }} aria-hidden="true">
@@ -572,7 +687,7 @@ export default function HosakaDesktopOS({
               setSplitSql((s) => !s);
             }}
           >
-            {splitSql ? 'Layout: Único ▢' : 'Split SQL ◫'}
+            {splitSql ? 'Layout: Único [ ]' : 'Split SQL [||]'}
           </button>
           {onReturnToSpace && (
             <button

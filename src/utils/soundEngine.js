@@ -4,6 +4,7 @@
 // ============================================================================
 
 let audioCtx = null;
+let ambientNodes = null;
 
 function getCtx() {
   if (typeof window === 'undefined') return null;
@@ -130,5 +131,152 @@ export function playRelicGlitch(enabled = true) {
       osc.start(now + i * 0.025);
       osc.stop(now + i * 0.025 + 0.05);
     });
+  } catch {}
+}
+
+export function playRotationChime(enabled = true) {
+  if (!enabled) return;
+  try {
+    const ctx = getCtx();
+    if (!ctx) return;
+    const now = ctx.currentTime;
+    [440, 659.25].forEach((freq, i) => {
+      const osc = ctx.createOscillator();
+      const gain = ctx.createGain();
+      osc.type = 'sine';
+      osc.frequency.setValueAtTime(freq, now + i * 0.07);
+      gain.gain.setValueAtTime(0.045, now + i * 0.07);
+      gain.gain.exponentialRampToValueAtTime(0.0008, now + i * 0.07 + 0.18);
+      osc.connect(gain);
+      gain.connect(ctx.destination);
+      osc.start(now + i * 0.07);
+      osc.stop(now + i * 0.07 + 0.2);
+    });
+  } catch {}
+}
+
+export function playConflictBuzz(enabled = true) {
+  if (!enabled) return;
+  try {
+    const ctx = getCtx();
+    if (!ctx) return;
+    const now = ctx.currentTime;
+    [165, 130].forEach((freq, i) => {
+      const osc = ctx.createOscillator();
+      const gain = ctx.createGain();
+      osc.type = 'sawtooth';
+      osc.frequency.setValueAtTime(freq, now + i * 0.085);
+      gain.gain.setValueAtTime(0.04, now + i * 0.085);
+      gain.gain.exponentialRampToValueAtTime(0.0008, now + i * 0.085 + 0.075);
+      osc.connect(gain);
+      gain.connect(ctx.destination);
+      osc.start(now + i * 0.085);
+      osc.stop(now + i * 0.085 + 0.08);
+    });
+  } catch {}
+}
+
+export function playDaemonUpload(enabled = true, tier = 1) {
+  if (!enabled) return;
+  try {
+    const ctx = getCtx();
+    if (!ctx) return;
+    const now = ctx.currentTime;
+    const base = 330 + tier * 55;
+    const notes = [base, base * 1.25, base * 1.5];
+    notes.forEach((freq, i) => {
+      const osc = ctx.createOscillator();
+      const gain = ctx.createGain();
+      osc.type = 'triangle';
+      osc.frequency.setValueAtTime(freq, now + i * 0.06);
+      gain.gain.setValueAtTime(0.048, now + i * 0.06);
+      gain.gain.exponentialRampToValueAtTime(0.0008, now + i * 0.06 + 0.16);
+      osc.connect(gain);
+      gain.connect(ctx.destination);
+      osc.start(now + i * 0.06);
+      osc.stop(now + i * 0.06 + 0.18);
+    });
+  } catch {}
+}
+
+/**
+ * Procedural Blade Runner / CS-80 nocturnal ambient drone (pure WebAudio).
+ * Gentle lowpass-filtered D-minor fifth drone with slow LFO filter sweep.
+ */
+export function setAmbientDrone(active) {
+  try {
+    if (!active) {
+      if (ambientNodes) {
+        const { ctx, master, oscs, lfo } = ambientNodes;
+        const now = ctx.currentTime;
+        master.gain.cancelScheduledValues(now);
+        master.gain.setValueAtTime(Math.max(0.0001, master.gain.value), now);
+        master.gain.exponentialRampToValueAtTime(0.0001, now + 0.45);
+        setTimeout(() => {
+          oscs.forEach((o) => {
+            try {
+              o.stop();
+              o.disconnect();
+            } catch {}
+          });
+          try {
+            lfo.stop();
+            lfo.disconnect();
+            master.disconnect();
+          } catch {}
+        }, 500);
+        ambientNodes = null;
+      }
+      return;
+    }
+
+    if (ambientNodes) return;
+    const ctx = getCtx();
+    if (!ctx) return;
+    const now = ctx.currentTime;
+
+    const master = ctx.createGain();
+    master.gain.setValueAtTime(0.0001, now);
+    master.gain.linearRampToValueAtTime(0.022, now + 1.4);
+
+    const filter = ctx.createBiquadFilter();
+    filter.type = 'lowpass';
+    filter.frequency.setValueAtTime(360, now);
+    filter.Q.setValueAtTime(2.4, now);
+
+    // Slow analog breathing LFO on the filter cutoff
+    const lfo = ctx.createOscillator();
+    const lfoGain = ctx.createGain();
+    lfo.type = 'sine';
+    lfo.frequency.setValueAtTime(0.09, now);
+    lfoGain.gain.setValueAtTime(175, now);
+    lfo.connect(lfoGain);
+    lfoGain.connect(filter.frequency);
+    lfo.start(now);
+
+    // D2 (73.42), A2 (110), D3 (146.83), F3 (174.61) — iconic CS-80 noir voicing
+    const voices = [
+      { freq: 73.42, type: 'sine', detune: 0, gainVal: 0.45 },
+      { freq: 110.0, type: 'triangle', detune: -6, gainVal: 0.3 },
+      { freq: 146.83, type: 'sawtooth', detune: 5, gainVal: 0.16 },
+      { freq: 174.61, type: 'sawtooth', detune: -8, gainVal: 0.11 },
+    ];
+
+    const oscs = voices.map((v) => {
+      const osc = ctx.createOscillator();
+      const vGain = ctx.createGain();
+      osc.type = v.type;
+      osc.frequency.setValueAtTime(v.freq, now);
+      osc.detune.setValueAtTime(v.detune, now);
+      vGain.gain.setValueAtTime(v.gainVal, now);
+      osc.connect(vGain);
+      vGain.connect(filter);
+      osc.start(now);
+      return osc;
+    });
+
+    filter.connect(master);
+    master.connect(ctx.destination);
+    ambientNodes = { ctx, master, oscs, lfo };
   } catch {}
 }
