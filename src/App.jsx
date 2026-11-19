@@ -22,15 +22,13 @@ import useModalFocus from './utils/useModalFocus';
 const HosakaDesktopOS = lazy(() => import('./components/HosakaDesktopOS'));
 
 const STORAGE_KEY_SEALS = 'ono_sendai_vk_seals_v1';
-const IRIS_CIRCUMFERENCE = 2 * Math.PI * 138;
 
 const SECTORS = [
-  { id: 'hero-top', code: '00', label: 'Hero' },
-  { id: 'sec-relic-chat', code: '01', label: 'Relic' },
-  { id: 'sec-rom-bay', code: '02', label: 'ROMs' },
-  { id: 'sec-telemetry', code: '03', label: 'Onda' },
-  { id: 'sec-icebreaker', code: '04', label: 'Breach' },
-  { id: 'sec-contact', code: '05', label: 'Contato' },
+  { id: 'hero-top', label: 'Início' },
+  { id: 'sec-rom-bay', label: 'Projetos' },
+  { id: 'sec-telemetry', label: 'Trajetória' },
+  { id: 'sec-contact', label: 'Contato' },
+  { id: 'sec-night-city', label: 'Night City' },
 ];
 
 const RECRUITER_BRIEFING_TEXT = [
@@ -51,22 +49,17 @@ const RECRUITER_BRIEFING_TEXT = [
 // Hidden keyboard sequences (typed anywhere outside inputs)
 const KONAMI = ['arrowup', 'arrowup', 'arrowdown', 'arrowdown', 'arrowleft', 'arrowright', 'arrowleft', 'arrowright', 'b', 'a'];
 const SECRET_WORDS = {
-  ff06b5: 'FF:06:B5 // Sinal magenta interceptado. Johnny-84: "Tem gente que caça esse código há anos. O Miqueias caça Table Scan."',
-  samurai: 'SAMURAI // "Never Fade Away" tocando no barramento. Johnny-84: "Wake up, choom — tem query pra otimizar."',
-  wakeup: 'WAKE UP, SAMURAI // Johnny-84: "We have a city to burn" — mas aqui a gente só queima latência.',
-  afterlife: 'AFTERLIFE // Rogue deixou um recado: "Esse backend aí tem cara de lenda. Contrata antes da Arasaka."',
+  ff06b5: 'FF:06:B5 · Sinal magenta interceptado. Johnny-84: "Tem gente que caça esse código há anos. O Miqueias caça Table Scan."',
+  samurai: 'SAMURAI · "Never Fade Away" tocando no barramento. Johnny-84: "Wake up, choom — tem query pra otimizar."',
+  wakeup: 'WAKE UP, SAMURAI · Johnny-84: "We have a city to burn" — mas aqui a gente só queima latência.',
+  afterlife: 'AFTERLIFE · Rogue deixou um recado: "Esse backend aí tem cara de lenda. Contrata antes da Arasaka."',
 };
-
 
 export default function App() {
   const [viewMode, setViewMode] = useState('editorial');
   const [phosphorMode, setPhosphorMode] = useState('amber');
   const [soundOn, setSoundOn] = useState(true);
   const [ambientOn, setAmbientOn] = useState(false);
-
-  // Voight-Kampff Biometric Calibration (0..3 pulses)
-  const [vkPulses, setVkPulses] = useState(0);
-  const isCalibrated = vkPulses >= 3;
 
   // Empathy Seals (12 total — evolves Obsidian -> Titanium at 6 -> 24K Gold at 12)
   const [unlockedSeals, setUnlockedSeals] = useState(() => {
@@ -85,13 +78,17 @@ export default function App() {
   // Live telemetry ping fed into Johnny-84 / Dixie / Rachel Relic dialogue
   const [relicPing, setRelicPing] = useState('');
 
-  // Section 01: Hosaka ROM Cartridges
+  // Section 1: Projetos & Produção
   const [romCategory, setRomCategory] = useState('all');
   const [activeRomId, setActiveRomId] = useState(ROM_CARTRIDGES[0].id);
+  const [romViewTab, setRomViewTab] = useState('code'); // 'code' (fast recruiter default) | 'lab' (interactive SVG simulator)
   const [showTerminalRun, setShowTerminalRun] = useState(false);
 
-  // Section 02: Neural Wave Telemetry Pin
+  // Section 2: Neural Wave Telemetry Pin
   const [selectedPin, setSelectedPin] = useState(TELEMETRY_PINS[TELEMETRY_PINS.length - 1]);
+
+  // Section 4: Night City Interactive Zone ('relic' | 'breach')
+  const [arcadeTab, setArcadeTab] = useState('relic');
 
   // Active sector for desktop rail + scroll progress hairline ref
   const [activeSector, setActiveSector] = useState('hero-top');
@@ -150,6 +147,7 @@ export default function App() {
     return () => io.disconnect();
   }, [viewMode]);
 
+  // Unlock seals silently without interrupting recruiter reading with achievement popups
   const unlockSeal = useCallback((sealId) => {
     setUnlockedSeals((prev) => {
       if (prev.includes(sealId)) return prev;
@@ -157,14 +155,10 @@ export default function App() {
       try {
         localStorage.setItem(STORAGE_KEY_SEALS, JSON.stringify(next));
       } catch {}
-      const sealObj = EMPATHY_SEALS.find((s) => s.id === sealId);
-      if (sealObj) {
-        setToastMsg(`SELO DESBLOQUEADO [${sealObj.code}]: ${sealObj.title}`);
-      }
       if (next.length === 6) {
-        setRelicPing('Rachel-7: 6 selos conquistados — liga da estação refundida para Titânio Escovado.');
+        setRelicPing('Rachel-7: 6 conquistas desbloqueadas — liga da estação atualizada para Titânio.');
       } else if (next.length === 12) {
-        setRelicPing('Johnny-84: Todos os 12 selos na mão, samurai! Ouro 24K Villa Straylight ativo.');
+        setRelicPing('Johnny-84: Todas as 12 conquistas na mão, samurai! Ouro 24K ativo.');
       }
       return next;
     });
@@ -176,10 +170,10 @@ export default function App() {
       setAmbientDrone(next);
       if (next) {
         unlockSeal('seal_synth');
-        setRelicPing('Rachel-7: Drone analógico CS-80 (Ré menor) sintonizado no ciberespaço.');
-        notify('Drone Noturno CS-80 ligado (WebAudio puro).');
+        setRelicPing('Rachel-7: Drone analógico CS-80 (Ré menor) sintonizado em Night City.');
+        notify('Ambiente sonoro CS-80 ativado.');
       } else {
-        notify('Drone Noturno CS-80 desligado.');
+        notify('Ambiente sonoro CS-80 desativado.');
       }
       return next;
     });
@@ -220,7 +214,6 @@ export default function App() {
   const triggerGlitch = useCallback(() => {
     const root = document.documentElement;
     root.classList.remove('is-glitching');
-    // Force reflow so the animation can replay
     void root.offsetWidth;
     root.classList.add('is-glitching');
     setTimeout(() => root.classList.remove('is-glitching'), 700);
@@ -242,8 +235,8 @@ export default function App() {
         triggerGlitch();
         playRelicGlitch(soundOn);
         setPhosphorMode((p) => (p === 'amber' ? 'green' : 'amber'));
-        setRelicPing('Dixie Flatline: Código Konami na matriz? Respeito, cowboy — espectro de fósforo invertido.');
-        notify('↑↑↓↓←→←→BA // Espectro de fósforo invertido.');
+        setRelicPing('Dixie Flatline: Código Konami na matriz? Respeito, cowboy — paleta alternada.');
+        notify('↑↑↓↓←→←→BA · Paleta Night City / Blade Runner alternada.');
         return;
       }
 
@@ -254,7 +247,7 @@ export default function App() {
         triggerGlitch();
         playRelicGlitch(soundOn);
         setRelicPing(SECRET_WORDS[word]);
-        notify(SECRET_WORDS[word].split(' // ')[0] + ' // easter egg desbloqueado');
+        notify(SECRET_WORDS[word]);
       }
     };
     window.addEventListener('keydown', onSecretKey);
@@ -291,20 +284,6 @@ export default function App() {
   useModalFocus(briefingModalOpen, briefingDialogRef);
   useModalFocus(cmdOpen, cmdDialogRef);
 
-  const handleVkPulse = () => {
-    setVkPulses((prev) => {
-      const next = Math.min(3, prev + 1);
-      playVoightKampffPulse(soundOn, next);
-      if (next >= 3) {
-        unlockSeal('seal_calibrate');
-        setRelicPing('Rachel-7: Retina Voight-Kampff em 100% — Empatia 98.4% confirmada no olhar do engenheiro.');
-      } else {
-        setRelicPing(`Voight-Kampff ajustando foco óptico (${next}/3)...`);
-      }
-      return next;
-    });
-  };
-
   const handleSwitchMode = (mode) => {
     playKeyclick(soundOn, 780);
     setViewMode(mode);
@@ -337,8 +316,7 @@ export default function App() {
     playKeyclick(soundOn, 940);
     setShowTerminalRun(true);
     unlockSeal('seal_runner');
-    setRelicPing(`Dixie Flatline: Fita "${activeRom.id}" executada com sucesso no cluster Hosaka.`);
-    notify('Diagnóstico de container/banco executado com sucesso.');
+    setRelicPing(`Dixie Flatline: Projeto "${activeRom.id}" executado com sucesso no cluster.`);
   };
 
   const handleCopyText = async (text, label) => {
@@ -362,6 +340,15 @@ export default function App() {
     handleSelectTelemetryPin(TELEMETRY_PINS[nextIdx]);
   };
 
+  const jumpToNightCity = (tab = 'relic') => {
+    playKeyclick(soundOn, 760);
+    setViewMode('editorial');
+    setArcadeTab(tab);
+    setTimeout(() => {
+      document.getElementById('sec-night-city')?.scrollIntoView({ behavior: 'auto' });
+    }, 30);
+  };
+
   const handleRelicEffect = useCallback(
     (effect) => {
       if (!effect) return;
@@ -376,15 +363,17 @@ export default function App() {
         }, 40);
       } else if (effect.scrollTo) {
         setViewMode('editorial');
+        if (effect.scrollTo === 'sec-icebreaker') {
+          setArcadeTab('breach');
+        }
         setTimeout(() => {
-          document.getElementById(effect.scrollTo)?.scrollIntoView({ behavior: 'auto' });
+          const targetId = effect.scrollTo === 'sec-icebreaker' ? 'sec-night-city' : effect.scrollTo;
+          document.getElementById(targetId)?.scrollIntoView({ behavior: 'auto' });
         }, 40);
       } else if (effect.calibrateAll) {
-        setVkPulses(3);
         playVoightKampffPulse(soundOn, 3);
         unlockSeal('seal_calibrate');
-        setRelicPing('Rachel-7: Óptica calibrada via ponte neural Relic 2.0.');
-        notify('Retina Voight-Kampff calibrada (98.4% Empatia).');
+        setRelicPing('Rachel-7: Telemetria neural sincronizada via Constructo Relic.');
       } else if (effect.openOs) {
         setViewMode('os');
         unlockSeal('seal_os_mode');
@@ -392,7 +381,7 @@ export default function App() {
         setSealsModalOpen(true);
       }
     },
-    [soundOn, unlockSeal, notify]
+    [soundOn, unlockSeal]
   );
 
   const visibleRoms =
@@ -405,38 +394,23 @@ export default function App() {
 
   const commandItems = [
     {
-      label: 'Abrir Briefing Recrutador 30s (Dossiê Técnico Copiável)',
-      sub: 'RECRUTAMENTO',
+      label: 'Abrir Resumo Recrutador 30s (Dossiê Técnico Copiável)',
+      sub: 'Recrutamento',
       action: () => setBriefingModalOpen(true),
     },
     {
-      label: ambientOn ? 'Desligar Drone Noturno CS-80 (WebAudio)' : 'Ligar Drone Noturno CS-80 (Blade Runner Synth)',
-      sub: ambientOn ? 'AUDIO ON' : 'AUDIO OFF',
-      action: () => handleToggleAmbient(),
-    },
-    {
-      label: 'Conversar com Johnny-84, Dixie Flatline & Rachel-7 (Relic 2.0)',
-      sub: 'CANAL NEURAL',
+      label: 'Ver Projetos & Experiência em Produção (Zetti + 5 Repositórios)',
+      sub: 'Projetos',
       action: () => {
         setViewMode('editorial');
         setTimeout(() => {
-          document.getElementById('sec-relic-chat')?.scrollIntoView({ behavior: 'auto' });
+          document.getElementById('sec-rom-bay')?.scrollIntoView({ behavior: 'auto' });
         }, 30);
       },
     },
     {
-      label: 'Jogar Breach Protocol contra o ICE Wintermute',
-      sub: 'MINIGAME',
-      action: () => {
-        setViewMode('editorial');
-        setTimeout(() => {
-          document.getElementById('sec-icebreaker')?.scrollIntoView({ behavior: 'auto' });
-        }, 30);
-      },
-    },
-    {
-      label: 'Contato direto: e-mail, WhatsApp, LinkedIn e Currículo PDF',
-      sub: 'RECRUTAMENTO',
+      label: 'Contato direto: WhatsApp, E-mail, LinkedIn e Currículo PDF',
+      sub: 'Contato',
       action: () => {
         setViewMode('editorial');
         setTimeout(() => {
@@ -445,36 +419,32 @@ export default function App() {
       },
     },
     {
-      label: 'Alternar para Bancada Hosaka OS (6 Ferramentas Integradas)',
-      sub: 'WORKSTATION',
+      label: 'Conversar com Johnny Silverhand, Dixie & Rachel (Relic)',
+      sub: 'Night City',
+      action: () => jumpToNightCity('relic'),
+    },
+    {
+      label: 'Jogar Breach Protocol (Matriz Hexadecimal 5×5)',
+      sub: 'Minigame',
+      action: () => jumpToNightCity('breach'),
+    },
+    {
+      label: 'Abrir Estação Keystone OS (6 Ferramentas Integradas)',
+      sub: 'Keystone OS',
       action: () => handleSwitchMode('os'),
     },
     {
-      label: 'Alternar para Ciberespaço Tyrell-84 (Dossiê Completo)',
-      sub: 'CIBERESPAÇO',
-      action: () => handleSwitchMode('editorial'),
+      label: ambientOn ? 'Desligar Sintetizador Ambiente CS-80' : 'Ligar Sintetizador Ambiente CS-80 (WebAudio)',
+      sub: ambientOn ? 'Áudio Ativo' : 'Áudio',
+      action: () => handleToggleAmbient(),
     },
     {
-      label: 'Calibrar Íris Voight-Kampff (100% Foco)',
-      sub: 'BIOMETRIA',
-      action: () => {
-        setVkPulses(3);
-        unlockSeal('seal_calibrate');
-        setRelicPing('Rachel-7: Retina Voight-Kampff estabilizada em 98.4%.');
-      },
-    },
-    {
-      label: 'Alternar Espectro CRT (Âmbar P3 / Verde P1)',
-      sub: 'ESPECTRO',
+      label: 'Alternar Paleta (Night City Rosa Choque / Blade Runner Âmbar)',
+      sub: 'Cores',
       action: () => setPhosphorMode((p) => (p === 'amber' ? 'green' : 'amber')),
     },
-    {
-      label: 'Abrir Cofre de Selos Voight-Kampff & Liga',
-      sub: `${unlockedSeals.length}/12 SELOS`,
-      action: () => setSealsModalOpen(true),
-    },
     ...ROM_CARTRIDGES.map((rom) => ({
-      label: `Carregar Fita ROM: ${rom.title}`,
+      label: `Projeto: ${rom.title}`,
       sub: rom.slot,
       action: () => {
         setViewMode('editorial');
@@ -492,41 +462,33 @@ export default function App() {
       item.sub.toLowerCase().includes(cmdQuery.toLowerCase())
   );
 
-  const irisProgressOffset = IRIS_CIRCUMFERENCE * (1 - vkPulses / 3);
-
   return (
     <>
       <a href="#main-deck" className="skip-link">
-        Pular para o ciberespaço principal
+        Pular para o conteúdo principal
       </a>
 
       {/* ====================================================================
-          FLAT BORDERLESS CYBERSPACE TOP BAR (ZERO CAPSULE-IN-CAPSULE)
+          NIGHT CITY TOP BAR (CLEAN, RECRUITER-FIRST, ZERO NESTED BOXES)
           ==================================================================== */}
       <header className="top-console-bar" role="banner">
         <div className="top-console-inner">
           <div className="brand-plate">
             <span className="brand-led" aria-hidden="true" />
-            <span className="brand-model-code">ONO-SENDAI VII</span>
-            <span className="brand-divider" aria-hidden="true">/</span>
-            <span className="brand-sub-tag">
-              {computedChassis === 'obsidian'
-                ? 'OBSIDIANA 84'
-                : computedChassis === 'titanium'
-                ? 'TITÂNIO TYRELL'
-                : 'OURO 24K'}
-            </span>
+            <span className="brand-model-code">Miqueias Carvalho</span>
+            <span className="brand-divider" aria-hidden="true">·</span>
+            <span className="brand-sub-tag">Backend · SQL Server &amp; .NET</span>
           </div>
 
-          <nav className="mode-switch-group" aria-label="Modo de operação">
+          <nav className="mode-switch-group" aria-label="Navegação principal">
             <button
               type="button"
               aria-pressed={viewMode === 'editorial'}
               className={`mode-switch-btn ${viewMode === 'editorial' ? 'active' : ''}`}
               onClick={() => handleSwitchMode('editorial')}
             >
-              <span className="label-full">Ciberespaço &amp; Relic</span>
-              <span className="label-short" aria-hidden="true">Ciberespaço</span>
+              <span className="label-full">Portfólio &amp; Projetos</span>
+              <span className="label-short" aria-hidden="true">Portfólio</span>
             </button>
             <button
               type="button"
@@ -534,24 +496,23 @@ export default function App() {
               className={`mode-switch-btn ${viewMode === 'os' ? 'active' : ''}`}
               onClick={() => handleSwitchMode('os')}
             >
-              <span className="label-full">Hosaka OS [6 Apps]</span>
-              <span className="label-short" aria-hidden="true">Hosaka OS</span>
+              <span className="label-full">Keystone OS [NCITY.PUB]</span>
+              <span className="label-short" aria-hidden="true">Keystone OS</span>
             </button>
           </nav>
 
           <div className="console-right-controls">
             <button
               type="button"
-              className="cmd-link"
+              className="seals-status-link"
               onClick={() => {
-                playKeyclick(soundOn, 750);
-                setCmdOpen(true);
+                playKeyclick(soundOn, 810);
+                setBriefingModalOpen(true);
               }}
-              title="Abrir paleta de comandos (Ctrl+K)"
-              aria-label="Abrir paleta de comandos (Ctrl+K)"
+              title="Abrir resumo executivo de 30 segundos para recrutadores"
             >
-              <span className="label-full">Ctrl+K</span>
-              <span className="label-short">⌘ Menu</span>
+              <span className="seals-orb-dot" aria-hidden="true" />
+              <span>Resumo 30s</span>
             </button>
 
             <button
@@ -561,11 +522,11 @@ export default function App() {
                 playKeyclick(soundOn, 690);
                 setPhosphorMode((p) => (p === 'amber' ? 'green' : 'amber'));
               }}
-              title="Alternar espectro entre Âmbar P3 e Verde P1"
-              aria-label={`Espectro de fósforo: ${phosphorMode === 'amber' ? 'Âmbar P3' : 'Verde P1'}`}
+              title="Alternar entre paleta Night City (Rosa Choque + Azul Oceano) e Blade Runner (Âmbar)"
+              aria-label={`Paleta ativa: ${phosphorMode === 'amber' ? 'Night City' : 'Blade Runner'}`}
             >
-              <span className="label-full">{phosphorMode === 'amber' ? 'Âmbar P3' : 'Verde P1'}</span>
-              <span className="label-short">{phosphorMode === 'amber' ? 'P3' : 'P1'}</span>
+              <span className="label-full">{phosphorMode === 'amber' ? 'Night City' : 'Blade Runner'}</span>
+              <span className="label-short">{phosphorMode === 'amber' ? 'NC' : 'BR'}</span>
             </button>
 
             <button
@@ -573,7 +534,7 @@ export default function App() {
               className={`cmd-link desktop-only-control ${ambientOn ? 'accent' : ''}`}
               aria-pressed={ambientOn}
               onClick={handleToggleAmbient}
-              title="Ligar ou desligar o drone analógico contínuo CS-80 (WebAudio)"
+              title="Ligar ou desligar o sintetizador ambiente noturno CS-80 (WebAudio)"
             >
               <span>{ambientOn ? 'CS-80 ●' : 'CS-80'}</span>
             </button>
@@ -582,7 +543,7 @@ export default function App() {
               type="button"
               className="cmd-link"
               aria-pressed={soundOn}
-              aria-label="Efeitos sonoros do teclado e terminal"
+              aria-label="Efeitos sonoros da interface"
               onClick={() => setSoundOn((s) => !s)}
               title="Ativar ou silenciar efeitos sonoros"
             >
@@ -592,15 +553,16 @@ export default function App() {
 
             <button
               type="button"
-              className="seals-status-link t-nums"
+              className="cmd-link"
               onClick={() => {
-                playKeyclick(soundOn, 810);
-                setSealsModalOpen(true);
+                playKeyclick(soundOn, 750);
+                setCmdOpen(true);
               }}
-              title="Abrir Cofre de Selos Voight-Kampff e liga metálica"
+              title="Abrir busca rápida (Ctrl+K)"
+              aria-label="Abrir busca rápida (Ctrl+K)"
             >
-              <span className="seals-orb-dot" aria-hidden="true" />
-              <span>Selos {unlockedSeals.length}/12</span>
+              <span className="label-full">Ctrl+K</span>
+              <span className="label-short">⌘</span>
             </button>
           </div>
         </div>
@@ -609,9 +571,9 @@ export default function App() {
         </div>
       </header>
 
-      {/* Subtle Wide-Desktop Spatial Sector Rail (>= 1440px only) */}
+      {/* Wide-Desktop Spatial Navigation Rail (>= 1580px only, unnumbered) */}
       {viewMode === 'editorial' && (
-        <nav className="sector-rail" aria-label="Navegação rápida por setores">
+        <nav className="sector-rail" aria-label="Navegação rápida por seções">
           {SECTORS.map((sec) => {
             const isActive = activeSector === sec.id;
             return (
@@ -622,9 +584,8 @@ export default function App() {
                 aria-current={isActive ? 'location' : undefined}
                 onClick={() => playKeyclick(soundOn, 720)}
               >
-                <span className="sector-rail-code t-nums">{sec.code}</span>
-                <span className="sector-rail-tick" aria-hidden="true" />
                 <span className="sector-rail-label">{sec.label}</span>
+                <span className="sector-rail-tick" aria-hidden="true" />
               </a>
             );
           })}
@@ -632,14 +593,14 @@ export default function App() {
       )}
 
       {/* ====================================================================
-          MAIN STAGE: CYBERSPACE SPATIAL DECK VS HOSAKA WORKSTATION OS
+          MAIN STAGE: RECRUITER-FIRST PORTFOLIO VS KEYSTONE WORKSTATION OS
           ==================================================================== */}
       <main id="main-deck">
         {viewMode === 'os' ? (
           <Suspense
             fallback={
               <div className="os-loading wrap" role="status">
-                Inicializando bancada Hosaka H-84 Workstation OS…
+                Inicializando terminal Keystone NCITY.PUB…
               </div>
             }
           >
@@ -654,82 +615,66 @@ export default function App() {
               onRelicPing={setRelicPing}
               onReturnToSpace={() => {
                 setViewMode('editorial');
-                setTimeout(() => {
-                  document.getElementById('sec-relic-chat')?.scrollIntoView({ behavior: 'auto' });
-                }, 40);
+                window.scrollTo({ top: 0, behavior: 'auto' });
               }}
             />
           </Suspense>
         ) : (
           <div className="cyberspace-flow">
             {/* ================================================================
-                SECTION 0: FULL-BLEED CYBERSPACE HERO + ORBITAL IRIS SCANNER
+                HERO: ZERO-FRICTION RECRUITER OVERVIEW + NIGHT CITY PORTRAIT
                 ================================================================ */}
             <section id="hero-top" className="hero-cyberspace" aria-labelledby="hero-heading">
               <CyberspaceTerrain chassis={computedChassis} phosphor={phosphorMode} />
 
               <div className="wrap hero-grid">
                 <div className="hero-copy-col">
-                  <div className="hero-eyebrow">
-                    <span className="pulse-dot" aria-hidden="true" />
-                    <span>DISPONÍVEL · BACKEND JÚNIOR · C# / .NET &amp; SQL SERVER · GOIÂNIA / REMOTO</span>
-                  </div>
-
                   <h1 id="hero-heading" className="hero-title">
-                    Miqueias Carvalho.{' '}
-                    <span className="hero-accent-phrase">Da query crítica em produção</span> à arquitetura limpa de APIs.
+                    <span className="hero-title-white">Miqueias Carvalho</span>
+                    <span className="hero-title-blue">Engenharia Backend</span>
+                    <span className="hero-title-pink">&amp; SQL Server em Produção.</span>
                   </h1>
 
                   <p className="hero-lead">
-                    {PROFILE_DATA.summary} Atualmente na <strong>Zetti</strong> sustentando bancos{' '}
-                    <strong>SQL Server</strong> e módulos <strong>VB6</strong> para dezenas de farmácias, e graduando em
-                    Engenharia de Software na <strong>UNIFAN (2027)</strong>.
+                    Desenvolvedor Backend na <strong>Zetti</strong> (Dez/2025 – Atual), atuando diariamente na
+                    sustentação e otimização de bancos <strong>SQL Server</strong> e módulos fiscais{' '}
+                    <strong>VB6</strong> para dezenas de farmácias. Construo APIs REST e sistemas transacionais com{' '}
+                    <strong>C# / .NET</strong>, <strong>Java 17 (Spring Boot 3)</strong> e{' '}
+                    <strong>Node.js (TypeScript / NestJS)</strong>, e curso Engenharia de Software na{' '}
+                    <strong>UNIFAN (2027)</strong> em Goiânia, GO.
                   </p>
 
                   <div className="hero-specs-ledger">
                     <div className="hero-spec-item">
-                      <small>PRODUÇÃO ATUAL (DEZ/2025)</small>
+                      <small>Experiência em produção</small>
                       <strong>Zetti · SQL Server &amp; VB6</strong>
                     </div>
                     <div className="hero-spec-item">
-                      <small>APIS &amp; ARQUITETURA</small>
+                      <small>APIs &amp; arquitetura</small>
                       <strong>C# / .NET · Java 17 · NestJS</strong>
                     </div>
                     <div className="hero-spec-item">
-                      <small>FORMAÇÃO SUPERIOR</small>
-                      <strong>Eng. Software · UNIFAN 2027</strong>
+                      <small>Formação &amp; modalidade</small>
+                      <strong>Eng. Software 2027 · Goiânia / Remoto</strong>
                     </div>
                   </div>
 
                   <div className="hero-cta-row">
                     <a
-                      href="#sec-relic-chat"
+                      href="#sec-rom-bay"
                       className="deck-cta"
                       onClick={() => playKeyclick(soundOn, 780)}
                     >
-                      Conversar com Johnny [Relic] ↓
+                      Ver Projetos &amp; Produção ↓
                     </a>
                     <a
-                      href="#sec-rom-bay"
+                      href={PROFILE_DATA.cvPdf}
+                      download="Curriculo_Miqueias_Carvalho.pdf"
                       className="deck-cta secondary"
-                      onClick={() => playKeyclick(soundOn, 720)}
+                      onClick={() => unlockSeal('seal_dossier')}
                     >
-                      Explorar Fitas ROM [6] ↓
+                      Baixar Currículo PDF ↓
                     </a>
-                    <a
-                      href="#sec-icebreaker"
-                      className="hero-text-link"
-                      onClick={() => playKeyclick(soundOn, 740)}
-                    >
-                      Breach Protocol ↓
-                    </a>
-                    <button
-                      type="button"
-                      className="hero-text-link"
-                      onClick={() => handleSwitchMode('os')}
-                    >
-                      Hosaka OS →
-                    </button>
                     <button
                       type="button"
                       className="hero-text-link"
@@ -739,138 +684,78 @@ export default function App() {
                         unlockSeal('seal_dossier');
                       }}
                     >
-                      Briefing 30s ↗
+                      Resumo em 30s ↗
                     </button>
                     <a
-                      href={PROFILE_DATA.cvPdf}
-                      download="Curriculo_Miqueias_Carvalho.pdf"
+                      href={PROFILE_DATA.github}
+                      target="_blank"
+                      rel="noopener noreferrer"
                       className="hero-text-link"
-                      onClick={() => unlockSeal('seal_dossier')}
                     >
-                      Currículo PDF ↓
+                      GitHub (27 repos) ↗
+                    </a>
+                    <a
+                      href={PROFILE_DATA.linkedin}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="hero-text-link"
+                    >
+                      LinkedIn ↗
+                    </a>
+                    <a
+                      href={PROFILE_DATA.whatsapp}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="hero-text-link"
+                    >
+                      WhatsApp ↗
                     </a>
                   </div>
                 </div>
 
-                {/* Right Column: Circular Orbital Voight-Kampff Iris Scanner */}
-                <div className="hero-iris-col">
-                  <div className={`vk-orbital-scanner ${isCalibrated ? 'calibrated' : ''}`}>
-                    <svg viewBox="0 0 320 320" className="vk-orbital-svg" aria-hidden="true">
-                      <circle
-                        cx="160"
-                        cy="160"
-                        r="152"
-                        fill="none"
-                        stroke="var(--hairline-strong)"
-                        strokeWidth="1"
-                        strokeDasharray="6 14 2 14"
-                        className="iris-orbit-ring"
-                      />
-                      <circle
-                        cx="160"
-                        cy="160"
-                        r="138"
-                        fill="none"
-                        stroke="var(--hairline)"
-                        strokeWidth="2"
-                      />
-                      <circle
-                        cx="160"
-                        cy="160"
-                        r="138"
-                        fill="none"
-                        stroke={isCalibrated ? 'var(--phosphor-secondary)' : 'var(--phosphor-primary)'}
-                        strokeWidth="3"
-                        strokeLinecap="round"
-                        strokeDasharray={IRIS_CIRCUMFERENCE}
-                        strokeDashoffset={irisProgressOffset}
-                        transform="rotate(-90 160 160)"
-                        className="iris-progress-arc"
-                      />
-                      <line x1="160" y1="2" x2="160" y2="20" stroke="var(--phosphor-primary)" strokeWidth="1.2" strokeOpacity="0.65" />
-                      <line x1="160" y1="300" x2="160" y2="318" stroke="var(--phosphor-primary)" strokeWidth="1.2" strokeOpacity="0.65" />
-                      <line x1="2" y1="160" x2="20" y2="160" stroke="var(--phosphor-primary)" strokeWidth="1.2" strokeOpacity="0.65" />
-                      <line x1="300" y1="160" x2="318" y2="160" stroke="var(--phosphor-primary)" strokeWidth="1.2" strokeOpacity="0.65" />
-                      <text x="160" y="-4" textAnchor="middle" fill="var(--ink-muted)" fontSize="9" fontFamily="var(--font-mono)">000°</text>
-                      <text x="326" y="163" textAnchor="start" fill="var(--ink-muted)" fontSize="9" fontFamily="var(--font-mono)">090°</text>
-                      <text x="160" y="330" textAnchor="middle" fill="var(--ink-muted)" fontSize="9" fontFamily="var(--font-mono)">180°</text>
-                      <text x="-6" y="163" textAnchor="end" fill="var(--ink-muted)" fontSize="9" fontFamily="var(--font-mono)">270°</text>
-                    </svg>
-
-                    <div className={`vk-circular-aperture ${isCalibrated ? 'calibrated' : 'uncalibrated'}`}>
+                {/* Right Column: Sharp Night City Cyberpunk Portrait (Zero Blur Lock) */}
+                <div className="hero-portrait-col">
+                  <figure className="nc-portrait-frame">
+                    <div className="nc-portrait-media">
                       <img
                         src={PROFILE_DATA.portrait}
-                        alt="Retrato de Miqueias Carvalho no visor orbital Voight-Kampff"
-                        width="272"
-                        height="363"
+                        alt="Retrato de Miqueias Carvalho iluminado em azul oceano e rosa choque no estilo Night City"
+                        width="720"
+                        height="960"
                         fetchPriority="high"
                       />
                     </div>
-                  </div>
-
-                  <div className="vk-iris-caption">
-                    <div className="vk-iris-meta t-nums">
-                      <span>RETINA MC-84</span>
-                      <span className="meta-sep">·</span>
-                      <strong style={{ color: isCalibrated ? 'var(--phosphor-secondary)' : 'var(--phosphor-primary)' }}>
-                        {isCalibrated ? 'EMPATIA 98.4% VALIDADO' : `SINTONIZANDO ${vkPulses * 33}%`}
-                      </strong>
-                    </div>
-
-                    {!isCalibrated ? (
-                      <button type="button" className="deck-cta" onClick={handleVkPulse}>
-                        Pulsar Calibração ({vkPulses}/3) ⚡
-                      </button>
-                    ) : (
-                      <button
-                        type="button"
-                        className="cmd-link accent"
-                        onClick={() => {
-                          playKeyclick(soundOn, 520);
-                          setVkPulses(0);
-                        }}
-                      >
-                        Lente Estabilizada · Recalibrar ↺
-                      </button>
-                    )}
-                  </div>
+                    <figcaption className="nc-portrait-caption">
+                      <span className="nc-caption-name">Miqueias Carvalho</span>
+                      <span className="nc-caption-role">Backend Developer @ Zetti · Goiânia, GO</span>
+                    </figcaption>
+                  </figure>
                 </div>
               </div>
             </section>
 
             {/* ================================================================
-                INTERACTIVE BIOCHIP DIALOGUE & LORE CODEX (JOHNNY / DIXIE / RACHEL)
-                ================================================================ */}
-            <RelicConstructDialog
-              soundOn={soundOn}
-              unlockSeal={unlockSeal}
-              onTriggerEffect={handleRelicEffect}
-              externalEvent={relicPing}
-              onOpenBriefing={() => setBriefingModalOpen(true)}
-            />
-
-            {/* ================================================================
-                SECTION 01: FLUXO DE FITAS ROM (BORDERLESS EDITORIAL SPLIT)
+                SECTION 1 (IMMEDIATELY BELOW HERO): PROJETOS & EXPERIÊNCIA REAL
+                Styled after the Night City KEYSTONE terminal screen (image_2.png)
                 ================================================================ */}
             <section id="sec-rom-bay" className="space-section wrap reveal" aria-labelledby="rom-heading">
               <div className="section-head-open">
                 <div>
-                  <span className="section-kicker">01 / ARQUITETURA &amp; LABORATÓRIO AO VIVO</span>
-                  <h2 id="rom-heading" className="glitch-title" data-text="Fitas ROM Hosaka">
-                    Fitas ROM Hosaka
+                  <h2 id="rom-heading">
+                    Projetos &amp; <span className="text-pink">Experiência em Produção</span>
                   </h2>
                   <p>
-                    Teste ao vivo cada sistema real: validador NT-2026 CNPJ Alfanumérico, simulador ACID de concorrência, Árvore AVL interativa e código-fonte.
+                    Atuação real na Zetti e repositórios públicos com código limpo, bancos relacionais e simuladores interativos.
                   </p>
                 </div>
 
-                <div className="rom-filter-tabs" role="group" aria-label="Filtrar fitas ROM por categoria">
+                <div className="rom-filter-tabs" role="group" aria-label="Filtrar projetos por área">
                   {[
-                    { id: 'all', label: 'Todas (6)' },
-                    { id: 'prod', label: 'Zetti Produção' },
+                    { id: 'all', label: 'Todos (6)' },
+                    { id: 'prod', label: 'Produção Zetti' },
                     { id: 'api', label: 'APIs REST (3)' },
-                    { id: 'desktop', label: 'Desktop DAO' },
-                    { id: 'algo', label: 'O(1) & AVL' },
+                    { id: 'desktop', label: 'Desktop & JDBC' },
+                    { id: 'algo', label: 'Árvore AVL & Hash' },
                   ].map((tab) => (
                     <button
                       key={tab.id}
@@ -884,147 +769,191 @@ export default function App() {
                 </div>
               </div>
 
-              <div className="rom-split-stage">
-                {/* Left: Clean Hairline-Ruled Track (Zero Box Slabs) */}
-                <div className="rom-index-rail" role="listbox" aria-label="Cartuchos de Projeto">
-                  {visibleRoms.map((rom) => {
-                    const isSelected = rom.id === activeRom.id;
-                    return (
-                      <button
-                        key={rom.id}
-                        type="button"
-                        role="option"
-                        aria-selected={isSelected}
-                        className={`rom-index-item ${isSelected ? 'active' : ''}`}
-                        onClick={() => handleSelectRom(rom.id)}
-                      >
-                        <div className="rom-index-meta">
-                          <span>{rom.slot.split(' · ')[0]}</span>
-                          <span>{isSelected ? 'Ativo ●' : 'Carregar →'}</span>
-                        </div>
-                        <div className="rom-index-title">{rom.title}</div>
-                        <div className="rom-index-sub">{rom.period}</div>
-                      </button>
-                    );
-                  })}
+              <div className="keystone-monitor-shell">
+                <div className="keystone-netdir-bar">
+                  <span className="keystone-brand">KEYSTONE</span>
+                  <span className="keystone-url">NETDIR://NCITY.PUB/PROJETOS/{activeRom.id.toUpperCase()}</span>
+                  <div className="keystone-view-tabs" role="tablist" aria-label="Modo de inspeção do projeto">
+                    <button
+                      type="button"
+                      role="tab"
+                      aria-selected={romViewTab === 'code'}
+                      className={`keystone-tab-btn ${romViewTab === 'code' ? 'active' : ''}`}
+                      onClick={() => {
+                        playKeyclick(soundOn, 720);
+                        setRomViewTab('code');
+                      }}
+                    >
+                      Resumo &amp; Código Real
+                    </button>
+                    <button
+                      type="button"
+                      role="tab"
+                      aria-selected={romViewTab === 'lab'}
+                      className={`keystone-tab-btn ${romViewTab === 'lab' ? 'active' : ''}`}
+                      onClick={() => {
+                        playKeyclick(soundOn, 820);
+                        setRomViewTab('lab');
+                      }}
+                    >
+                      ● Simulador Interativo ao Vivo
+                    </button>
+                  </div>
                 </div>
 
-                {/* Right: Open Typographic Reader Stream */}
-                <article className="rom-open-reader" aria-live="polite">
-                  <header className="rom-reader-head">
-                    <div>
-                      <span className="rom-reader-slot">
-                        {activeRom.slot} · {activeRom.period}
-                      </span>
-                      <h3 className="rom-reader-title">{activeRom.title}</h3>
-                    </div>
-                    <a
-                      href={activeRom.repoUrl}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="deck-cta"
-                    >
-                      {activeRom.linkLabel} ↗
-                    </a>
-                  </header>
-
-                  <blockquote className="rom-impact-lead">
-                    <span className="impact-label">IMPACTO DIRETO //</span> {activeRom.impact}
-                  </blockquote>
-
-                  <div className="rom-prose-grid">
-                    <div>
-                      <h4>Contexto de Operação</h4>
-                      <p>{activeRom.context}</p>
-                    </div>
-                    <div>
-                      <h4>Engenharia Aplicada</h4>
-                      <ul>
-                        {activeRom.engineering.map((item, idx) => (
-                          <li key={idx}>{item}</li>
-                        ))}
-                      </ul>
-                    </div>
+                <div className="rom-split-stage">
+                  {/* Left: Project Selector List */}
+                  <div className="rom-index-rail" role="listbox" aria-label="Lista de projetos backend">
+                    {visibleRoms.map((rom) => {
+                      const isSelected = rom.id === activeRom.id;
+                      return (
+                        <button
+                          key={rom.id}
+                          type="button"
+                          role="option"
+                          aria-selected={isSelected}
+                          className={`rom-index-item ${isSelected ? 'active' : ''}`}
+                          onClick={() => handleSelectRom(rom.id)}
+                        >
+                          <div className="rom-index-meta">
+                            <span>{rom.slot.split(' · ')[0]}</span>
+                            <span>{isSelected ? 'Selecionado ●' : 'Ver →'}</span>
+                          </div>
+                          <div className="rom-index-title">{rom.title}</div>
+                          <div className="rom-index-sub">{rom.period}</div>
+                        </button>
+                      );
+                    })}
                   </div>
 
-                  {/* Interactive Borderless Vector Architecture & Algorithm Lab */}
-                  <RomSignalLab
-                    romId={activeRom.id}
-                    soundOn={soundOn}
-                    unlockSeal={unlockSeal}
-                    onRelicPing={setRelicPing}
-                  />
+                  {/* Right: Project Details, Real Code & Optional Interactive Lab */}
+                  <article className="rom-open-reader" aria-live="polite">
+                    <header className="rom-reader-head">
+                      <div>
+                        <span className="rom-reader-slot">
+                          {activeRom.slot} · {activeRom.period}
+                        </span>
+                        <h3 className="rom-reader-title">{activeRom.title}</h3>
+                      </div>
+                      <a
+                        href={activeRom.repoUrl}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="deck-cta"
+                      >
+                        {activeRom.linkLabel} ↗
+                      </a>
+                    </header>
 
-                  {/* Borderless Left-Accented Code Deck */}
-                  <div className="cyberspace-code-deck">
-                    <div className="code-deck-bar">
-                      <span>SNIPPET SOURCE // {activeRom.id}</span>
-                      <div className="code-deck-actions">
-                        <button
-                          type="button"
-                          className="cmd-link"
-                          onClick={() => handleCopyText(activeRom.codeSnippet, 'Snippet de código')}
-                        >
-                          Copiar código
-                        </button>
-                        <button
-                          type="button"
-                          className="cmd-link accent"
-                          onClick={handleRunRomTerminal}
-                        >
-                          ▶ Rodar diagnóstico
-                        </button>
+                    <blockquote className="rom-impact-lead">
+                      {activeRom.impact}
+                    </blockquote>
+
+                    <div className="rom-prose-grid">
+                      <div>
+                        <h4>Contexto e problema resolvido</h4>
+                        <p>{activeRom.context}</p>
+                      </div>
+                      <div>
+                        <h4>Arquitetura e engenharia aplicada</h4>
+                        <ul>
+                          {activeRom.engineering.map((item, idx) => (
+                            <li key={idx}>{item}</li>
+                          ))}
+                        </ul>
                       </div>
                     </div>
-                    <pre className="rom-code-pre" translate="no">
-                      {activeRom.codeSnippet}
-                    </pre>
 
-                    {showTerminalRun && (
-                      <div className="terminal-output-block">
-                        <div className="terminal-output-label">STDOUT // CLUSTER HOSAKA</div>
-                        <pre className="rom-code-pre output" translate="no">
-                          {activeRom.terminalOutput}
+                    {romViewTab === 'lab' ? (
+                      <RomSignalLab
+                        romId={activeRom.id}
+                        soundOn={soundOn}
+                        unlockSeal={unlockSeal}
+                        onRelicPing={setRelicPing}
+                      />
+                    ) : (
+                      <div className="cyberspace-code-deck">
+                        <div className="code-deck-bar">
+                          <span>Trecho de código real ({activeRom.id})</span>
+                          <div className="code-deck-actions">
+                            <button
+                              type="button"
+                              className="cmd-link accent"
+                              onClick={() => {
+                                playKeyclick(soundOn, 820);
+                                setRomViewTab('lab');
+                              }}
+                            >
+                              ⚡ Abrir Simulador Interativo
+                            </button>
+                            <button
+                              type="button"
+                              className="cmd-link"
+                              onClick={() => handleCopyText(activeRom.codeSnippet, 'Trecho de código')}
+                            >
+                              Copiar código
+                            </button>
+                            <button
+                              type="button"
+                              className="cmd-link"
+                              onClick={handleRunRomTerminal}
+                            >
+                              ▶ Ver saída de execução
+                            </button>
+                          </div>
+                        </div>
+                        <pre className="rom-code-pre" translate="no">
+                          {activeRom.codeSnippet}
                         </pre>
+
+                        {showTerminalRun && (
+                          <div className="terminal-output-block">
+                            <div className="terminal-output-label">Saída de execução:</div>
+                            <pre className="rom-code-pre output" translate="no">
+                              {activeRom.terminalOutput}
+                            </pre>
+                          </div>
+                        )}
                       </div>
                     )}
-                  </div>
 
-                  <div className="rom-footer-meta">
-                    <div className="rom-inline-stack">
-                      {activeRom.stack.map((tech, idx) => (
-                        <React.Fragment key={tech}>
-                          <span>{tech}</span>
-                          {idx < activeRom.stack.length - 1 && (
-                            <span className="stack-sep" aria-hidden="true">·</span>
-                          )}
-                        </React.Fragment>
-                      ))}
+                    <div className="rom-footer-meta">
+                      <div className="rom-inline-stack">
+                        {activeRom.stack.map((tech, idx) => (
+                          <React.Fragment key={tech}>
+                            <span>{tech}</span>
+                            {idx < activeRom.stack.length - 1 && (
+                              <span className="stack-sep" aria-hidden="true">·</span>
+                            )}
+                          </React.Fragment>
+                        ))}
+                      </div>
+
+                      <a
+                        href={activeRom.repoUrl}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="hero-text-link"
+                      >
+                        Abrir repositório completo ↗
+                      </a>
                     </div>
-
-                    <a
-                      href={activeRom.repoUrl}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="hero-text-link"
-                    >
-                      Inspecionar fonte completo ↗
-                    </a>
-                  </div>
-                </article>
+                  </article>
+                </div>
               </div>
             </section>
 
             {/* ================================================================
-                SECTION 02: ONDA NEURAL DE TELEMETRIA
+                SECTION 2: STACK TÉCNICA & TRAJETÓRIA (2021 -> 2026)
                 ================================================================ */}
             <section id="sec-telemetry" className="space-section wrap" aria-labelledby="matrix-heading">
               <div className="section-head-open">
                 <div>
-                  <span className="section-kicker">02 / MATRIZ NEURAL CONTÍNUA</span>
-                  <h2 id="matrix-heading">Telemetria &amp; Evolução (2021 → 2026)</h2>
+                  <h2 id="matrix-heading">
+                    Stack Técnica &amp; <span className="text-blue">Trajetória (2021 – 2026)</span>
+                  </h2>
                   <p>
-                    Cada nó orbital na curva registra um marco real da trajetória de Miqueias. Deslize ou selecione os sinais.
+                    Evolução prática desde os fundamentos de programação e bancos relacionais até a operação diária na Zetti.
                   </p>
                 </div>
                 <a
@@ -1047,12 +976,12 @@ export default function App() {
                   <span>Sustentação diária na Zetti</span>
                 </div>
                 <div className="open-metric-cell">
-                  <strong>C# · Java · Node</strong>
+                  <strong>C# · Java 17 · NestJS</strong>
                   <span>APIs RESTful e arquitetura limpa</span>
                 </div>
                 <div className="open-metric-cell">
                   <strong className="t-nums">UNIFAN · 2027</strong>
-                  <span>Engenharia de Software</span>
+                  <span>Bacharelado em Eng. de Software</span>
                 </div>
               </div>
 
@@ -1066,83 +995,16 @@ export default function App() {
             </section>
 
             {/* ================================================================
-                SECTION 03: NÚCLEO WINTERMUTE & FORJA DA LIGA METÁLICA
-                ================================================================ */}
-            <section id="sec-icebreaker" className="space-section wrap reveal" aria-labelledby="ice-heading">
-              <div className="section-head-open">
-                <div>
-                  <span className="section-kicker">03 / BREACH PROTOCOL · ICE TESSIER-ASHPOOL</span>
-                  <h2 id="ice-heading" className="glitch-title" data-text="Invada o ICE Wintermute">
-                    Invada o ICE Wintermute
-                  </h2>
-                  <p>
-                    Minigame no estilo netrunner de Night City: cada daemon enviado revela uma competência real do
-                    Miqueias. Comece pela primeira linha e alterne coluna e linha.
-                  </p>
-                </div>
-              </div>
-
-              <BreachProtocol
-                soundOn={soundOn}
-                unlockSeal={unlockSeal}
-                onRelicPing={setRelicPing}
-                notify={notify}
-              />
-
-              {/* Slim alloy strip: chassis evolution driven by the 12 seals */}
-              <div className="alloy-strip">
-                <div className="alloy-strip-copy">
-                  <span className="section-kicker">EVOLUÇÃO DA ESTAÇÃO</span>
-                  <p>
-                    Destrave os 12 <strong>Selos Voight-Kampff</strong> explorando o deck — 6 refundem a carcaça em
-                    Titânio, 12 em Ouro 24K. Ou teste cada liga agora:
-                  </p>
-                </div>
-
-                <div className="alloy-orbs-row" role="group" aria-label="Selecionar liga metálica da estação">
-                  {[
-                    { id: 'obsidian', label: 'Obsidiana 84', pitch: 640, ping: 'Rachel-7: Estação calibrada no breu Obsidiana 84.' },
-                    { id: 'titanium', label: 'Titânio Tyrell', pitch: 740, ping: 'Rachel-7: Liga alterada para Titânio Escovado Tyrell.' },
-                    { id: 'gold-24k', label: 'Ouro 24K', pitch: 880, ping: 'Johnny-84: Ouro 24K Straylight no barramento. Brilho de lenda do Afterlife.' },
-                  ].map((alloy) => (
-                    <button
-                      key={alloy.id}
-                      type="button"
-                      aria-pressed={computedChassis === alloy.id}
-                      className={`alloy-orb-btn ${computedChassis === alloy.id ? 'active' : ''}`}
-                      onClick={() => {
-                        playKeyclick(soundOn, alloy.pitch);
-                        setChassisOverride(alloy.id);
-                        setRelicPing(alloy.ping);
-                      }}
-                    >
-                      <span className={`alloy-sphere ${alloy.id}`} aria-hidden="true" />
-                      <span>{alloy.label}</span>
-                    </button>
-                  ))}
-                  <button
-                    type="button"
-                    className="cmd-link accent"
-                    onClick={() => setSealsModalOpen(true)}
-                  >
-                    Cofre de Selos {unlockedSeals.length}/12 ★
-                  </button>
-                </div>
-              </div>
-            </section>
-
-            {/* ================================================================
-                SECTION 04: CANAIS DIRETOS (ARCHITECTURAL RULED LEDGER)
+                SECTION 3: CONTATO DIRETO & CURRÍCULO (BEFORE GAMES/LORE!)
                 ================================================================ */}
             <section id="sec-contact" className="space-section wrap reveal" aria-labelledby="ports-heading">
               <div className="section-head-open">
                 <div>
-                  <span className="section-kicker">04 / CONEXÃO DIRETA</span>
-                  <h2 id="ports-heading" className="glitch-title" data-text="Canais & Dossiê Oficial">
-                    Canais &amp; Dossiê Oficial
+                  <h2 id="ports-heading">
+                    Contato Direto &amp; <span className="text-pink">Currículo</span>
                   </h2>
                   <p>
-                    Disponível para vagas Backend Júnior · C#/.NET · SQL Server · Java 17 · Node.js em Goiânia ou remoto.
+                    Disponível para oportunidades Backend Júnior · C# / .NET · SQL Server · Java 17 · Node.js em Goiânia ou remoto.
                   </p>
                 </div>
                 <button
@@ -1153,22 +1015,11 @@ export default function App() {
                     setBriefingModalOpen(true);
                   }}
                 >
-                  Briefing Recrutador (30s) ↗
+                  Resumo Executivo (30s) ↗
                 </button>
               </div>
 
               <div className="contact-ledger">
-                <button
-                  type="button"
-                  className="contact-row"
-                  onClick={() => handleCopyText(PROFILE_DATA.email, 'E-mail de Miqueias')}
-                >
-                  <span className="contact-port-code">RS-232 // E-MAIL</span>
-                  <strong className="contact-title">Correio Eletrônico Direto</strong>
-                  <span className="contact-endpoint">{PROFILE_DATA.email}</span>
-                  <span className="contact-action">Copiar e-mail →</span>
-                </button>
-
                 <a
                   href={PROFILE_DATA.whatsapp}
                   target="_blank"
@@ -1176,11 +1027,22 @@ export default function App() {
                   className="contact-row"
                   onClick={() => unlockSeal('seal_dossier')}
                 >
-                  <span className="contact-port-code">VID-PHON // WHATSAPP</span>
-                  <strong className="contact-title">Linha Direta Goiânia</strong>
+                  <span className="contact-port-code">WhatsApp</span>
+                  <strong className="contact-title">Conversa Direta (Goiânia / Remoto)</strong>
                   <span className="contact-endpoint t-nums">{PROFILE_DATA.phoneDisplay}</span>
                   <span className="contact-action">Chamar no WhatsApp ↗</span>
                 </a>
+
+                <button
+                  type="button"
+                  className="contact-row"
+                  onClick={() => handleCopyText(PROFILE_DATA.email, 'E-mail de Miqueias')}
+                >
+                  <span className="contact-port-code">E-mail</span>
+                  <strong className="contact-title">Correio Eletrônico Profissional</strong>
+                  <span className="contact-endpoint">{PROFILE_DATA.email}</span>
+                  <span className="contact-action">Copiar e-mail →</span>
+                </button>
 
                 <a
                   href={PROFILE_DATA.linkedin}
@@ -1189,8 +1051,8 @@ export default function App() {
                   className="contact-row"
                   onClick={() => unlockSeal('seal_dossier')}
                 >
-                  <span className="contact-port-code">HOSAKA NET // LINKEDIN</span>
-                  <strong className="contact-title">Rede Profissional</strong>
+                  <span className="contact-port-code">LinkedIn</span>
+                  <strong className="contact-title">Perfil &amp; Experiência na Zetti</strong>
                   <span className="contact-endpoint">in/miqueias-henrique-88503b218</span>
                   <span className="contact-action">Abrir LinkedIn ↗</span>
                 </a>
@@ -1201,11 +1063,90 @@ export default function App() {
                   className="contact-row highlight-row"
                   onClick={() => unlockSeal('seal_dossier')}
                 >
-                  <span className="contact-port-code">HARD COPY // PDF · 53 KB</span>
-                  <strong className="contact-title">Currículo Oficial Miqueias Carvalho</strong>
+                  <span className="contact-port-code">Currículo PDF</span>
+                  <strong className="contact-title">Currículo Completo Miqueias Carvalho</strong>
                   <span className="contact-endpoint">Curriculo_Miqueias_Carvalho.pdf</span>
                   <span className="contact-action">Baixar PDF ⬇</span>
                 </a>
+              </div>
+            </section>
+
+            {/* ================================================================
+                SECTION 4 (OPTIONAL DEEP DIVE): ZONA IMERSIVA NIGHT CITY
+                For visitors who liked Miqueias and want to stay longer!
+                ================================================================ */}
+            <section id="sec-night-city" className="space-section wrap reveal" aria-labelledby="nc-heading">
+              <div className="section-head-open">
+                <div>
+                  <h2 id="nc-heading">
+                    Imersão Night City: <span className="text-blue">Constructo Relic</span> &amp;{' '}
+                    <span className="text-pink">Breach Protocol</span>
+                  </h2>
+                  <p>
+                    Gostou do perfil e tem mais um minuto? Converse com o engrama do Johnny Silverhand sobre a carreira do Miqueias, invada a matriz hexadecimal ou abra o sistema Keystone OS.
+                  </p>
+                </div>
+              </div>
+
+              <div className="keystone-monitor-shell">
+                <div className="keystone-netdir-bar">
+                  <span className="keystone-brand">KEYSTONE</span>
+                  <span className="keystone-url">
+                    NETDIR://NCITY.PUB/{arcadeTab === 'relic' ? 'CONSTRUCTO-RELIC' : 'BREACH-PROTOCOL'}
+                  </span>
+                  <div className="keystone-view-tabs" role="tablist" aria-label="Experiências interativas de Night City">
+                    <button
+                      type="button"
+                      role="tab"
+                      aria-selected={arcadeTab === 'relic'}
+                      className={`keystone-tab-btn ${arcadeTab === 'relic' ? 'active' : ''}`}
+                      onClick={() => {
+                        playKeyclick(soundOn, 740);
+                        setArcadeTab('relic');
+                      }}
+                    >
+                      Constructo Relic (Johnny Silverhand)
+                    </button>
+                    <button
+                      type="button"
+                      role="tab"
+                      aria-selected={arcadeTab === 'breach'}
+                      className={`keystone-tab-btn ${arcadeTab === 'breach' ? 'active' : ''}`}
+                      onClick={() => {
+                        playKeyclick(soundOn, 780);
+                        setArcadeTab('breach');
+                      }}
+                    >
+                      Minigame Breach Protocol (5×5)
+                    </button>
+                    <button
+                      type="button"
+                      className="keystone-tab-btn"
+                      onClick={() => handleSwitchMode('os')}
+                    >
+                      Abrir Keystone OS [6 Apps] →
+                    </button>
+                  </div>
+                </div>
+
+                {arcadeTab === 'relic' ? (
+                  <RelicConstructDialog
+                    soundOn={soundOn}
+                    unlockSeal={unlockSeal}
+                    onTriggerEffect={handleRelicEffect}
+                    externalEvent={relicPing}
+                    onOpenBriefing={() => setBriefingModalOpen(true)}
+                  />
+                ) : (
+                  <div id="sec-icebreaker" className="breach-arcade-pad">
+                    <BreachProtocol
+                      soundOn={soundOn}
+                      unlockSeal={unlockSeal}
+                      onRelicPing={setRelicPing}
+                      notify={notify}
+                    />
+                  </div>
+                )}
               </div>
             </section>
           </div>
@@ -1213,19 +1154,16 @@ export default function App() {
       </main>
 
       {/* ====================================================================
-          OPEN CYBERSPACE FOOTER
+          NIGHT CITY FOOTER
           ==================================================================== */}
       <footer className="cyberspace-footer wrap">
         <div className="footer-signature">
-          <span>ONO-SENDAI CYBERSPACE VII // TYRELL-84</span>
+          <span>Miqueias Carvalho · Engenharia Backend</span>
           <span className="meta-sep">·</span>
-          <span>Miqueias Carvalho · Goiânia, GO</span>
+          <span>Goiânia, GO (Remoto / Híbrido)</span>
         </div>
         <div className="footer-stack-line">
-          C# / .NET · SQL Server · VB6 · Java 17 · Spring Boot 3 · Node.js &amp; NestJS · Docker ·{' '}
-          <span className="footer-secret-hint" title="Experimente digitar no teclado fora de campos de texto">
-            [easter eggs: ff06b5 · samurai · ↑↑↓↓←→←→BA]
-          </span>
+          C# / .NET · SQL Server · VB6 · Java 17 · Spring Boot 3 · Node.js &amp; NestJS · Docker
         </div>
       </footer>
 
@@ -1378,11 +1316,11 @@ export default function App() {
         >
           <div ref={briefingDialogRef} className="modal-window briefing-modal" onClick={(e) => e.stopPropagation()}>
             <header className="modal-header">
-              <span id="briefing-modal-title">DOSSIÊ EXECUTIVO (30s) // MIQUEIAS CARVALHO</span>
+              <span id="briefing-modal-title">Resumo Executivo (30s) · Miqueias Carvalho</span>
               <button
                 type="button"
                 className="modal-close-btn"
-                aria-label="Fechar briefing executivo"
+                aria-label="Fechar resumo executivo"
                 onClick={() => setBriefingModalOpen(false)}
               >
                 ×
@@ -1398,9 +1336,9 @@ export default function App() {
                   <button
                     type="button"
                     className="deck-cta"
-                    onClick={() => handleCopyText(RECRUITER_BRIEFING_TEXT, 'Briefing Executivo 30s')}
+                    onClick={() => handleCopyText(RECRUITER_BRIEFING_TEXT, 'Resumo Executivo 30s')}
                   >
-                    Copiar Briefing →
+                    Copiar Resumo →
                   </button>
                   <a
                     href={PROFILE_DATA.cvPdf}
@@ -1415,7 +1353,7 @@ export default function App() {
 
               <div className="briefing-ledger">
                 <div className="briefing-row">
-                  <span className="briefing-key">PRODUÇÃO ATUAL</span>
+                  <span className="briefing-key">Produção atual</span>
                   <div>
                     <strong>{PROFILE_DATA.currentJob}</strong>
                     <p>
@@ -1426,7 +1364,7 @@ export default function App() {
                   </div>
                 </div>
                 <div className="briefing-row">
-                  <span className="briefing-key">STACK BACKEND</span>
+                  <span className="briefing-key">Stack backend</span>
                   <div>
                     <strong>C# / .NET · SQL Server · VB6 · Java 17 (Spring Boot 3) · Node.js (NestJS)</strong>
                     <p>
@@ -1436,7 +1374,7 @@ export default function App() {
                   </div>
                 </div>
                 <div className="briefing-row">
-                  <span className="briefing-key">DESTAQUES GITHUB</span>
+                  <span className="briefing-key">Destaques GitHub</span>
                   <div>
                     <strong>27 repositórios públicos</strong>
                     <p>
@@ -1447,7 +1385,7 @@ export default function App() {
                   </div>
                 </div>
                 <div className="briefing-row">
-                  <span className="briefing-key">FORMAÇÃO &amp; CONTATO</span>
+                  <span className="briefing-key">Formação &amp; contato</span>
                   <div>
                     <strong>{PROFILE_DATA.education}</strong>
                     <p className="t-nums">

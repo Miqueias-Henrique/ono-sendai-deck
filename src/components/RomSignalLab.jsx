@@ -118,7 +118,7 @@ function ZettiSqlLab({ soundOn, unlockSeal, onRelicPing }) {
   return (
     <div className="rom-lab-stage">
       <div className="rom-lab-head">
-        <span className="rom-lab-kicker">LAB AO VIVO // VALIDADOR CNPJ ALFANUMÉRICO (NT 2026) &amp; PLANO SQL SERVER</span>
+        <span className="rom-lab-kicker">Simulador ao vivo: Validador CNPJ Alfanumérico (NT 2026) &amp; Plano SQL Server</span>
         <div className="rom-lab-mode-row" role="group" aria-label="Plano de execução SQL">
           <button
             type="button"
@@ -305,7 +305,7 @@ function CinemaConcurrencyLab({ soundOn, unlockSeal, onRelicPing }) {
   return (
     <div className="rom-lab-stage">
       <div className="rom-lab-head">
-        <span className="rom-lab-kicker">LAB AO VIVO // SIMULADOR DE CONCORRÊNCIA (ASSENTO D-07 · PRISMA $TRANSACTION)</span>
+        <span className="rom-lab-kicker">Simulador ao vivo: Concorrência no Assento D-07 (Prisma $transaction)</span>
         <div className="rom-lab-mode-row" role="group" aria-label="Isolamento transacional">
           <button
             type="button"
@@ -475,7 +475,7 @@ function AvlHashLab({ soundOn, unlockSeal, onRelicPing }) {
   return (
     <div className="rom-lab-stage">
       <div className="rom-lab-head">
-        <span className="rom-lab-kicker">LAB AO VIVO // ÁRVORE AVL AUTO-BALANCEADA &amp; TABELA HASH CPF</span>
+        <span className="rom-lab-kicker">Simulador ao vivo: Árvore AVL Auto-Balanceada &amp; Tabela Hash CPF</span>
         <div className="rom-lab-mode-row" role="group" aria-label="Alternar estrutura de dados">
           <button
             type="button"
@@ -753,7 +753,7 @@ function StandardPipelineLab({ romId, soundOn, unlockSeal }) {
   return (
     <div className="rom-lab-stage">
       <div className="rom-lab-head">
-        <span className="rom-lab-kicker">TOPOLOGIA AO VIVO // {cfg.title}</span>
+        <span className="rom-lab-kicker">Fluxo de requisição ao vivo: {cfg.title}</span>
         <div className="rom-lab-mode-row">
           <button
             type="button"

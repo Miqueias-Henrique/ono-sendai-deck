@@ -232,16 +232,16 @@ export default function BreachProtocol({ soundOn, unlockSeal, onRelicPing, notif
       <div className="breach-matrix-col">
         <div className="breach-meta-row t-nums">
           <span>
-            CODE MATRIX // {puzzle.matrix.length}×{puzzle.matrix.length}
-            {streak > 0 ? ` · SEQ ${streak}★` : ''}
+            Matriz Hexadecimal {puzzle.matrix.length}×{puzzle.matrix.length}
+            {streak > 0 ? ` · Sequência ${streak}★` : ''}
           </span>
           <span
             className={`breach-timer ${timeLeft < 10 && phase === 'running' ? 'is-critical' : ''}`}
             aria-live="off"
           >
             {phase === 'idle'
-              ? `TEMPO ${totalSeconds.toFixed(1)}s · inicia no 1º código`
-              : `TEMPO ${timeLeft.toFixed(1)}s`}
+              ? `Tempo ${totalSeconds.toFixed(1)}s · inicia no 1º código`
+              : `Tempo ${timeLeft.toFixed(1)}s`}
           </span>
         </div>
         <div className="breach-timer-track" aria-hidden="true">
@@ -337,7 +337,7 @@ export default function BreachProtocol({ soundOn, unlockSeal, onRelicPing, notif
         </div>
 
         <div className="breach-buffer" aria-label="Buffer de upload">
-          <span className="breach-buffer-label">BUFFER</span>
+          <span className="breach-buffer-label">Buffer</span>
           <div className="breach-buffer-slots t-nums">
             {Array.from({ length: BREACH_BUFFER }, (_, i) => (
               <span key={i} className={`breach-slot ${buffer[i] ? 'filled' : ''}`}>
@@ -359,7 +359,7 @@ export default function BreachProtocol({ soundOn, unlockSeal, onRelicPing, notif
         </div>
 
         <div className="breach-daemons">
-          <span className="breach-daemons-kicker">SEQUÊNCIAS NECESSÁRIAS PARA UPLOAD</span>
+          <span className="breach-daemons-kicker">Sequências de upload</span>
           {puzzle.daemons.map((d) => {
             const complete = bufferContains(buffer, d.sequence);
             const failed = phase === 'done' && !complete;

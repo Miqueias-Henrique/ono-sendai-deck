@@ -3,12 +3,12 @@ import { PROFILE_DATA, ROM_CARTRIDGES, SQL_PRESETS } from '../data/portfolioData
 import { playKeyclick, playRelicGlitch, playVangelisChord } from '../utils/soundEngine';
 
 const OS_APPS = [
-  { id: 'explorer', num: '01', code: 'ROM_EXPLORER', label: 'Cartuchos ROM' },
-  { id: 'sqlbench', num: '02', code: 'SQL_BENCH', label: 'SQL Bench' },
+  { id: 'explorer', num: '01', code: 'PROJETOS', label: 'Projetos & Código' },
+  { id: 'sqlbench', num: '02', code: 'SQL_BENCH', label: 'SQL Server Bench' },
   { id: 'esper', num: '03', code: 'ESPER_2019', label: 'Esper 2019' },
   { id: 'synth', num: '04', code: 'CS80_SYNTH', label: 'Deck CS-80' },
   { id: 'flatline', num: '05', code: 'CONSTRUCT_CLI', label: 'Constructo CLI' },
-  { id: 'biometry', num: '06', code: 'DOSSIE_VK84', label: 'Ficha VK-84' },
+  { id: 'biometry', num: '06', code: 'RESUMO_CV', label: 'Resumo & CV' },
 ];
 
 const SYNTH_PADS = [
@@ -257,7 +257,6 @@ export default function HosakaDesktopOS({
     <div className="os-pane-section">
       <div className="os-pane-header">
         <div>
-          <span className="section-kicker">01 / ROM EXPLORER</span>
           <h3>{selectedRom.title}</h3>
         </div>
         <a
@@ -271,7 +270,7 @@ export default function HosakaDesktopOS({
       </div>
 
       <div className="os-rom-split">
-        <div className="rom-index-rail" role="listbox" aria-label="Cartuchos ROM na estação">
+        <div className="rom-index-rail" role="listbox" aria-label="Projetos na estação">
           {ROM_CARTRIDGES.map((rom) => {
             const isSelected = rom.id === selectedRomId;
             return (
@@ -307,7 +306,7 @@ export default function HosakaDesktopOS({
           <p className="os-rom-summary">{selectedRom.headline}</p>
           <div className="cyberspace-code-deck">
             <div className="code-deck-bar">
-              <span>FONTE EXECUTÁVEL // {selectedRom.id}</span>
+              <span>Código: {selectedRom.id}</span>
               <button
                 type="button"
                 className="cmd-link"
@@ -333,8 +332,7 @@ export default function HosakaDesktopOS({
     <div className="os-pane-section">
       <div className="os-pane-header">
         <div>
-          <span className="section-kicker">02 / ZETTI SQL SERVER BENCH</span>
-          <h3>Consultas &amp; Planos de Execução</h3>
+          <h3>SQL Server Bench: Consultas &amp; Planos de Execução</h3>
         </div>
         <button type="button" className="deck-cta" onClick={handleExecuteCustomSql}>
           ▶ Executar T-SQL (F5)
@@ -365,11 +363,11 @@ export default function HosakaDesktopOS({
         spellCheck={false}
       />
 
-      <div className="os-status-readout t-nums">STATUS: {sqlExecStatus}</div>
+      <div className="os-status-readout t-nums">Status: {sqlExecStatus}</div>
 
       {/* Borderless SVG SQL Server Execution Plan */}
       <div className="os-sql-plan-strip" aria-label="Plano de execução SQL Server">
-        <span className="rom-lab-kicker">PLANO DE EXECUÇÃO ESTIMADO // SSMS COST GRAPH</span>
+        <span className="rom-lab-kicker">Plano de execução estimado (SSMS Cost Graph)</span>
         <svg viewBox="0 0 580 84" className="rom-pipeline-svg" role="img" aria-label="Árvore de custo do plano de execução T-SQL">
           <line x1="64" y1="30" x2="514" y2="30" stroke="var(--phosphor-secondary)" strokeWidth="1.4" strokeDasharray="3 4" />
           {sqlPlan.map((node, idx) => {
@@ -426,8 +424,7 @@ export default function HosakaDesktopOS({
     <div className="os-pane-section">
       <div className="os-pane-header">
         <div>
-          <span className="section-kicker">03 / BLADE RUNNER ESPER PHOTOLAB</span>
-          <h3>Análise Óptica de Retrato (Enhance 224 → 176)</h3>
+          <h3>Blade Runner Esper PhotoLab (Enhance 224 → 176)</h3>
         </div>
       </div>
 
@@ -446,10 +443,10 @@ export default function HosakaDesktopOS({
 
         <div className="os-esper-controls">
           <div className="os-status-readout t-nums">
-            TELEMETRIA ESPER: {esperSector} · ZOOM: {esperZoom}x
+            Telemetria Esper: {esperSector} · Zoom: {esperZoom}x
           </div>
           <p className="os-rom-summary">
-            Comandos de ampliação e espectro óptico inspirados na unidade Esper de Rick Deckard aplicadas em tempo real sobre <code>portrait-2.webp</code>.
+            Comandos de ampliação e espectro óptico inspirados na unidade Esper de Rick Deckard aplicados em tempo real sobre <code>portrait-2.webp</code>.
           </p>
 
           <div className="os-command-stack">
@@ -461,7 +458,7 @@ export default function HosakaDesktopOS({
             >
               <span className="choice-arrow">▸</span>
               <span className="choice-tag">[1.0x NORMAL]</span>
-              <span className="choice-text">Restaurar enquadramento biométrico padrão</span>
+              <span className="choice-text">Restaurar retrato Night City original</span>
             </button>
             <button
               type="button"
@@ -503,8 +500,7 @@ export default function HosakaDesktopOS({
     <div className="os-pane-section">
       <div className="os-pane-header">
         <div>
-          <span className="section-kicker">04 / YAMAHA CS-80 WEBAUDIO SYNTH</span>
-          <h3>Sintetizador Analógico de Fósforo</h3>
+          <h3>Sintetizador Analógico Yamaha CS-80 (WebAudio)</h3>
         </div>
         <div className="code-deck-actions">
           {onToggleAmbient && (
@@ -518,7 +514,7 @@ export default function HosakaDesktopOS({
             </button>
           )}
           <span className="os-status-readout t-nums">
-            FREQUÊNCIA ATIVA: {lastPad.freqLabel}
+            Frequência ativa: {lastPad.freqLabel}
           </span>
         </div>
       </div>
@@ -551,7 +547,7 @@ export default function HosakaDesktopOS({
               className={`contact-row ${isCurrent ? 'highlight-row' : ''}`}
               onClick={() => handleTriggerSynth(pad)}
             >
-              <span className="contact-port-code">OSC-0{idx + 1} // CS-80</span>
+              <span className="contact-port-code">Canal 0{idx + 1} · CS-80</span>
               <strong className="contact-title">♪ {pad.label}</strong>
               <span className="contact-endpoint t-nums">{pad.freqLabel}</span>
               <span className="contact-action">{isCurrent ? 'Tocando ●' : 'Disparar acorde →'}</span>
@@ -566,7 +562,6 @@ export default function HosakaDesktopOS({
     <div className="os-pane-section">
       <div className="os-pane-header">
         <div>
-          <span className="section-kicker">05 / ONO-SENDAI ROM SHELL</span>
           <h3>Constructo CLI: Dixie Flatline &amp; Johnny-84</h3>
         </div>
         <button
@@ -588,7 +583,7 @@ export default function HosakaDesktopOS({
 
       <form onSubmit={handleCliSubmit} className="relic-prompt-form" style={{ marginTop: '16px' }}>
         <label htmlFor="os-cli-input" className="relic-prompt-prefix">
-          cowboy@ono-sendai:~$
+          ncity:~$
         </label>
         <input
           id="os-cli-input"
@@ -610,8 +605,7 @@ export default function HosakaDesktopOS({
     <div className="os-pane-section">
       <div className="os-pane-header">
         <div>
-          <span className="section-kicker">06 / DOSSIÊ BIOMÉTRICO TYRELL</span>
-          <h3>Especificações do Engenheiro</h3>
+          <h3>Especificações &amp; Resumo do Engenheiro</h3>
         </div>
         <a
           href={PROFILE_DATA.cvPdf}
@@ -625,26 +619,26 @@ export default function HosakaDesktopOS({
 
       <div className="contact-ledger">
         <div className="contact-row">
-          <span className="contact-port-code">IDENTIDADE // BIO</span>
+          <span className="contact-port-code">Nome completo</span>
           <strong className="contact-title">Engenheiro Responsável</strong>
           <span className="contact-endpoint">{PROFILE_DATA.fullName}</span>
           <span className="contact-action">Verificado</span>
         </div>
         <div className="contact-row">
-          <span className="contact-port-code">PRODUÇÃO // ZETTI</span>
-          <strong className="contact-title">Atuação Atual</strong>
+          <span className="contact-port-code">Produção atual</span>
+          <strong className="contact-title">Zetti Sistemas</strong>
           <span className="contact-endpoint">{PROFILE_DATA.currentJob}</span>
           <span className="contact-action">Ativo</span>
         </div>
         <div className="contact-row">
-          <span className="contact-port-code">GRADUAÇÃO // UNIFAN</span>
-          <strong className="contact-title">Formação Acadêmica</strong>
+          <span className="contact-port-code">Graduação</span>
+          <strong className="contact-title">UNIFAN (2027)</strong>
           <span className="contact-endpoint">{PROFILE_DATA.education}</span>
           <span className="contact-action">Em curso</span>
         </div>
         <div className="contact-row">
-          <span className="contact-port-code">CHASSI // SELOS VK</span>
-          <strong className="contact-title">Liga &amp; Empatia Atual</strong>
+          <span className="contact-port-code">Conquistas</span>
+          <strong className="contact-title">Selos Desbloqueados</strong>
           <span className="contact-endpoint t-nums">
             {chassisStage.toUpperCase()} · {unlockedSeals.length}/12 Selos
           </span>
@@ -657,7 +651,13 @@ export default function HosakaDesktopOS({
   const currentAppMeta = OS_APPS.find((a) => a.id === activeApp) || OS_APPS[0];
 
   return (
-    <section className="os-workstation-stage wrap" aria-label="Estação de Trabalho Hosaka H-84">
+    <section className="os-workstation-stage wrap" aria-label="Terminal Keystone Night City">
+      <div className="keystone-netdir-bar">
+        <span className="keystone-brand">KEYSTONE</span>
+        <span className="keystone-url">NETDIR://NCITY.PUB/MIQUEIAS-BACKEND</span>
+        <span className="keystone-netwatch">NETWATCH VERIFIED</span>
+      </div>
+
       {/* Borderless Top Kernel Rail */}
       <div className="os-top-rail">
         <div className="os-app-dock" role="group" aria-label="Módulos da Workstation OS">
@@ -671,7 +671,6 @@ export default function HosakaDesktopOS({
                 className={`os-dock-tab ${isCurrent ? 'active' : ''}`}
                 onClick={() => handleSelectApp(app.id)}
               >
-                <span className="os-tab-num">{app.num}</span>
                 <span>{app.label}</span>
               </button>
             );
@@ -695,13 +694,13 @@ export default function HosakaDesktopOS({
               className="cmd-link accent"
               onClick={onReturnToSpace}
             >
-              Falar com Johnny-84 →
+              Voltar ao Portfólio →
             </button>
           )}
         </div>
       </div>
 
-      {/* Main Borderless Spatial Canvas (Zero Enclosing CRT Box Frame) */}
+      {/* Main Borderless Spatial Canvas */}
       <div className={`os-workstation-canvas ${splitSql ? 'is-split' : ''}`}>
         <div className="os-primary-pane">
           {activeApp === 'explorer' && renderRomPane()}
@@ -722,10 +721,10 @@ export default function HosakaDesktopOS({
       {/* Minimal Bottom Hairline Telemetry Bar */}
       <div className="os-bottom-status">
         <span>
-          HOSAKA KERNEL // MÓDULO {currentAppMeta.num} [{currentAppMeta.code}]
+          KEYSTONE TERMINAL · MÓDULO [{currentAppMeta.code}]
         </span>
         <span className="t-nums">
-          MEMÓRIA: 640K OK · SELOS VOIGHT-KAMPFF: {unlockedSeals.length}/12
+          MEMÓRIA: 640K OK · CONQUISTAS: {unlockedSeals.length}/12
         </span>
       </div>
     </section>

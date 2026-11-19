@@ -3,37 +3,37 @@ import fx from '../fx/fx.js';
 import dotTerrain from '../fx/dot-terrain/effect.js';
 
 function getCyberspacePalette(chassis, phosphor) {
-  const isGreen = phosphor === 'green';
+  const isAlt = phosphor === 'green';
 
   if (chassis === 'titanium') {
     return {
-      bg: '#050A0E',
-      surface: '#0A141D',
-      ink: '#7D9AB0',
-      muted: '#3F5566',
-      accent: isGreen ? '#38F27F' : '#00E5B8',
-      accentInk: '#050A0E',
+      bg: '#151216',
+      surface: '#1A171E',
+      ink: '#056FA4',
+      muted: '#044E74',
+      accent: isAlt ? '#FFB000' : '#FA2C85',
+      accentInk: '#151216',
     };
   }
 
   if (chassis === 'gold-24k') {
     return {
-      bg: '#090703',
-      surface: '#140F05',
-      ink: '#A8915C',
-      muted: '#5D4E2C',
-      accent: isGreen ? '#38F27F' : '#FFC837',
-      accentInk: '#090703',
+      bg: '#151216',
+      surface: '#1D181F',
+      ink: '#FA2C85',
+      muted: '#056FA4',
+      accent: isAlt ? '#24B0F0' : '#FFB000',
+      accentInk: '#151216',
     };
   }
 
   return {
-    bg: '#06080B',
-    surface: '#0D1218',
-    ink: '#9A9284',
-    muted: '#4E4A43',
-    accent: isGreen ? '#38F27F' : '#FFB000',
-    accentInk: '#06080B',
+    bg: '#151216',
+    surface: '#19151B',
+    ink: '#056FA4',
+    muted: '#044B70',
+    accent: isAlt ? '#FFB000' : '#FA2C85',
+    accentInk: '#151216',
   };
 }
 

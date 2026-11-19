@@ -48,13 +48,13 @@ export const OWL_QUOTES = {
 export const ROM_CARTRIDGES = [
   {
     id: 'zetti-prod',
-    slot: 'FITA ROM I · PRODUÇÃO REAL',
+    slot: 'Produção Real · SQL Server & VB6',
     category: 'prod',
     title: 'Zetti Sistemas Farmacêuticos (SQL Server & VB6)',
     period: 'Dez/2025 – Atual · Em Produção',
     headline: 'Sustentação crítica e adequação fiscal para dezenas de farmácias em operação diária.',
     impact:
-      'O QUE: sustentação de ERP farmacêutico em produção · COMO: T-SQL (Stored Procedures, Views, Index Seek) e evolução de módulos VB6 · RESULTADO: adequação ao CNPJ Alfanumérico (14 posições) e novos cálculos tributários sem downtime nas filiais.',
+      'Sustentação diária de ERP farmacêutico em produção com T-SQL (Stored Procedures, Views, Index Seek) e evolução de módulos VB6, entregando a adequação ao CNPJ Alfanumérico (NT 2026) e novos cálculos tributários sem downtime nas filiais.',
     context:
       'Atuação diária na Zetti (desde 08/12/2025) mantendo sistemas legados em Visual Basic 6 integrados a bancos SQL Server de alta demanda no varejo farmacêutico, garantindo continuidade operacional em caixa, estoque e fechamento fiscal.',
     engineering: [
@@ -91,13 +91,13 @@ END;`,
   },
   {
     id: 'api-gestao-produtos',
-    slot: 'FITA ROM II · ARQUITETURA REST & DOCKER',
+    slot: 'API REST · TypeScript & Docker',
     category: 'api',
     title: 'api-gestao-produtos (Node.js, TypeScript & TypeORM)',
     period: 'Repositório Público · GitHub',
     headline: 'API RESTful containerizada com autenticação, migrations, TypeORM, MySQL e documentação Swagger.',
     impact:
-      'O QUE: API de catálogo, estoque e categorias · COMO: Node.js + TypeScript em camadas (Controllers/Services/Entities), TypeORM Migrations e Docker Compose · RESULTADO: ambiente 100% reprodutível (API + MySQL 8) com contrato OpenAPI interativo.',
+      'API de catálogo, estoque e categorias em Node.js + TypeScript (Controllers, Services e Entities), com TypeORM Migrations, MySQL 8 containerizado via Docker Compose e documentação OpenAPI/Swagger interativa.',
     context:
       'Construída para resolver o gerenciamento completo de produtos, saldo de estoque e categorias com validação estrita de payload, paginação performática e persistência relacional versionada.',
     engineering: [
@@ -131,13 +131,13 @@ export class ProductService {
   },
   {
     id: 'vosso-cinema-api',
-    slot: 'FITA ROM III · NESTJS & PRISMA ORM',
+    slot: 'Backend Modular · NestJS & Prisma',
     category: 'api',
     title: 'vosso-cinema-api (NestJS, Prisma & PostgreSQL)',
     period: 'Repositório Público · GitHub',
     headline: 'Backend modular em NestJS para gestão de filmes, salas, sessões e reserva concorrente de assentos.',
     impact:
-      'O QUE: backend de bilheteria e sessões de cinema · COMO: módulos NestJS, DTOs validados e $transaction no Prisma + PostgreSQL · RESULTADO: reserva atômica livre de venda dupla (race condition) integrada ao frontend vosso-cinema-web.',
+      'Backend de bilheteria e sessões de cinema com módulos NestJS, DTOs validados e transações ACID (prisma.$transaction) no PostgreSQL, impedindo venda dupla de assentos sob requisições simultâneas.',
     context:
       'Desenvolvida para sustentar a operação completa de um complexo de cinema (filmes, salas, sessões e ingressos), garantindo consistência transacional quando múltiplos clientes disputam o mesmo assento.',
     engineering: [
@@ -166,13 +166,13 @@ PASS  test/sessions.e2e-spec.ts (6 passed, 0 failed in 1.12s)`,
   },
   {
     id: 'vital-conscious-api',
-    slot: 'FITA ROM IV · JAVA 17 & SPRING BOOT 3',
+    slot: 'API Corporativa · Java 17 & Spring Boot 3',
     category: 'api',
     title: 'vital-conscious-api (Java 17, Spring Boot 3 & JPA)',
     period: 'Repositório Público · GitHub',
     headline: 'API RESTful em Java 17 e Spring Boot 3 com Spring Data JPA e PostgreSQL.',
     impact:
-      'O QUE: API REST corporativa de registros vitais · COMO: Java 17, Spring Boot 3, Spring Data JPA/Hibernate e Bean Validation · RESULTADO: contratos REST padronizados (ResponseEntity, HTTP 201/400/404) e persistência relacional em PostgreSQL.',
+      'API REST em Java 17 e Spring Boot 3 com Spring Data JPA/Hibernate, Bean Validation e contratos HTTP padronizados (ResponseEntity 201/400/404) persistidos em PostgreSQL.',
     context:
       'Projeto de engenharia backend aplicando os padrões corporativos do ecossistema Java 17 e Spring Boot 3: inversão de controle, DTOs imutáveis, validação declarativa e mapeamento objeto-relacional limpo.',
     engineering: [
@@ -203,13 +203,13 @@ public class VitalRecordController {
   },
   {
     id: 'controle-estoque-javafx',
-    slot: 'FITA ROM V · DESKTOP JAVAFX & DAO',
+    slot: 'Desktop & SQL Puro · JavaFX & JDBC DAO',
     category: 'desktop',
     title: 'controle-estoque-javafx (JavaFX, JDBC & PostgreSQL)',
     period: 'Repositório Público · GitHub',
     headline: 'Sistema desktop completo em JavaFX com conexão JDBC direta ao PostgreSQL e padrão arquitetural DAO.',
     impact:
-      'O QUE: sistema desktop de inventário e estoque · COMO: Java 17 + JavaFX em MVC e persistência JDBC pura via padrão DAO · RESULTADO: CRUD transacional seguro contra SQL Injection (PreparedStatement) e desacoplamento total entre UI e SQL.',
+      'Sistema desktop de inventário em Java 17 + JavaFX (MVC) com persistência JDBC pura via padrão DAO e PreparedStatement, garantindo proteção contra SQL Injection e desacoplamento total entre interface e banco.',
     context:
       'Aplicação desktop construída deliberadamente sem ORMs para demonstrar domínio de SQL puro via JDBC, gerenciamento de recursos com try-with-resources e separação entre camada de apresentação e acesso a dados.',
     engineering: [
@@ -235,13 +235,13 @@ public void atualizarEstoque(int idProduto, int novaQuantidade) throws SQLExcept
   },
   {
     id: 'estruturas-dados-java',
-    slot: 'FITA ROM VI · ALGORITMOS O(1) & O(log n)',
+    slot: 'Algoritmos · Árvore AVL & Hash CPF',
     category: 'algo',
     title: 'Tabela Hash CPF & Catálogo Árvore AVL vs BST (Java)',
     period: '2 Repositórios Públicos · GitHub',
     headline: 'Implementações do zero de Tabela Hash com encadeamento separado e Árvore AVL auto-balanceada.',
     impact:
-      'O QUE: estruturas de dados implementadas do zero em Java · COMO: Hash Table com dispersão de CPF (Módulo 11) e Árvore AVL com rotações simples/duplas (|FB| ≤ 1) · RESULTADO: busca em O(1) médio e O(log n) garantido sob entradas ordenadas que degeneram uma BST comum em O(n).',
+      'Implementações do zero em Java de Tabela Hash com validação Módulo-11 de CPF e Árvore AVL auto-balanceada (rotações LL, RR, LR e RL), garantindo busca em O(1) médio e O(log n) no pior caso.',
     context:
       'Dois repositórios públicos (tabela-hash-cpf-java e catalogo-livros-avl-bst) construídos sem coleções prontas para demonstrar domínio de ponteiros, tratamento de colisão, fator de balanceamento e análise assintótica.',
     engineering: [
@@ -296,7 +296,7 @@ export const TELEMETRY_PINS = [
   { id: 23, code: '2026-M05', level: 3, commits: 189, label: 'Evolução contínua no ecossistema C#/.NET e integração de serviços REST' },
   { id: 24, code: '2026-M07', level: 4, commits: 231, label: 'Engenharia de Software UNIFAN (68% concluído) · Arquitetura e Qualidade de Software' },
   { id: 25, code: '2026-M09', level: 4, commits: 248, label: 'Publicação dos dossiês interativos Galvan-M e Mikoshi Engrama no GitHub Pages' },
-  { id: 26, code: '2026-M11', level: 4, commits: 275, label: 'Lançamento da estação retrofuturista ONO-SENDAI VII // DECK TYRELL-84' },
+  { id: 26, code: '2026-M11', level: 4, commits: 275, label: 'Portfólio Backend Interativo & Simuladores SQL Server / Árvore AVL (GitHub Pages)' },
 ];
 
 // 12 Voight-Kampff Empathy Seals (Unlocking 6 -> Titanium Chassis; 12 -> 24K Gold Chassis)

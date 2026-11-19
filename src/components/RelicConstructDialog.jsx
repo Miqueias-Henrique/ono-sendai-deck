@@ -275,16 +275,16 @@ export default function RelicConstructDialog({
   };
 
   return (
-    <section
+    <div
       ref={sectionRef}
       id="sec-relic-chat"
-      className="space-section wrap relic-construct-section reveal"
+      className="relic-construct-section"
       aria-labelledby="relic-heading"
     >
       {/* Borderless Top Rail Header */}
       <div className="relic-top-rail">
         <div className="relic-persona-tabs" role="group" aria-label="Canal do Constructo Neural">
-          {Object.values(CONSTRUCT_PERSONAS).map((p, idx) => {
+          {Object.values(CONSTRUCT_PERSONAS).map((p) => {
             const active = p.id === personaId;
             return (
               <button
@@ -295,7 +295,6 @@ export default function RelicConstructDialog({
                 style={{ '--tab-accent': p.accentVar }}
                 onClick={() => handleSelectPersona(p.id)}
               >
-                <span className="relic-tab-num">0{idx + 1}</span>
                 <span>{p.handle.split(' // ')[0]}</span>
               </button>
             );
@@ -315,7 +314,7 @@ export default function RelicConstructDialog({
           </svg>
           <div className="relic-sync-stat">
             <span className="t-nums">
-              {isStreaming ? 'TRANSMITINDO SINAL //' : 'SINCRONIA RELIC //'} {relicSync}%
+              {isStreaming ? 'Transmitindo sinal:' : 'Sincronia Relic:'} {relicSync}%
             </span>
             <div className="relic-sync-bar" aria-hidden="true">
               <div
@@ -331,15 +330,15 @@ export default function RelicConstructDialog({
       <div className="relic-dialogue-grid">
         <div className="relic-transcript-col">
           <div className="relic-speaker-meta" style={{ color: persona.accentVar }}>
-            <span>{persona.handle}</span>
+            <span>{persona.handle.replace(' // ', ' · ')}</span>
             <span className="meta-sep">·</span>
             <span>{persona.origin}</span>
           </div>
 
           <div className="relic-heading-row">
-            <h2 id="relic-heading" className="relic-section-title glitch-title" data-text="Diálogo Neural Aberto">
-              Diálogo Neural Aberto
-            </h2>
+            <h3 id="relic-heading" className="relic-section-title">
+              Conversa com o Constructo Relic
+            </h3>
             {onOpenBriefing && (
               <button
                 type="button"
@@ -349,14 +348,14 @@ export default function RelicConstructDialog({
                   onOpenBriefing();
                 }}
               >
-                Briefing Recrutador (30s) ↗
+                Resumo Recrutador (30s) ↗
               </button>
             )}
           </div>
 
           {externalEvent && (
             <p className="relic-external-ping">
-              [INTERRUPÇÃO AO VIVO // TELEMETRIA]: {externalEvent}
+              Sinal da estação: {externalEvent}
             </p>
           )}
 
@@ -392,7 +391,7 @@ export default function RelicConstructDialog({
 
         {/* Right Side: Cyberpunk 2077-Style Horizontal Choice Lines & Open Input */}
         <div className="relic-choices-col">
-          <div className="relic-choices-kicker">RESPOSTAS SINÁPTICAS DISPONÍVEIS</div>
+          <div className="relic-choices-kicker">Pergunte ao constructo ou escolha uma resposta</div>
 
           <div className="relic-choice-list" role="group" aria-label="Opções de diálogo com o constructo">
             {activeNode.options.map((opt) => (
@@ -412,7 +411,7 @@ export default function RelicConstructDialog({
 
           <form onSubmit={handleSendPrompt} className="relic-prompt-form">
             <label htmlFor="relic-user-input" className="relic-prompt-prefix">
-              V@ono-sendai:~$
+              ncity:~$
             </label>
             <input
               id="relic-user-input"
@@ -424,12 +423,12 @@ export default function RelicConstructDialog({
               spellCheck={false}
             />
             <button type="submit" className="relic-send-link">
-              Transmitir ↵
+              Enviar ↵
             </button>
           </form>
 
           <div className="relic-quick-topics" aria-label="Tópicos rápidos de lore e engenharia">
-            <span>Atalhos:</span>
+            <span>Tópicos:</span>
             {['zetti', 'avl', 'stack', 'breach', 'samurai', 'arasaka', 'ff:06:b5', 'afterlife'].map((topic) => (
               <button
                 key={topic}
@@ -447,7 +446,7 @@ export default function RelicConstructDialog({
       {/* Slim Hairline Cyberpunk Lore & Aesthetics Codex */}
       <div className="relic-lore-codex">
         <div className="codex-nav-strip" role="group" aria-label="Referências e Estética Cyberpunk">
-          <span className="codex-label">ARQUIVO LORE &amp; REFERÊNCIAS //</span>
+          <span className="codex-label">Referências Cyberpunk:</span>
           {LORE_CODEX.map((item) => (
             <button
               key={item.id}
@@ -469,6 +468,6 @@ export default function RelicConstructDialog({
           <p>{activeLore.body}</p>
         </div>
       </div>
-    </section>
+    </div>
   );
 }
